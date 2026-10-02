@@ -27,19 +27,30 @@ $role = $_SESSION['role'];
 
 <?php if ($role == 'admin') : ?>
 
-    <a href="siswa.php">Kelola guru</a><br>
-    <a href="menu2.php">kelola siswa</a><br>
-    <a href="menu3.php">Menu 3</a><br>
-    <a href="menu4.php">Menu 4</a><br>
+    <h3>Menu Admin</h3>
+
+    <a href="menu1.php">Kelola Siswa</a><br>
+    <a href="menu2.php">Kelola Guru</a><br>
+    <a href="menu3.php">Kelola Kelas</a><br>
+    <a href="menu4.php">Kelola Tahun Ajaran</a><br>
 
 <?php elseif ($role == 'guru') : ?>
 
-    <a href="menu3.php">Menu 3</a><br>
-    <a href="menu4.php">Menu 4</a><br>
+    <h3>Menu Guru</h3>
+
+    <a href="catat_pelanggaran.php">Catat Pelanggaran</a><br>
+    <a href="tindakan.php">Tindakan</a><br>
+    <a href="riwayat.php">Riwayat</a><br>
+    <a href="rekap_poin.php">Rekap Poin</a><br>
+
+<?php else : ?>
+
+    <p>Role tidak dikenali.</p>
 
 <?php endif; ?>
 
 <br>
+
 <a href="logout.php">Logout</a>
 
 </body>
