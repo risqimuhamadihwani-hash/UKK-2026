@@ -1,22 +1,40 @@
 <?php
-include "config/koneksi.php";
+$koneksi = new mysqli("localhost", "root", "", "db_ukk_2026");
 
-$data = mysqli_query($koneksi, "SELECT * FROM t_guru");
+if ($koneksi->connect_error) {
+    die("Koneksi gagal: " . $koneksi->connect_error);
+}
+
+$sql = "SELECT id, nip, nama, email, status_aktif
+        FROM t_guru
+        ORDER BY id ASC";
+
+$result = $koneksi->query($sql);
+
+if (!$result) {
+    die("Query gagal: " . $koneksi->error);
+}
 ?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Kelola Guru</title>
+</head>
+<body>
 
 <h1>Kelola Guru</h1>
 
+<p>Halaman untuk mengelola data guru.</p>
+
 <a href="tambah_guru.php">Tambah Guru</a>
-
 <br>
-
 <a href="dashboard.php">Kembali ke Dashboard</a>
-
 <br><br>
 
 <table border="1" cellpadding="8" cellspacing="0">
     <tr>
-        <th>No</th>
+        <th>Id</th>
         <th>NIP</th>
         <th>Nama Guru</th>
         <th>Email</th>
@@ -27,36 +45,40 @@ $data = mysqli_query($koneksi, "SELECT * FROM t_guru");
     <?php
     $no = 1;
 
-    while ($guru = mysqli_fetch_assoc($data)) {
+    while ($guru = $result->fetch_assoc()) {
     ?>
-
     <tr>
         <td><?= $no++; ?></td>
-        <td><?= $guru['nip']; ?></td>
-        <td><?= $guru['nama']; ?></td>
-        <td><?= $guru['email']; ?></td>
-
+        <td><?= htmlspecialchars($guru['nip']); ?></td>
+        <td><?= htmlspecialchars($guru['nama']); ?></td>
+        <td><?= htmlspecialchars($guru['email']); ?></td>
         <td>
-            <?php
-            if ($guru['status_aktif'] == 1) {
-                echo "Aktif";
-            } else {
-                echo "Tidak Aktif";
-            }
-            ?>
+            <?= $guru['status_aktif'] == 1
+                ? 'Aktif' : 'Tidak Aktif'; ?>
         </td>
-
         <td>
             <a href="edit_guru.php?id=<?= $guru['id']; ?>">Edit</a>
             |
             <a href="hapus_guru.php?id=<?= $guru['id']; ?>"
-               onclick="return confirm('Yakin hapus data guru?')">
+               onclick="return confirm('Yakin hapus data guru ini?')">
                 Hapus
             </a>
         </td>
     </tr>
+    <?php
+    }
 
+    if ($result->num_rows == 0) {
+    ?>
+    <tr>
+        <td colspan="6">Belum ada data guru.</td>
+    </tr>
     <?php } ?>
-
 </table>
 
+</body>
+</html>
+<?php
+$koneksi->close();
+?>
+```

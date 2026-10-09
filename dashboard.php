@@ -33,6 +33,9 @@ $role = $_SESSION['role'];
     <a href="menu2.php">Kelola Guru</a><br>
     <a href="menu3.php">Kelola Kelas</a><br>
     <a href="menu4.php">Kelola Tahun Ajaran</a><br>
+    <a href="menu5.php">Kelola Wali Kelas</a><br>
+    <a href="menu6.php">Penempatan Siswa</a><br>
+    <a href="menu7.php">Kelola Kategori Pelanggaran</a><br>
 
 <?php elseif ($role == 'guru') : ?>
 
@@ -40,6 +43,14 @@ $role = $_SESSION['role'];
 
     <a href="catat_pelanggaran.php">Catat Pelanggaran</a><br>
     <a href="tindakan.php">Tindakan</a><br>
+    <a href="riwayat.php">Riwayat</a><br>
+    <a href="rekap_poin.php">Rekap Poin</a><br>
+
+<?php elseif ($role == 'wali_kelas') : ?>
+
+    <h3>Menu Wali Kelas</h3>
+
+    <a href="laporan.php">Laporan</a><br>
     <a href="riwayat.php">Riwayat</a><br>
     <a href="rekap_poin.php">Rekap Poin</a><br>
 
