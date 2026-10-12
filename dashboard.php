@@ -10,59 +10,128 @@ $name = $_SESSION['name'];
 $role = $_SESSION['role'];
 ?>
 
+
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <title>Dashboard</title>
 </head>
+
 <body>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
-<h2>Dashboard</h2>
+<div class="container-fluid">
+    <div class="row">
+        <!-- SIDEBAR -->
+        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
+            <h4 class="text-white mb-4">
+                JusticeAdmin
+            </h4>
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item mb-2">
+                    <a href="dashboard.php" class="nav-link active">
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu1.php" class="nav-link text-white">
+                        Kelola Siswa
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu2.php" class="nav-link text-white">
+                        Kelola Guru
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu3.php" class="nav-link text-white">
+                        Kelola Kelas
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu4.php" class="nav-link text-white">
+                        Kelola Tahun ajaran
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu5.php" class="nav-link text-white">
+                        Kelola wali kelas
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu6.php" class="nav-link text-white">
+                        Penempatan siswa
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu7.php" class="nav-link text-white">
+                        kelola Kategori pelanggaran
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="#" class="nav-link text-white">
+                        About Me
+                    </a>
+                </li>
+                <hr class="text-secondary">
+                <li class="nav-item">
+                    <a href="logout.php" class="nav-link text-danger">
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!-- KONTEN -->
+        <main class="col-md-9 col-lg-10 p-4">
+            <h2>Dashboard</h2>
+            <p>
+                Selamat datang di halaman dashboard.
+            </p>
+            <div class="row">
+                <!-- CARD DATA SISWA -->
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                Data Siswa
+                            </h5>
+                            <h2>
+                                120
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+                <!-- CARD DATA GURU -->
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                Data Guru
+                            </h5>
+                            <h2>
+                                25
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+                <!-- CARD KELAS -->
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                Kelas
+                            </h5>
+                            <h2>
+                             12
+                          </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
 
-<p>Selamat datang, <?= htmlspecialchars($name); ?></p>
-<p>Role: <?= htmlspecialchars($role); ?></p>
-
-<hr>
-
-<?php if ($role == 'admin') : ?>
-
-    <h3>Menu Admin</h3>
-
-    <a href="menu1.php">Kelola Siswa</a><br>
-    <a href="menu2.php">Kelola Guru</a><br>
-    <a href="menu3.php">Kelola Kelas</a><br>
-    <a href="menu4.php">Kelola Tahun Ajaran</a><br>
-    <a href="menu5.php">Kelola Wali Kelas</a><br>
-    <a href="menu6.php">Penempatan Siswa</a><br>
-    <a href="menu7.php">Kelola Kategori Pelanggaran</a><br>
-
-<?php elseif ($role == 'guru') : ?>
-
-    <h3>Menu Guru</h3>
-
-    <a href="catat_pelanggaran.php">Catat Pelanggaran</a><br>
-    <a href="tindakan.php">Tindakan</a><br>
-    <a href="riwayat.php">Riwayat</a><br>
-    <a href="rekap_poin.php">Rekap Poin</a><br>
-
-<?php elseif ($role == 'wali_kelas') : ?>
-
-    <h3>Menu Wali Kelas</h3>
-
-    <a href="laporan.php">Laporan</a><br>
-    <a href="riwayat.php">Riwayat</a><br>
-    <a href="rekap_poin.php">Rekap Poin</a><br>
-
-<?php else : ?>
-
-    <p>Role tidak dikenali.</p>
-
-<?php endif; ?>
-
-<br>
-
-<a href="logout.php">Logout</a>
-
-</body>
-</html>

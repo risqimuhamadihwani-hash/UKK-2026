@@ -1,71 +1,52 @@
+```php
 <?php
-include "config/koneksi.php";
+$koneksi = new mysqli("localhost", "root", "", "db_ukk_2026");
 
-$data = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran");
+$sql = "SELECT * FROM t_tahun_ajaran ORDER BY id ASC";
+$result = $koneksi->query($sql);
 ?>
 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kelola Tahun Ajaran</title>
+</head>
+<body>
+
 <h1>Kelola Tahun Ajaran</h1>
+<p>Halaman untuk mengelola data tahun ajaran.</p>
 
 <a href="tambah_tahun_ajaran.php">Tambah Tahun Ajaran</a>
-
 <br>
-
 <a href="dashboard.php">Kembali ke Dashboard</a>
-
 <br><br>
 
 <table border="1" cellpadding="8" cellspacing="0">
-
     <tr>
-        <th>No</th>
-        <th>Nama</th>
+        <th>ID</th>
+        <th>Nama Tahun Ajaran</th>
         <th>Tanggal Mulai</th>
         <th>Tanggal Selesai</th>
-        <th>Status Aktif</th>
+        <th>Status</th>
         <th>Aksi</th>
     </tr>
 
-    <?php
-    $no = 1;
-
-    while ($tahun = mysqli_fetch_assoc($data)) {
-    ?>
-
+    <?php while ($data = $result->fetch_assoc()) { ?>
     <tr>
-        <td><?= $no++; ?></td>
-
-        <td><?= $tahun['nama']; ?></td>
-
-        <td><?= $tahun['tanggal_mulai']; ?></td>
-
-        <td><?= $tahun['tanggal_selesai']; ?></td>
-
+        <td><?= $data['id']; ?></td>
+        <td><?= htmlspecialchars($data['nama']); ?></td>
+        <td><?= $data['tanggal_mulai']; ?></td>
+        <td><?= $data['tanggal_selesai']; ?></td>
+        <td><?= $data['status_aktif'] ? 'Aktif' : 'Tidak Aktif'; ?></td>
         <td>
-            <?php
-            if ($tahun['status_aktif'] == 1) {
-                echo "Aktif";
-            } else {
-                echo "Tidak Aktif";
-            }
-            ?>
-        </td>
-
-        <td>
-            <a href="edit_tahun_ajaran.php?id=<?= $tahun['id']; ?>">
-                Edit
-            </a>
-
-            |
-
-            <a href="hapus_tahun_ajaran.php?id=<?= $tahun['id']; ?>"
-               onclick="return confirm('Yakin ingin menghapus data ini?')">
-                Hapus
-            </a>
+            <a href="edit_tahun_ajaran.php?id=<?= $data['id']; ?>">Edit</a> |
+            <a href="hapus_tahun_ajaran.php?id=<?= $data['id']; ?>"
+               onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
         </td>
     </tr>
-
-    <?php
-    }
-    ?>
-
+    <?php } ?>
 </table>
+
+</body>
+</html>
+```

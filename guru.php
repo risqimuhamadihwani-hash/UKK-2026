@@ -26,7 +26,7 @@
         <td>Contoh Guru</td>
         <td>Laki-laki</td>
         <td>
-            <a href="edit_guru.php">Edit</a> |
+            <a href="edit_guru.php">Edit</a> 
             <a href="hapus_guru.php">Hapus</a>
         </td>
     </tr>
