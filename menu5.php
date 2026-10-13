@@ -1,138 +1,67 @@
 <?php
-session_start();
+$conn = new mysqli("localhost", "root", "", "db_ukk_2026");
 
-if (!isset($_SESSION['id_user'])) {
-    header("Location: login.php");
-    exit;
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
 }
 
-if ($_SESSION['role'] != 'admin') {
-    header("Location: dashboard.php");
-    exit;
-}
+$conn->set_charset("utf8mb4");
 
-$koneksi = new mysqli("localhost", "root", "", "db_ukk_2026");
-
-if ($koneksi->connect_error) {
-    die("Koneksi database gagal: " . $koneksi->connect_error);
-}
-
-$sql = "
-    SELECT
-        wk.id,
-        ta.tahun AS tahun_ajaran,
-        k.nama AS nama_kelas,
-        g.nama AS nama_guru,
-        wk.tanggal_mulai,
-        wk.tanggal_selesai,
-        wk.status_aktif
-    FROM t_wali_kelas AS wk
-    LEFT JOIN t_tahun_ajaran AS ta
-        ON wk.tahun_ajaran_id = ta.id
-    LEFT JOIN t_kelas AS k
-        ON wk.kelas_id = k.id
-    LEFT JOIN t_guru AS g
-        ON wk.siswa_ajaran_id = g.id
-    ORDER BY wk.id ASC
-";
-
-$result = $koneksi->query($sql);
-
-if (!$result) {
-    die("Query gagal: " . $koneksi->error);
-}
+$result = $conn->query(
+    "SELECT * FROM t_wali_kelas ORDER BY id DESC"
+);
 ?>
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Kelola Wali Kelas</title>
-</head>
-<body>
-
-<h3>Daftar Wali Kelas</h3>
+<h2>Kelola Wali Kelas</h2>
 
 <table border="1" cellpadding="8" cellspacing="0">
-    <tr>
-        <th>No</th>
-        <th>Tahun Ajaran</th>
-        <th>Kelas</th>
-        <th>Guru</th>
-        <th>Tanggal Mulai</th>
-        <th>Tanggal Selesai</th>
-        <th>Status</th>
-        <th>Aksi</th>
-    </tr>
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>ID</th>
+            <th>Tahun Ajaran ID</th>
+            <th>Kelas ID</th>
+            <th>Guru ID</th>
+            <th>Tanggal Mulai</th>
+            <th>Tanggal Selesai</th>
+            <th>Status</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
 
-    <?php
-    $no = 1;
+    <tbody>
+        <?php if ($result && $result->num_rows > 0): ?>
+            <?php $no = 1; ?>
 
-    while ($row = $result->fetch_assoc()) {
-    ?>
-    <tr>
-        <td><?= $no++; ?></td>
+            <?php while ($row = $result->fetch_assoc()): ?>
+                <tr>
+                    <td><?= $no++ ?></td>
+                    <td><?= htmlspecialchars($row['id']) ?></td>
+                    <td><?= htmlspecialchars($row['tahun_ajaran_id']) ?></td>
+                    <td><?= htmlspecialchars($row['kelas_id']) ?></td>
+                    <td><?= htmlspecialchars($row['guru_id']) ?></td>
+                    <td><?= htmlspecialchars($row['tanggal_mulai']) ?></td>
+                    <td><?= htmlspecialchars($row['tanggal_selesai']) ?></td>
+                    <td>
+                        <?= $row['status_aktif'] == 1 ? 'Aktif' : 'Nonaktif' ?>
+                    </td>
+                    <td>
+                        <a href="menu5.php?edit=<?= (int)$row['id'] ?>">Edit</a>
 
-        <td>
-            <?= htmlspecialchars($row['tahun_ajaran'] ?? '-'); ?>
-        </td>
+                        <form method="POST" action="menu5.php"
+                              onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                            <input type="hidden" name="hapus_id"
+                                   value="<?= (int)$row['id'] ?>">
+                            <button type="submit" name="hapus">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+            <?php endwhile; ?>
 
-        <td>
-            <?= htmlspecialchars($row['nama_kelas'] ?? '-'); ?>
-        </td>
-
-        <td>
-            <?= htmlspecialchars($row['nama_guru'] ?? '-'); ?>
-        </td>
-
-        <td>
-            <?= htmlspecialchars($row['tanggal_mulai'] ?? '-'); ?>
-        </td>
-
-        <td>
-            <?php
-            if (
-                empty($row['tanggal_selesai']) ||
-                $row['tanggal_selesai'] == '0000-00-00'
-            ) {
-                echo '-';
-            } else {
-                echo htmlspecialchars($row['tanggal_selesai']);
-            }
-            ?>
-        </td>
-
-        <td>
-            <?= $row['status_aktif'] ? 'Aktif' : 'Tidak Aktif'; ?>
-        </td>
-
-        <td>
-            <a href="edit_wali_kelas.php?id=<?= (int)$row['id']; ?>">
-                Edit
-            </a>
-            |
-            <a
-                href="hapus_wali_kelas.php?id=<?= (int)$row['id']; ?>"
-                onclick="return confirm('Yakin ingin menghapus data wali kelas ini?');"
-            >
-                Hapus
-            </a>
-        </td>
-    </tr>
-    <?php
-    }
-
-    if ($result->num_rows == 0) {
-    ?>
-    <tr>
-        <td colspan="8">Belum ada data wali kelas.</td>
-    </tr>
-    <?php } ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="9">Data wali kelas belum tersedia.</td>
+            </tr>
+        <?php endif; ?>
+    </tbody>
 </table>
-
-</body>
-</html>
-
-<?php
-$koneksi->close();
-?>
