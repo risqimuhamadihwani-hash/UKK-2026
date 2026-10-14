@@ -17,7 +17,6 @@ $role = $_SESSION['role'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <title>Dashboard</title>
 </head>
-
 <body>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
@@ -57,22 +56,7 @@ $role = $_SESSION['role'];
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu5.php" class="nav-link text-white">
-                        Kelola wali kelas
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="menu6.php" class="nav-link text-white">
-                        Penempatan siswa
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="menu7.php" class="nav-link text-white">
-                        kelola Kategori pelanggaran
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="#" class="nav-link text-white">
+                    <a href="about_me.php" class="nav-link text-white">
                         About Me
                     </a>
                 </li>

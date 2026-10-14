@@ -80,25 +80,6 @@ if (!$result) {
                         Kelola Tahun Ajaran
                     </a>
                 </li>
-
-                <li class="nav-item mb-2">
-                    <a href="menu5.php" class="nav-link text-white">
-                        Kelola Wali Kelas
-                    </a>
-                </li>
-
-                <li class="nav-item mb-2">
-                    <a href="menu6.php" class="nav-link text-white">
-                        Penempatan Siswa
-                    </a>
-                </li>
-
-                <li class="nav-item mb-2">
-                    <a href="menu7.php" class="nav-link text-white">
-                        Kelola Kategori Pelanggaran
-                    </a>
-                </li>
-
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
                         About Me
@@ -180,11 +161,11 @@ if (!$result) {
                             </td>
 
             <td>
-            <a href="edit_siswa.php?id=<?= $siswa['id']; ?>">
+            <a href="edit_Tahun_ajaran.php?id=<?= $tahun['id']; ?>">
             <button type="button" class="btn btn-warning">Edit</button>
             </a>
             
-            <a href="hapus_siswa.php?id=<?= $siswa['id']; ?>"
+            <a href="hapus_tahun_ajaran.php?id=<?= $tahun['id']; ?>"
                onclick="return confirm('Yakin ingin menghapus siswa ini?');"
                <button type="button" class="btn btn-danger">Hapus</button>
             </a>

@@ -63,22 +63,7 @@ if (!$result) {
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu5.php" class="nav-link text-white">
-                        Kelola wali kelas
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="menu6.php" class="nav-link text-white">
-                        Penempatan siswa
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="menu7.php" class="nav-link text-white">
-                        kelola Kategori pelanggaran
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="#" class="nav-link text-white">
+                    <a href="about_me.php" class="nav-link text-white">
                         About Me
                     </a>
                 </li>

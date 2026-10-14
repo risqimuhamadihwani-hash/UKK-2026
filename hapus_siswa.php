@@ -1,31 +1,22 @@
 <?php
+require_once "config/koneksi.php";
 
-$koneksi = new mysqli("localhost", "root", "", "db_ukk_2026");
+if (isset($_GET['id'])) {
+    $id = (int) $_GET['id'];
 
-if ($koneksi->connect_error) {
-    die("Koneksi database gagal: " . $koneksi->connect_error);
-}
+    $stmt = mysqli_prepare($koneksi, "DELETE FROM t_siswa WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $id);
 
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+    if (mysqli_stmt_execute($stmt)) {
+        header("Location: menu1.php");
+        exit;
+    } else {
+        echo "Gagal menghapus data siswa: " . mysqli_error($koneksi);
+    }
 
-if ($id <= 0) {
-    die("ID siswa tidak valid.");
-}
-
-/* Nonaktifkan siswa */
-$sql = "UPDATE t_siswa
-        SET status_aktif = 0,
-            updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?";
-
-$stmt = $koneksi->prepare($sql);
-$stmt->bind_param("i", $id);
-
-if ($stmt->execute()) {
+    mysqli_stmt_close($stmt);
+} else {
     header("Location: menu1.php");
     exit;
-} else {
-    echo "Gagal menghapus data: " . $stmt->error;
 }
-
 ?>
