@@ -66,6 +66,16 @@ $role = $_SESSION['role'];
                     </a>
                 </li>
                 <li class="nav-item mb-2">
+                    <a href="menu7.php" class="nav-link text-white">
+                        Kelola Kategori Pelanggaran
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu8.php" class="nav-link text-white">
+                        Kelola Jenis Pelanggaran
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
                         About Me
                     </a>
@@ -82,7 +92,7 @@ $role = $_SESSION['role'];
         <main class="col-md-9 col-lg-10 p-4">
             <h2>Dashboard</h2>
             <p>
-                Selamat datang Admoinistrator.
+                Selamat datang Admoinistrator
             </p>
             <div class="row">
                 <!-- CARD DATA SISWA -->

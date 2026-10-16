@@ -76,7 +76,7 @@ if (!$result) {
 
                 <li class="nav-item mb-2">
                     <a href="menu4.php" class="nav-link active">
-                        Kelola Tahun Ajaran
+                        Kelola Tahun ajaran
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -87,6 +87,16 @@ if (!$result) {
                 <li class="nav-item mb-2">
                     <a href="menu6.php" class="nav-link text-white">
                         Kelola Wali kelas
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu7.php" class="nav-link text-white">
+                        Kelola Kategori Pelanggaran
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu8.php" class="nav-link text-white">
+                        Kelola Jenis Pelanggaran
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -111,7 +121,7 @@ if (!$result) {
 
             <h1>Kelola Tahun Ajaran</h1>
 
-            <p>Halaman untuk mengelola data tahun ajaran.</p>
+            <p>Halaman untuk mengelola data tahun ajaran</p>
 
             <a href="tambah_tahun_ajaran.php"
                class="btn btn-secondary mb-3">
