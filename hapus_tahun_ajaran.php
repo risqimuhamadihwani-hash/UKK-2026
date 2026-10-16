@@ -1,48 +1,36 @@
-```php
 <?php
 require_once "config/koneksi.php";
 
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+if (isset($_GET['id'])) {
     $id = (int) $_GET['id'];
 
-    // Cek apakah tahun ajaran masih digunakan
-    $stmt = mysqli_prepare(
-        $koneksi,
-        "SELECT COUNT(*) FROM t_pelanggaran_siswa WHERE tahun_ajaran_id = ?"
-    );
+    try {
+        // Hapus data pelanggaran yang terkait terlebih dahulu
+        $stmt = $koneksi->prepare(
+            "DELETE FROM t_pelanggaran_siswa
+             WHERE tahun_ajaran_id = ?"
+        );
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $stmt->close();
 
-    mysqli_stmt_bind_param($stmt, "i", $id);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_bind_result($stmt, $jumlah);
-    mysqli_stmt_fetch($stmt);
-    mysqli_stmt_close($stmt);
+        // Hapus tahun ajaran
+        $stmt = $koneksi->prepare(
+            "DELETE FROM t_tahun_ajaran WHERE id = ?"
+        );
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $stmt->close();
 
-    if ($jumlah > 0) {
-        header("Location: menu4.php?status=masih_digunakan");
+        header("Location: menu4.php");
         exit;
+
+    } catch (mysqli_sql_exception $e) {
+        echo "Gagal menghapus: " .
+             htmlspecialchars($e->getMessage());
     }
-
-    // Hapus jika tidak digunakan
-    $stmt = mysqli_prepare(
-        $koneksi,
-        "DELETE FROM t_tahun_ajaran WHERE id = ?"
-    );
-
-    mysqli_stmt_bind_param($stmt, "i", $id);
-
-    if (mysqli_stmt_execute($stmt)) {
-        mysqli_stmt_close($stmt);
-        header("Location: menu4.php?status=hapus_berhasil");
-        exit;
-    }
-
-    $error = mysqli_stmt_error($stmt);
-    mysqli_stmt_close($stmt);
-
-    die("Gagal menghapus tahun ajaran: " . htmlspecialchars($error));
+} else {
+    header("Location: menu4.php");
+    exit;
 }
-
-header("Location: menu4.php");
-exit;
 ?>
-```

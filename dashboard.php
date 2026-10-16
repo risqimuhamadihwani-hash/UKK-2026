@@ -55,6 +55,16 @@ $role = $_SESSION['role'];
                         Kelola Tahun ajaran
                     </a>
                 </li>
+                 <li class="nav-item mb-2">
+                    <a href="menu5.php" class="nav-link text-white">
+                        Penempatan Siswa
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu6.php" class="nav-link text-white">
+                        Kelola Wali kelas
+                    </a>
+                </li>
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
                         About Me
@@ -83,7 +93,7 @@ $role = $_SESSION['role'];
                                 Data Siswa
                             </h5>
                             <h2>
-                                120
+                                350
                             </h2>
                         </div>
                     </div>

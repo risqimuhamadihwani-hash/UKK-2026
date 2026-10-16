@@ -1,0 +1,240 @@
+
+<?php
+session_start();
+include 'config/koneksi.php';
+
+if (!isset($_SESSION['id_user'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$data = mysqli_query(
+    $koneksi,
+    "SELECT
+        wk.id,
+        ta.nama AS tahun_ajaran,
+        k.nama AS nama_kelas,
+        g.nip,
+        g.nama AS nama_guru,
+        wk.tanggal_mulai,
+        wk.tanggal_selesai,
+        wk.status_aktif
+    FROM t_wali_kelas wk
+    LEFT JOIN t_tahun_ajaran ta ON wk.tahun_ajaran_id = ta.id
+    LEFT JOIN t_kelas k ON wk.kelas_id = k.id
+    LEFT JOIN t_guru g ON wk.guru_id = g.id
+    ORDER BY wk.id ASC"
+);
+
+if (!$data) {
+    die("Gagal mengambil data: " . mysqli_error($koneksi));
+}
+?>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kelola Wali Kelas</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+</head>
+
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- SIDEBAR -->
+        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
+            <h4 class="text-white mb-4">JusticeAdmin</h4>
+
+            <ul class="nav nav-pills flex-column">
+
+                <li class="nav-item mb-2">
+                    <a href="dashboard.php" class="nav-link text-white">
+                        Dashboard
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="menu1.php" class="nav-link text-white">
+                        Kelola Siswa
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="menu2.php" class="nav-link text-white">
+                        Kelola Guru
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="menu3.php" class="nav-link text-white">
+                        Kelola Kelas
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="menu4.php" class="nav-link text-white">
+                        Kelola Tahun Ajaran
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="menu5.php" class="nav-link text-white">
+                        Penempatan Siswa
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="menu6.php" class="nav-link active">
+                        Kelola Wali Kelas
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="about_me.php" class="nav-link text-white">
+                        About Me
+                    </a>
+                </li>
+
+                <hr class="text-secondary">
+
+                <li class="nav-item">
+                    <a href="logout.php" class="nav-link text-danger">
+                        Logout
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+
+        <!-- KONTEN -->
+        <main class="col-md-9 col-lg-10 p-4">
+
+            <h1>Kelola Wali Kelas</h1>
+
+            <p>Halaman untuk menampilkan data wali kelas.</p>
+
+            <!-- TOMBOL TAMBAH -->
+            <p>
+                <a href="tambah_wali_kelas.php"
+                   class="btn btn-primary">
+                    + Tambah Wali Kelas
+                </a>
+            </p>
+
+            <!-- TABEL DATA -->
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Tahun Ajaran</th>
+                            <th>Kelas</th>
+                            <th>NIP</th>
+                            <th>Nama Guru</th>
+                            <th>Tanggal Mulai</th>
+                            <th>Tanggal Selesai</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <?php if (mysqli_num_rows($data) > 0): ?>
+
+                            <?php $no = 1; ?>
+
+                            <?php while ($d = mysqli_fetch_assoc($data)): ?>
+
+                                <tr>
+                                    <td><?= $no++ ?></td>
+
+                                    <td>
+                                        <?= htmlspecialchars($d['tahun_ajaran'] ?? '-') ?>
+                                    </td>
+
+                                    <td>
+                                        <?= htmlspecialchars($d['nama_kelas'] ?? '-') ?>
+                                    </td>
+
+                                    <td>
+                                        <?= htmlspecialchars($d['nip'] ?? '-') ?>
+                                    </td>
+
+                                    <td>
+                                        <?= htmlspecialchars($d['nama_guru'] ?? '-') ?>
+                                    </td>
+
+                                    <td>
+                                        <?= htmlspecialchars($d['tanggal_mulai'] ?? '-') ?>
+                                    </td>
+
+                                    <td>
+                                        <?= htmlspecialchars($d['tanggal_selesai'] ?? '-') ?>
+                                    </td>
+
+                                    <td>
+                                        <?php if ((int)$d['status_aktif'] === 1): ?>
+                                            Aktif
+                                        <?php else: ?>
+                                            Tidak Aktif
+                                        <?php endif; ?>
+                                    </td>
+
+                                    <!-- TOMBOL EDIT DAN HAPUS -->
+                                    <td>
+                                        <a href="edit_wali_kelas.php?id=<?= (int)$d['id'] ?>"
+                                           class="btn btn-warning btn-sm">
+                                            Edit
+                                        </a>
+
+                                        <form action="hapus_wali_kelas.php"
+                                              method="POST"
+                                              class="d-inline"
+                                              onsubmit="return confirm('Yakin ingin menghapus data wali kelas ini?')">
+
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="<?= (int)$d['id'] ?>">
+
+                                            <button type="submit"
+                                                    class="btn btn-danger btn-sm">
+                                                Hapus
+                                            </button>
+
+                                        </form>
+                                    </td>
+
+                                </tr>
+
+                            <?php endwhile; ?>
+
+                        <?php else: ?>
+
+                            <tr>
+                                <td colspan="9" class="text-center">
+                                    Belum ada data wali kelas.
+                                </td>
+                            </tr>
+
+                        <?php endif; ?>
+
+                    </tbody>
+                </table>
+
+            </div>
+
+        </main>
+    </div>
+</div>
+
+</body>
+</html>
