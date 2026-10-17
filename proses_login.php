@@ -36,9 +36,17 @@ if (mysqli_num_rows($query) == 1) {
         $_SESSION['email'] = $user['email'];
         $_SESSION['role'] = $user['role'];
 
-        // Masuk dashboard
+        
+        if ($_SESSION['role'] === 'guru') {
+        header("Location: guru.php");
+        exit;
+        }
+
+        if ($_SESSION['role'] === 'admin') {
         header("Location: dashboard.php");
         exit;
+        }
+
 
     } else {
         echo "Password salah.";

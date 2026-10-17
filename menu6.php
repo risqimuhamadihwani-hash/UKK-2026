@@ -79,7 +79,7 @@ if (!$data) {
 
                 <li class="nav-item mb-2">
                     <a href="menu4.php" class="nav-link text-white">
-                        Kelola Tahun ajaran
+                        Kelola Tahun Ajaran
                     </a>
                 </li>
 

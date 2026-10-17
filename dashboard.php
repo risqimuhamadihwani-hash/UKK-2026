@@ -6,10 +6,20 @@ if (!isset($_SESSION['id_user'])) {
     exit;
 }
 
-$name = $_SESSION['name'];
-$role = $_SESSION['role'];
-?>
+$name = $_SESSION['name'] ?? 'Pengguna';
+$role = strtolower($_SESSION['role'] ?? '');
 
+if ($role === 'guru') {
+    header("Location: guru.php");
+    exit;
+}
+
+if ($role !== 'admin') {
+    session_destroy();
+    header("Location: login.php");
+    exit;
+}
+?>
 
 <!DOCTYPE html>
 <html>
@@ -52,7 +62,7 @@ $role = $_SESSION['role'];
                 </li>
                 <li class="nav-item mb-2">
                     <a href="menu4.php" class="nav-link text-white">
-                        Kelola Tahun ajaran
+                        Kelola Tahun Ajaran
                     </a>
                 </li>
                  <li class="nav-item mb-2">
@@ -62,7 +72,7 @@ $role = $_SESSION['role'];
                 </li>
                 <li class="nav-item mb-2">
                     <a href="menu6.php" class="nav-link text-white">
-                        Kelola Wali kelas
+                        Kelola Wali Kelas
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -140,3 +150,4 @@ $role = $_SESSION['role'];
 </div>
 </body>
 </html>
+

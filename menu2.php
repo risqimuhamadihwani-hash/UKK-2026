@@ -62,7 +62,7 @@ if (!$result) {
                 </li>
                 <li class="nav-item mb-2">
                     <a href="menu4.php" class="nav-link text-white">
-                        Kelola Tahun ajaran
+                        Kelola Tahun Ajaran
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -72,7 +72,7 @@ if (!$result) {
                 </li>
                 <li class="nav-item mb-2">
                     <a href="menu6.php" class="nav-link text-white">
-                        Kelola Wali kelas
+                        Kelola Wali Kelas
                     </a>
                 </li>
                 <li class="nav-item mb-2">

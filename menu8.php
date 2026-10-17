@@ -6,7 +6,7 @@ $cari = isset($_GET['cari']) ? trim($_GET['cari']) : '';
 $sql = "SELECT * FROM t_pelanggaran
         WHERE kode LIKE ?
         OR nama LIKE ?
-        ORDER BY id DESC";
+        ORDER BY id ASC";
 
 $stmt = mysqli_prepare($koneksi, $sql);
 $keyword = "%$cari%";
@@ -63,7 +63,7 @@ $result = mysqli_stmt_get_result($stmt);
 
                 <li class="nav-item mb-2">
                     <a href="menu4.php" class="nav-link text-white">
-                        Kelola Tahun ajaran
+                        Kelola Tahun Ajaran
                     </a>
                 </li>
 
@@ -127,7 +127,7 @@ $result = mysqli_stmt_get_result($stmt);
         </tr>
     </thead>
 
-    <tbody>
+    <body>
     <?php
     $no = 1;
 
@@ -163,7 +163,7 @@ $result = mysqli_stmt_get_result($stmt);
         echo '<tr><td colspan="7">Data tidak ditemukan.</td></tr>';
     }
     ?>
-    </tbody>
+    </body>
 </table>
 
 </body>
