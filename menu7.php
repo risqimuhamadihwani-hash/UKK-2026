@@ -24,6 +24,11 @@ if (!$data) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Kategori Pelanggaran</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+      href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
+
 </head>
 <body>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -116,51 +121,109 @@ if (!$data) {
 
 <a href="tambah_kategori_pelanggaran.php" class="btn btn-secondary mb-3"> + Tambah Kategori</a>
 
+<!-- TABEL DATA -->
 <div class="table-responsive">
-    <table class="table table-hover align-middle">
-    <tr>
-        <th>No</th>
-        <th>Nama Kategori</th>
-        <th>Deskripsi</th>
-        <th>Status</th>
-        <th>Aksi</th>
-    </tr>
+    <table id="tabelKategori"
+           class="table table-hover table-striped table-bordered align-middle">
 
-    <?php if (mysqli_num_rows($data) > 0): ?>
-        <?php $no = 1; ?>
-        <?php while ($d = mysqli_fetch_assoc($data)): ?>
+        <thead class="table-dark">
             <tr>
-                <td><?= $no++ ?></td>
-                <td><?= htmlspecialchars($d['nama']) ?></td>
-                <td><?= htmlspecialchars($d['deskripsi'] ?? '') ?></td>
-                <td>
-                    <?= $d['status_aktif'] ? 'Aktif' : 'Tidak Aktif' ?>
-                </td>
-        <td>
-        <a href="edit_kategori_pelanggaran.php?id=<?= (int)$d['id'] ?>">
-            <button type="button" class="btn btn-warning">Edit</button>
-            </a>
+                <th>No</th>
+                <th>Nama Kategori</th>
+                <th>Deskripsi</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
 
-            <form action="hapus_kategori_pelanggaran.php"
-                   method="POST"
-                   style="display:inline;"
-                   onsubmit="return confirm('Yakin ingin menghapus kategori ini?');">
+        <tbody>
+            <?php if (mysqli_num_rows($data) > 0): ?>
+                <?php $no = 1; ?>
 
-                  <input type="hidden" name="id" value="<?= (int)$d['id'] ?>">
+                <?php while ($d = mysqli_fetch_assoc($data)): ?>
+                    <tr>
+                        <td><?= $no++ ?></td>
 
-                  <button type="submit" name="hapus" class="btn btn-danger">
-                    Hapus
-                  </button>
-            </form>
-            </td>
-         </tr>
-        <?php endwhile; ?>
-    <?php else: ?>
-        <tr>
-            <td colspan="5">Belum ada data kategori pelanggaran.</td>
-        </tr>
-    <?php endif; ?>
-</table>
+                        <td><?= htmlspecialchars($d['nama']) ?></td>
 
+                        <td><?= htmlspecialchars($d['deskripsi'] ?? '') ?></td>
+
+                        <td>
+                            <?php if ((int)$d['status_aktif'] === 1): ?>
+                                <span class="badge bg-success">Aktif</span>
+                            <?php else: ?>
+                                <span class="badge bg-secondary">Tidak Aktif</span>
+                            <?php endif; ?>
+                        </td>
+
+                        <td>
+                            <a href="edit_kategori_pelanggaran.php?id=<?= (int)$d['id'] ?>"
+                               class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
+
+                            <form action="hapus_kategori_pelanggaran.php"
+                                  method="POST"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
+
+                                <input type="hidden" name="id"
+                                       value="<?= (int)$d['id'] ?>">
+
+                                <button type="submit" name="hapus"
+                                        class="btn btn-danger btn-sm">
+                                    Hapus
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            <?php endif; ?>
+        </tbody>
+    </table>
+</div>
+
+<!-- JAVASCRIPT DATATABLES -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    $('#tabelKategori').DataTable({
+        pageLength: 5,
+        lengthMenu: [5, 10, 25, 50, 100],
+        ordering: true,
+        searching: true,
+        paging: true,
+        info: true,
+
+        columnDefs: [
+            {
+                targets: 4,
+                orderable: false,
+                searchable: false
+            }
+        ],
+
+        language: {
+            search: "Cari:",
+            lengthMenu: "Tampilkan _MENU_ data",
+            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+            infoEmpty: "Tidak ada data yang ditampilkan",
+            infoFiltered: "(difilter dari _MAX_ total data)",
+            zeroRecords: "Data kategori tidak ditemukan",
+            emptyTable: "Belum ada data kategori pelanggaran",
+
+            paginate: {
+                first: "Pertama",
+                last: "Terakhir",
+                next: "Berikutnya",
+                previous: "Sebelumnya"
+            }
+        }
+    });
+});
+</script>
 </body>
 </html>

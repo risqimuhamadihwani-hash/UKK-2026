@@ -27,6 +27,9 @@ if (!$result) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <meta charset="UTF-8">
     <title>Kelola Kelas</title>
+
+    <link href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css"
+          rel="stylesheet">
 </head>
 <body>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -111,48 +114,101 @@ if (!$result) {
 </a>
 <br>
 
-<table class="table">
-    <tr>
-        <th>ID</th>
-        <th>Nama Kelas</th>
-        <th>Tingkat</th>
-        <th>Jurusan</th>
-        <th>Status</th>
-        <th>Aksi</th>
-    </tr>
 
-    <?php while ($kelas = $result->fetch_assoc()) { ?>
-    <tr>
-        <td><?= htmlspecialchars($kelas['id']); ?></td>
-        <td><?= htmlspecialchars($kelas['nama']); ?></td>
-        <td><?= htmlspecialchars($kelas['tingkat']); ?></td>
-        <td><?= htmlspecialchars($kelas['jurusan']); ?></td>
-        <td>
-            <?= $kelas['status_aktif'] == 1 ? 'Aktif' : 'Tidak Aktif'; ?>
-        </td>
-        <td>
-            <a href="edit_kelas.php?id=<?= $kelas['id']; ?>">
-            <button type="button" class="btn btn-warning">Edit</button>
-            </a>
+<div class="table-responsive">
+    <table id="tabelKelas"
+           class="table table-hover table-striped table-bordered align-middle">
 
-            <a href="hapus_kelas.php?id=<?= $kelas['id']; ?>"
-               onclick="return confirm('Yakin ingin menghapus kelas ini?');">
-               <button type="button" class="btn btn-danger">Hapus</button>
-            </a>
-        </td>
-    </tr>
-    <?php } ?>
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nama Kelas</th>
+                <th>Tingkat</th>
+                <th>Jurusan</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
 
-    <?php if ($result->num_rows == 0) { ?>
-    <tr>
-        <td colspan="6">Belum ada data kelas.</td>
-    </tr>
-    <?php } ?>
-</table>
+        <tbody>
+            <?php while ($kelas = $result->fetch_assoc()) { ?>
+            <tr>
+                <td><?= htmlspecialchars($kelas['id']) ?></td>
+                <td><?= htmlspecialchars($kelas['nama']) ?></td>
+                <td><?= htmlspecialchars($kelas['tingkat']) ?></td>
+                <td><?= htmlspecialchars($kelas['jurusan']) ?></td>
+                <td>
+                    <?php if ((int)$kelas['status_aktif'] === 1) { ?>
+                        <span class="badge bg-success">Aktif</span>
+                    <?php } else { ?>
+                        <span class="badge bg-secondary">Tidak Aktif</span>
+                    <?php } ?>
+                </td>
+                <td>
+                    <a href="edit_kelas.php?id=<?= (int)$kelas['id'] ?>"
+                       class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
 
+                    <a href="hapus_kelas.php?id=<?= (int)$kelas['id'] ?>"
+                       onclick="return confirm('Yakin ingin menghapus kelas ini?')"
+                       class="btn btn-danger btn-sm">
+                        Hapus
+                    </a>
+                </td>
+            </tr>
+            <?php } ?>
+        </tbody>
+    </table>
+</div>
+</main>
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    $('#tabelKelas').DataTable({
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50, 100],
+
+        ordering: true,
+        order: [[0, 'asc']],
+        searching: true,
+        paging: true,
+        info: true,
+
+        columnDefs: [
+            {
+                targets: 5,
+                orderable: false,
+                searchable: false
+            }
+        ],
+
+        language: {
+            search: "Cari:",
+            lengthMenu: "Tampilkan _MENU_ data",
+            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+            infoEmpty: "Tidak ada data yang ditampilkan",
+            infoFiltered: "(difilter dari _MAX_ total data)",
+            zeroRecords: "Data kelas tidak ditemukan",
+            emptyTable: "Belum ada data kelas",
+
+            paginate: {
+                first: "Pertama",
+                last: "Terakhir",
+                next: "Berikutnya",
+                previous: "Sebelumnya"
+            }
+        }
+    });
+});
+</script>
 </body>
 </html>
-
-<?php
-$koneksi->close();
-?>

@@ -38,6 +38,10 @@ if (!$data) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Kelola Wali Kelas</title>
+
+    <link rel="stylesheet"
+      href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
+
 </head>
 <body>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -136,110 +140,139 @@ if (!$data) {
                 </a>
             </p>
 
-            <!-- TABEL DATA -->
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
+<!-- TABEL DATA -->
+<div class="table-responsive">
+    <table id="tabelWaliKelas"
+           class="table table-hover table-striped table-bordered align-middle">
 
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Tahun Ajaran</th>
-                            <th>Kelas</th>
-                            <th>NIP</th>
-                            <th>Nama Guru</th>
-                            <th>Tanggal Mulai</th>
-                            <th>Tanggal Selesai</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
+        <thead class="table-dark">
+            <tr>
+                <th>No</th>
+                <th>Tahun Ajaran</th>
+                <th>Kelas</th>
+                <th>NIP</th>
+                <th>Nama Guru</th>
+                <th>Tanggal Mulai</th>
+                <th>Tanggal Selesai</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
 
-                    <tbody>
+        <tbody>
+            <?php if (mysqli_num_rows($data) > 0): ?>
+                <?php $no = 1; ?>
 
-                        <?php if (mysqli_num_rows($data) > 0): ?>
+                <?php while ($d = mysqli_fetch_assoc($data)): ?>
+                    <tr>
+                        <td><?= $no++ ?></td>
 
-                            <?php $no = 1; ?>
+                        <td>
+                            <?= htmlspecialchars($d['tahun_ajaran'] ?? '-') ?>
+                        </td>
 
-                            <?php while ($d = mysqli_fetch_assoc($data)): ?>
+                        <td>
+                            <?= htmlspecialchars($d['nama_kelas'] ?? '-') ?>
+                        </td>
 
-                                <tr>
-                                    <td><?= $no++ ?></td>
+                        <td>
+                            <?= htmlspecialchars($d['nip'] ?? '-') ?>
+                        </td>
 
-                                    <td>
-                                        <?= htmlspecialchars($d['tahun_ajaran'] ?? '-') ?>
-                                    </td>
+                        <td>
+                            <?= htmlspecialchars($d['nama_guru'] ?? '-') ?>
+                        </td>
 
-                                    <td>
-                                        <?= htmlspecialchars($d['nama_kelas'] ?? '-') ?>
-                                    </td>
+                        <td>
+                            <?= htmlspecialchars($d['tanggal_mulai'] ?? '-') ?>
+                        </td>
 
-                                    <td>
-                                        <?= htmlspecialchars($d['nip'] ?? '-') ?>
-                                    </td>
+                        <td>
+                            <?= htmlspecialchars($d['tanggal_selesai'] ?? '-') ?>
+                        </td>
 
-                                    <td>
-                                        <?= htmlspecialchars($d['nama_guru'] ?? '-') ?>
-                                    </td>
+                        <td>
+                            <?php if ((int)$d['status_aktif'] === 1): ?>
+                                <span class="badge bg-success">Aktif</span>
+                            <?php else: ?>
+                                <span class="badge bg-secondary">Tidak Aktif</span>
+                            <?php endif; ?>
+                        </td>
 
-                                    <td>
-                                        <?= htmlspecialchars($d['tanggal_mulai'] ?? '-') ?>
-                                    </td>
+                        <td>
+                            <a href="edit_wali_kelas.php?id=<?= (int)$d['id'] ?>"
+                               class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
 
-                                    <td>
-                                        <?= htmlspecialchars($d['tanggal_selesai'] ?? '-') ?>
-                                    </td>
+                            <form action="hapus_wali_kelas.php"
+                                  method="POST"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Yakin ingin menghapus data wali kelas ini?')">
 
-                                    <td>
-                                        <?php if ((int)$d['status_aktif'] === 1): ?>
-                                            Aktif
-                                        <?php else: ?>
-                                            Tidak Aktif
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <a href="edit_wali_kelas.php?id=<?= (int)$d['id'] ?>"
-                                           class="btn btn-warning btn-sm">
-                                            Edit
-                                        </a>
+                                <input type="hidden"
+                                       name="id"
+                                       value="<?= (int)$d['id'] ?>">
 
-                                        <form action="hapus_wali_kelas.php"
-                                              method="POST"
-                                              class="d-inline"
-                                              onsubmit="return confirm('Yakin ingin menghapus data wali kelas ini?')">
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm">
+                                    Hapus
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            <?php endif; ?>
+        </tbody>
 
-                                            <input type="hidden"
-                                                   name="id"
-                                                   value="<?= (int)$d['id'] ?>">
-
-                                            <button type="submit"class="btn btn-danger btn-sm">
-                                                Hapus
-                                            </button>
-
-                                        </form>
-                                    </td>
-
-                                </tr>
-
-                            <?php endwhile; ?>
-
-                        <?php else: ?>
-
-                            <tr>
-                                <td colspan="9" class="text-center">
-                                    Belum ada data wali kelas.
-                                </td>
-                            </tr>
-
-                        <?php endif; ?>
-
-                    </tbody>
-                </table>
-
-            </div>
-
-        </main>
-    </div>
+    </table>
 </div>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+
+<!-- Integrasi DataTables dengan Bootstrap 5 -->
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#tabelWaliKelas').DataTable({
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50, 100],
+
+            ordering: true,
+            searching: true,
+            paging: true,
+            info: true,
+
+            columnDefs: [
+                {
+                    targets: 8,
+                    orderable: false,
+                    searchable: false
+                }
+            ],
+
+            language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                infoEmpty: "Tidak ada data yang ditampilkan",
+                infoFiltered: "(difilter dari _MAX_ total data)",
+                zeroRecords: "Data wali kelas tidak ditemukan",
+                emptyTable: "Belum ada data wali kelas",
+
+                paginate: {
+                    first: "Pertama",
+                    last: "Terakhir",
+                    next: "Berikutnya",
+                    previous: "Sebelumnya"
+                }
+            }
+        });
+    });
+</script>
 </body>
 </html>

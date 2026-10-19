@@ -1,4 +1,3 @@
-```php
 <?php
 require_once "config/koneksi.php";
 
@@ -31,4 +30,3 @@ if (stripos($error, 'foreign key constraint fails') !== false) {
 
 die("Gagal menghapus kelas: " . htmlspecialchars($error));
 ?>
-```

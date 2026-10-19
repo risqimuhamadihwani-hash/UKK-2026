@@ -32,6 +32,10 @@ $data = mysqli_query(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Penempatan Siswa</title>
+    
+    <link rel="stylesheet"
+      href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
+
 </head>
 <body>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -114,69 +118,132 @@ $data = mysqli_query(
             </a>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>NIS</th>
-                            <th>Nama Siswa</th>
-                            <th>Tahun Ajaran</th>
-                            <th>Kelas</th>
-                            <th>Tanggal Mulai</th>
-                            <th>Tanggal Selesai</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <?php if ($data && mysqli_num_rows($data) > 0): ?>
-                        <?php $no = 1; ?>
-                        <?php while ($d = mysqli_fetch_assoc($data)): ?>
-                        <tr>
-                            <td><?= $no++ ?></td>
-                            <td><?= htmlspecialchars($d['nis']) ?></td>
-                            <td><?= htmlspecialchars($d['nama_siswa']) ?></td>
-                            <td><?= htmlspecialchars($d['tahun_ajaran']) ?></td>
-                            <td><?= htmlspecialchars($d['nama_kelas']) ?></td>
-                            <td><?= htmlspecialchars($d['tanggal_mulai']) ?></td>
-                            <td>
-                                <?= $d['tanggal_selesai']
-                                    ? htmlspecialchars($d['tanggal_selesai'])
-                                    : '-' ?>
-                            </td>
-                            <td>
-                                <?php if ($d['status_aktif'] == 1): ?>
-                                    Aktif
-                                <?php else: ?>
-                                    Tidak Aktif
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <a href="edit_penempatan.php?id=<?= (int)$d['id'] ?>"
-                                   class="btn btn-warning btn-sm">Edit</a>
+<div class="table-responsive">
+    <table id="tabelPenempatan"
+           class="table table-hover table-striped table-bordered align-middle">
 
-                                <a href="hapus_penempatan.php?id=<?= (int)$d['id'] ?>"
-                                   class="btn btn-danger btn-sm"
-                                   onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                    Hapus
-                                </a>
-                            </td>
-                        </tr>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <tr>
-                            <td colspan="9" class="text-center">
-                                Belum ada data penempatan siswa.
-                            </td>
-                        </tr>
-                    <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+        <thead class="table-dark">
+            <tr>
+                <th>No</th>
+                <th>NIS</th>
+                <th>Nama Siswa</th>
+                <th>Tahun Ajaran</th>
+                <th>Kelas</th>
+                <th>Tanggal Mulai</th>
+                <th>Tanggal Selesai</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
 
-        </main>
-    </div>
+        <tbody>
+            <?php if ($data && mysqli_num_rows($data) > 0): ?>
+                <?php $no = 1; ?>
+
+                <?php while ($d = mysqli_fetch_assoc($data)): ?>
+                    <tr>
+                        <td><?= $no++ ?></td>
+
+                        <td>
+                            <?= htmlspecialchars($d['nis']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($d['nama_siswa']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($d['tahun_ajaran']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($d['nama_kelas']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($d['tanggal_mulai']) ?>
+                        </td>
+
+                        <td>
+                            <?= $d['tanggal_selesai']
+                                ? htmlspecialchars($d['tanggal_selesai'])
+                                : '-' ?>
+                        </td>
+
+                        <td>
+                            <?php if ($d['status_aktif'] == 1): ?>
+                                <span class="badge bg-success">Aktif</span>
+                            <?php else: ?>
+                                <span class="badge bg-secondary">Tidak Aktif</span>
+                            <?php endif; ?>
+                        </td>
+
+                        <td>
+                            <a href="edit_penempatan.php?id=<?= (int)$d['id'] ?>"
+                               class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
+
+                            <a href="hapus_penempatan.php?id=<?= (int)$d['id'] ?>"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                Hapus
+                            </a>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+
+            <?php endif; ?>
+        </tbody>
+    </table>
 </div>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+
+<!-- Integrasi DataTables dengan Bootstrap 5 -->
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#tabelPenempatan').DataTable({
+            pageLength: 10,
+
+            lengthMenu: [5, 10, 25, 50, 100],
+
+            ordering: true,
+            searching: true,
+            paging: true,
+            info: true,
+
+            columnDefs: [
+                {
+                    targets: 8,
+                    orderable: false,
+                    searchable: false
+                }
+            ],
+
+            language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                infoEmpty: "Tidak ada data yang ditampilkan",
+                infoFiltered: "(difilter dari _MAX_ total data)",
+                zeroRecords: "Data penempatan tidak ditemukan",
+                emptyTable: "Belum ada data penempatan siswa",
+
+                paginate: {
+                    first: "Pertama",
+                    last: "Terakhir",
+                    next: "Berikutnya",
+                    previous: "Sebelumnya"
+                }
+            }
+        });
+    });
+</script>
 </body>
 </html>

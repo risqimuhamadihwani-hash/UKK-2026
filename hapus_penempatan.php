@@ -1,4 +1,3 @@
-```php
 <?php
 session_start();
 include 'config/koneksi.php';
@@ -26,4 +25,3 @@ if (isset($_GET['id'])) {
 header("Location: menu5.php");
 exit;
 ?>
-```

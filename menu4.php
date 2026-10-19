@@ -32,6 +32,11 @@ if (!$result) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Tahun Ajaran</title>
+
+    <link rel="stylesheet"
+      href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
+
+
 </head>
 <body>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -131,86 +136,114 @@ if (!$result) {
             <!-- TABEL TAHUN AJARAN -->
             <div class="table-responsive">
 
-                <table class="table table-hover align-middle">
+               <!-- TABEL TAHUN AJARAN -->
+<div class="table-responsive">
 
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nama Tahun Ajaran</th>
-                            <th>Tanggal Mulai</th>
-                            <th>Tanggal Selesai</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
+    <table id="tabelTahunAjaran"
+           class="table table-hover table-striped table-bordered align-middle">
 
-                    <tbody>
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nama Tahun Ajaran</th>
+                <th>Tanggal Mulai</th>
+                <th>Tanggal Selesai</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
 
-                    <?php while ($tahun = $result->fetch_assoc()) { ?>
+        <tbody>
+            <?php while ($tahun = $result->fetch_assoc()) { ?>
+                <tr>
+                    <td>
+                        <?= htmlspecialchars($tahun['id']); ?>
+                    </td>
 
-                        <tr>
-                            <td>
-                                <?= htmlspecialchars($tahun['id']); ?>
-                            </td>
+                    <td>
+                        <?= htmlspecialchars($tahun['nama']); ?>
+                    </td>
 
-                            <td>
-                                <?= htmlspecialchars($tahun['nama']); ?>
-                            </td>
+                    <td>
+                        <?= htmlspecialchars($tahun['tanggal_mulai']); ?>
+                    </td>
 
-                            <td>
-                                <?= htmlspecialchars($tahun['tanggal_mulai']); ?>
-                            </td>
+                    <td>
+                        <?= htmlspecialchars($tahun['tanggal_selesai']); ?>
+                    </td>
 
-                            <td>
-                                <?= htmlspecialchars($tahun['tanggal_selesai']); ?>
-                            </td>
+                    <td>
+                        <?php if ($tahun['status_aktif'] == 1) { ?>
+                            <span class="badge bg-success">Aktif</span>
+                        <?php } else { ?>
+                            <span class="badge bg-secondary">Tidak Aktif</span>
+                        <?php } ?>
+                    </td>
 
-                            <td>
-                                <?php if ($tahun['status_aktif'] == 1) { ?>
+                    <td>
+                        <a href="edit_tahun_ajaran.php?id=<?= (int)$tahun['id']; ?>"
+                           class="btn btn-warning btn-sm">
+                            Edit
+                        </a>
 
-                                        Aktif
-
-                                <?php } else { ?>
-
-    
-                                        Tidak Aktif
-                                
-
-                                <?php } ?>
-                            </td>
-            <td>
-            <a href="edit_Tahun_ajaran.php?id=<?= $tahun['id']; ?>">
-            <button type="button" class="btn btn-warning">Edit</button>
-            </a>
-            
-            <a href="hapus_tahun_ajaran.php?id=<?= $tahun['id']; ?>"
-               onclick="return confirm('Yakin ingin menghapus siswa ini?');"
-               <button type="button" class="btn btn-danger">Hapus</button>
-            </a>
-        </td>
-                            </td>
-                        </tr>
-
-                    <?php } ?>
-
-                    <?php if ($result->num_rows == 0) { ?>
-
-                        <tr>
-                            <td colspan="6" class="text-center">
-                                Belum ada data tahun ajaran.
-                            </td>
-                        </tr>
-
-                    <?php } ?>
-
-                    </tbody>
-                </table>
-
-            </div>
-
-        </main>
-    </div>
+                        <a href="hapus_tahun_ajaran.php?id=<?= (int)$tahun['id']; ?>"
+                           onclick="return confirm('Yakin ingin menghapus data ini?')"
+                           class="btn btn-danger btn-sm">
+                            Hapus
+                        </a>
+                    </td>
+                </tr>
+            <?php } ?>
+        </tbody>
+    </table>
 </div>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+
+<!-- DataTables Bootstrap 5 -->
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#tabelTahunAjaran').DataTable({
+            pageLength: 10,
+
+            lengthMenu: [5, 10, 25, 50, 100],
+
+            ordering: true,
+            searching: true,
+            paging: true,
+            info: true,
+
+            columnDefs: [
+                {
+                    targets: 5,
+                    orderable: false,
+                    searchable: false
+                }
+            ],
+
+            language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                infoEmpty: "Tidak ada data yang ditampilkan",
+                infoFiltered: "(difilter dari _MAX_ total data)",
+                zeroRecords: "Data tidak ditemukan",
+                emptyTable: "Belum ada data tahun ajaran",
+
+                paginate: {
+                    first: "Pertama",
+                    last: "Terakhir",
+                    next: "Berikutnya",
+                    previous: "Sebelumnya"
+                }
+            }
+        });
+    });
+</script>
 </body>
 </html>

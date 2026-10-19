@@ -184,7 +184,3 @@ $data_akun = $koneksi->query(
 
 </body>
 </html>
-
-<?php
-$koneksi->close();
-?>

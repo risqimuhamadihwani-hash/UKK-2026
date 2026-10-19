@@ -77,6 +77,3 @@ if (isset($_POST['simpan'])) {
 </body>
 </html>
 
-<?php
-$koneksi->close();
-?>

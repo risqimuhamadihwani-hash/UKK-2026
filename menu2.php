@@ -17,7 +17,7 @@ $sql = "
 $result = $koneksi->query($sql);
 
 if (!$result) {
-    die("Query gagal: " . $koneksi->error);
+    die("Query gagal: " . $koneksi->eror);
 }
 ?>
 <!DOCTYPE html>
@@ -26,6 +26,10 @@ if (!$result) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <meta charset="UTF-8">
     <title>Kelola Guru</title>
+
+    <link rel="stylesheet"
+      href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
+
 </head>
 <body>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -104,59 +108,146 @@ if (!$result) {
 
 <p>Halaman untuk mengelola data guru</p>
 
-<a href="tambah_guru.php">
-<button type="button" class="btn btn-secondary"> + Tambah Guru </button>
-</a>
-<br>
+<!-- FORM TAMBAH GURU -->
+<h2 class="mb-3">Tambah Guru</h2>
 
-<table class="table">
-    <tr>
-        <th>ID</th>
-        <th>NIP</th>
-        <th>Nama Guru</th>
-        <th>Email</th>
-        <th>Status</th>
-        <th>Aksi</th>
-    </tr>
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form action="proses_tambah_guru.php" method="POST">
+            <div class="row">
 
-    <?php
-    $no = 1;
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">NIP:</label>
+                    <input type="text" name="nip" class="form-control"
+                           placeholder="Masukkan NIP" required>
+                </div>
 
-    while ($guru = $result->fetch_assoc()) {
-    ?>
-    <tr>
-        <td><?= $no++; ?></td>
-        <td><?= htmlspecialchars($guru['nip']); ?></td>
-        <td><?= htmlspecialchars($guru['nama']); ?></td>
-        <td><?= htmlspecialchars($guru['email']); ?></td>
-        <td>
-            <?= $guru['status_aktif'] == 1
-                ? 'Aktif' : 'Tidak Aktif'; ?>
-        </td>
-        <td>
-            <a href="edit_guru.php?id=<?= $guru['id']; ?>">
-            <button type="button" class="btn btn-warning">Edit</button>
-            </a>
-            
-            <a href="hapus_guru.php?id=<?= $guru['id']; ?>"
-               onclick="return confirm('Yakin hapus data guru ini?')">
-               <button type="button" class="btn btn-danger">Hapus</button>
-            </a>
-        </td>
-    </tr>
-    <?php
-    }
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Nama Guru:</label>
+                    <input type="text" name="nama_guru" class="form-control"
+                           placeholder="Masukkan Nama Guru" required>
+                </div>
 
-    if ($result->num_rows == 0) {
-    ?>
-    <tr>
-        <td colspan="6">Belum ada data guru.</td>
-    </tr>
-    <?php } ?>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Email:</label>
+                    <input type="email" name="email" class="form-control"
+                           placeholder="Masukkan Email">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Status:</label>
+                    <select name="status_aktif" class="form-select">
+                        <option value="1">Aktif</option>
+                        <option value="0">Tidak Aktif</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                + Tambah Guru
+            </button>
+
+            <button type="reset" class="btn btn-secondary">
+                Reset
+            </button>
+        </form>
+    </div>
+</div>
+
+<hr class="my-4">
+
+<table id="tabelGuru" class="table table-striped table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>NIP</th>
+            <th>Nama Guru</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <?php
+        $no = 1;
+
+        while ($guru = $result->fetch_assoc()) {
+        ?>
+        <tr>
+            <td><?= $no++; ?></td>
+            <td><?= htmlspecialchars($guru['nip']); ?></td>
+            <td><?= htmlspecialchars($guru['nama']); ?></td>
+            <td><?= htmlspecialchars($guru['email']); ?></td>
+            <td>
+                <?php if ($guru['status_aktif'] == 1) { ?>
+                    <span class="badge bg-success">Aktif</span>
+                <?php } else { ?>
+                    <span class="badge bg-secondary">Tidak Aktif</span>
+                <?php } ?>
+            </td>
+            <td>
+                <a href="edit_guru.php?id=<?= (int)$guru['id']; ?>"
+                   class="btn btn-warning btn-sm">
+                    Edit
+                </a>
+
+                <a href="hapus_guru.php?id=<?= (int)$guru['id']; ?>"
+                   onclick="return confirm('Yakin ingin menghapus guru ini?')"
+                   class="btn btn-danger btn-sm">
+                    Hapus
+                </a>
+            </td>
+        </tr>
+        <?php
+        }
+        ?>
+    </tbody>
 </table>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+
+<!-- Integrasi Bootstrap 5 -->
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#tabelGuru').DataTable({
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50, 100],
+            ordering: true,
+            searching: true,
+            paging: true,
+            info: true,
+
+            language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                infoEmpty: "Tidak ada data yang ditampilkan",
+                zeroRecords: "Data tidak ditemukan",
+                emptyTable: "Belum ada data guru",
+                paginate: {
+                    first: "Pertama",
+                    last: "Terakhir",
+                    next: "Berikutnya",
+                    previous: "Sebelumnya"
+                }
+            },
+
+            columnDefs: [
+                {
+                    targets: 5,
+                    orderable: false,
+                    searchable: false
+                }
+            ]
+        });
+    });
+</script>
 </body>
 </html>
-<?php
-$koneksi->close();
-?>

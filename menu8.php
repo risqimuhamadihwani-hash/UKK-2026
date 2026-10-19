@@ -22,6 +22,11 @@ $result = mysqli_stmt_get_result($stmt);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <meta charset="UTF-8">
     <title>Kelola Jenis Pelanggaran</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+      href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
+
 </head>
 <body>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -113,58 +118,108 @@ $result = mysqli_stmt_get_result($stmt);
 
 <a href="tambah_pelanggaran.php"  class="btn btn-secondary mb-3"> + Tambah Jenis Pelanggaran</a>
 
+
 <div class="table-responsive">
-    <table class="table table-hover align-middle">
-    <thead>
-        <tr>
-            <th>No</th>
-            <th>Kode</th>
-            <th>Nama Pelanggaran</th>
-            <th>Poin</th>
-            <th>Deskripsi</th>
-            <th>Status</th>
-            <th>Aksi</th>
-        </tr>
-    </thead>
+    <table id="tabelPelanggaran"
+           class="table table-hover table-striped table-bordered align-middle">
 
-    <body>
-    <?php
-    $no = 1;
+        <thead class="table-dark">
+            <tr>
+                <th>No</th>
+                <th>Kode</th>
+                <th>Nama Pelanggaran</th>
+                <th>Poin</th>
+                <th>Deskripsi</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
 
-    if (mysqli_num_rows($result) > 0) {
-        while ($row = mysqli_fetch_assoc($result)) {
-    ?>
-        <tr>
-            <td><?= $no++ ?></td>
-            <td><?= htmlspecialchars($row['kode']) ?></td>
-            <td><?= htmlspecialchars($row['nama']) ?></td>
-            <td><?= (int)$row['poin'] ?></td>
-            <td><?= htmlspecialchars($row['deskripsi']) ?></td>
-            <td>
-                <?= $row['status_aktif'] == 1
-                    ? 'Aktif' : 'Tidak Aktif' ?>
-            </td>
-            <td>
-                <a href="edit_pelanggaran.php?id=<?= (int)$row['id'] ?>" 
-                 class="btn btn-warning btn-sm">
-                    Edit
-                </a>
-                |
-                <a href="hapus_pelanggaran.php?id=<?= (int)$row['id'] ?>"
-                   onclick="return confirm('Yakin ingin menghapus data ini?')" 
-                   class="btn btn-danger btn-sm">
-                    Hapus
-                </a>
-            </td>
-        </tr>
-    <?php
+        <tbody>
+        <?php
+        $no = 1;
+
+        if (mysqli_num_rows($result) > 0):
+            while ($row = mysqli_fetch_assoc($result)):
+        ?>
+            <tr>
+                <td><?= $no++ ?></td>
+                <td><?= htmlspecialchars($row['kode']) ?></td>
+                <td><?= htmlspecialchars($row['nama']) ?></td>
+                <td><?= (int)$row['poin'] ?></td>
+                <td><?= htmlspecialchars($row['deskripsi'] ?? '') ?></td>
+                <td>
+                    <?php if ((int)$row['status_aktif'] === 1): ?>
+                        <span class="badge bg-success">Aktif</span>
+                    <?php else: ?>
+                        <span class="badge bg-secondary">Tidak Aktif</span>
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <a href="edit_pelanggaran.php?id=<?= (int)$row['id'] ?>"
+                       class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <a href="hapus_pelanggaran.php?id=<?= (int)$row['id'] ?>"
+                       onclick="return confirm('Yakin ingin menghapus data ini?')"
+                       class="btn btn-danger btn-sm">
+                        Hapus
+                    </a>
+                </td>
+            </tr>
+        <?php
+            endwhile;
+        endif;
+        ?>
+        </tbody>
+    </table>
+</div>
+</main>
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    $('#tabelPelanggaran').DataTable({
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50, 100],
+
+        ordering: true,
+        searching: true,
+        paging: true,
+        info: true,
+
+        columnDefs: [
+            {
+                targets: 6,
+                orderable: false,
+                searchable: false
+            }
+        ],
+
+        language: {
+            search: "Cari:",
+            lengthMenu: "Tampilkan _MENU_ data",
+            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+            infoEmpty: "Tidak ada data yang ditampilkan",
+            infoFiltered: "(difilter dari _MAX_ total data)",
+            zeroRecords: "Data pelanggaran tidak ditemukan",
+            emptyTable: "Belum ada data jenis pelanggaran",
+
+            paginate: {
+                first: "Pertama",
+                last: "Terakhir",
+                next: "Berikutnya",
+                previous: "Sebelumnya"
+            }
         }
-    } else {
-        echo '<tr><td colspan="7">Data tidak ditemukan.</td></tr>';
-    }
-    ?>
-    </body>
-</table>
-
+    });
+});
+</script>
 </body>
 </html>

@@ -19,6 +19,34 @@ if ($role !== 'admin') {
     header("Location: login.php");
     exit;
 }
+
+// Koneksi database
+$koneksi = new mysqli("localhost", "root", "", "db_ukk_2026");
+
+if ($koneksi->connect_error) {
+    die("Koneksi database gagal: " . $koneksi->connect_error);
+}
+
+// Menghitung jumlah data dengan aman
+function hitungData($koneksi, $tabel) {
+    $daftarTabel = ['t_siswa', 't_guru', 't_kelas'];
+
+    if (!in_array($tabel, $daftarTabel, true)) {
+        return 0;
+    }
+
+    $hasil = $koneksi->query("SELECT COUNT(*) AS jumlah FROM `$tabel`");
+
+    if ($hasil) {
+        return (int) $hasil->fetch_assoc()['jumlah'];
+    }
+
+    return 0;
+}
+
+$jml_siswa = hitungData($koneksi, 't_siswa');
+$jml_guru  = hitungData($koneksi, 't_guru');
+$jml_kelas = hitungData($koneksi, 't_kelas');
 ?>
 
 <!DOCTYPE html>
@@ -26,6 +54,7 @@ if ($role !== 'admin') {
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <title>Dashboard</title>
+     
 </head>
 <body>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -100,54 +129,53 @@ if ($role !== 'admin') {
         </div>
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
-            <h2>Dashboard</h2>
-            <p>
-                Selamat datang Admoinistrator
-            </p>
-            <div class="row">
-                <!-- CARD DATA SISWA -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                Data Siswa
-                            </h5>
-                            <h2>
-                                350
-                            </h2>
-                        </div>
-                    </div>
-                </div>
-                <!-- CARD DATA GURU -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                Data Guru
-                            </h5>
-                            <h2>
-                                25
-                            </h2>
-                        </div>
-                    </div>
-                </div>
-                <!-- CARD KELAS -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                Kelas
-                            </h5>
-                            <h2>
-                             12
-                          </h2>
-                        </div>
-                    </div>
-                </div>
+        <h2>Dashboard</h2>
+        <p>Selamat datang
+    <?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>
+        </p>
+<div class="row">
+    
+    <!-- DATA SISWA -->
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Data Siswa</h5>
+                <h2 class="jumlah">
+                    <?= $jml_siswa ?>
+                </h2>
             </div>
-        </main>
+        </div>
     </div>
+
+    <!-- DATA GURU -->
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Data Guru</h5>
+                <h2 class="jumlah">
+                    <?= $jml_guru ?>
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- DATA KELAS -->
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Kelas</h5>
+                <h2 class="jumlah">
+                    <?= $jml_kelas ?>
+                </h2>
+            </div>
+        </div>
+    </div>
+
 </div>
+
+</main>
+</div>
+</div>
+
 </body>
 </html>
-
