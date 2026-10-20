@@ -1,273 +1,244 @@
+
+<?php
+session_start();
+
+if (!isset($_SESSION['id_user'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$name = $_SESSION['name'] ?? 'Pengguna';
+$role = strtolower($_SESSION['role'] ?? '');
+
+if ($role === 'guru') {
+    header("Location: guru.php");
+    exit;
+}
+
+if ($role !== 'admin') {
+    session_destroy();
+    header("Location: login.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Me | My Portfolio</title>
 
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-          rel="stylesheet">
+    <title>About Me - JusticeAdmin</title>
 
     <style>
-        * {
+        body {
             margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            background-color: #eaf0f6;
         }
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #0b1120;
-            color: #f8fafc;
+        /* SIDEBAR - DISESUAIKAN DENGAN MENU1.PHP */
+        .sidebar {
+            background-color: #212529;
+            padding: 16px !important;
             min-height: 100vh;
         }
 
-        .navbar {
-            background: rgba(11, 17, 32, 0.95);
-            border-bottom: 1px solid #202b40;
-            padding: 18px 0;
+        .sidebar h4 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px !important;
         }
 
-        .navbar-brand {
-            color: #60a5fa !important;
-            font-weight: 800;
-            letter-spacing: 1px;
+        .sidebar .nav {
+            margin: 0;
+            padding: 0;
         }
 
-        .nav-link {
-            color: #cbd5e1;
-            margin-left: 18px;
-            transition: 0.3s;
+        .sidebar .nav-item {
+            margin-bottom: 8px !important;
         }
 
-        .nav-link:hover {
-            color: #60a5fa;
+        .sidebar .nav-link {
+            display: block;
+            width: 100%;
+            padding: 8px 16px;
+            font-family: var(--bs-body-font-family);
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.5;
+            text-align: left;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
         }
 
-        .hero {
-            min-height: 88vh;
-            display: flex;
-            align-items: center;
-            padding: 70px 0;
+        .sidebar .nav-link:hover:not(.active) {
+            color: #fff;
+            background-color: transparent;
+        }
+    
+        .sidebar .nav-link.active {
+            color: #fff;
+            background-color: #0d6efd;
         }
 
-        .badge-custom {
+        .sidebar .nav-link.text-danger {
+            color: #dc3545 !important;
+        }
+
+        .sidebar .nav-link.text-danger:hover {
+            color: #ff6b78 !important;
+        }
+
+        .sidebar hr {
+            margin: 16px 0;
+        }
+
+        /* KONTEN ABOUT ME */
+        .main-content {
+            padding: 24px;
+        }
+
+        .profile-card {
+            background: #fff;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
+        }
+
+        .profile-header {
+            height: 100px;
+            background: #0d6efd;
+        }
+
+        .profile-body {
+            padding: 0 30px 25px;
+            text-align: center;
+        }
+
+        .profile {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #e9ecef;
+            border: 5px solid #fff;
+            margin-top: -55px;
+            margin-bottom: 12px;
+        }
+
+        .profile-body h2 {
+            color: #212529;
+            font-size: 27px;
+            margin-bottom: 8px;
+        }
+
+        .role-badge {
             display: inline-block;
-            background: rgba(59, 130, 246, 0.12);
-            border: 1px solid rgba(96, 165, 250, 0.35);
-            color: #93c5fd;
-            border-radius: 30px;
-            padding: 9px 16px;
+            background: #e7f1ff;
+            color: #0d6efd;
+            padding: 7px 14px;
+            border-radius: 20px;
             font-size: 13px;
-            margin-bottom: 25px;
+            margin-bottom: 18px;
         }
 
-        .hero h1 {
-            font-size: clamp(38px, 6vw, 65px);
-            font-weight: 800;
-            line-height: 1.15;
+        .description {
+            color: #6c757d;
+            font-size: 14px;
+            line-height: 1.8;
             margin-bottom: 22px;
         }
 
-        .highlight {
-            color: #60a5fa;
-        }
-
-        .hero p {
-            color: #94a3b8;
-            font-size: 16px;
-            line-height: 1.9;
-            max-width: 550px;
-        }
-
-        .profile-wrapper {
-            position: relative;
+        .info-box {
             display: flex;
-            justify-content: center;
             align-items: center;
-            margin: 30px auto;
+            gap: 12px;
+            text-align: left;
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 10px;
         }
 
-        .profile-circle {
-            width: 290px;
-            height: 290px;
-            border-radius: 50%;
-            border: 3px solid #60a5fa;
-            padding: 9px;
-            box-shadow: 0 0 50px rgba(59, 130, 246, 0.2);
+        .info-icon {
+            font-size: 22px;
         }
 
-        .profile-circle img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            background: #1e293b;
+        .info-label {
+            color: #6c757d;
+            font-size: 12px;
+            margin-bottom: 4px;
         }
 
-        .floating-card {
-            position: absolute;
-            bottom: 15px;
-            right: 0;
-            background: #172338;
-            border: 1px solid #334155;
-            padding: 14px 18px;
-            border-radius: 12px;
-            font-size: 13px;
-            color: #cbd5e1;
-        }
-
-        .floating-card i {
-            color: #60a5fa;
-            margin-right: 6px;
-        }
-
-        .btn-primary-custom {
-            display: inline-block;
-            text-decoration: none;
-            background: #3b82f6;
-            color: white;
-            padding: 13px 24px;
-            border-radius: 9px;
-            font-weight: 600;
-            transition: 0.3s;
-            margin-top: 18px;
-            margin-right: 10px;
-        }
-
-        .btn-primary-custom:hover {
-            background: #2563eb;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .btn-outline-custom {
-            display: inline-block;
-            text-decoration: none;
-            color: #cbd5e1;
-            border: 1px solid #334155;
-            padding: 12px 24px;
-            border-radius: 9px;
-            margin-top: 18px;
-            transition: 0.3s;
-        }
-
-        .btn-outline-custom:hover {
-            border-color: #60a5fa;
-            color: #60a5fa;
-        }
-
-        .section {
-            padding: 75px 0;
+        .info-value {
+            color: #212529;
+            font-size: 14px;
+            font-weight: bold;
         }
 
         .section-title {
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 12px;
-        }
-
-        .section-subtitle {
-            color: #94a3b8;
-            margin-bottom: 40px;
-        }
-
-        .info-card {
-            background: #111c30;
-            border: 1px solid #243149;
-            border-radius: 16px;
-            padding: 28px;
-            height: 100%;
-            transition: 0.3s;
-        }
-
-        .info-card:hover {
-            transform: translateY(-5px);
-            border-color: #3b82f6;
-        }
-
-        .icon-box {
-            width: 48px;
-            height: 48px;
-            background: rgba(59, 130, 246, 0.13);
-            color: #60a5fa;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 23px;
-            margin-bottom: 20px;
-        }
-
-        .info-card h5 {
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        .info-card p {
-            color: #94a3b8;
-            line-height: 1.8;
-            font-size: 14px;
-            margin-bottom: 0;
+            color: #212529;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: left;
+            margin: 25px 0 12px;
         }
 
         .skill {
             display: inline-block;
-            background: #172338;
-            border: 1px solid #2c3b54;
-            color: #bfdbfe;
-            padding: 10px 16px;
-            border-radius: 8px;
-            margin: 5px;
+            background: #e7f1ff;
+            color: #0d6efd;
+            padding: 7px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin: 3px;
+        }
+
+        .social-button {
+            display: inline-block;
+            margin-top: 22px;
+            padding: 11px 24px;
+            background: #0d6efd;
+            color: #fff;
+            border-radius: 7px;
+            text-decoration: none;
             font-size: 14px;
+            transition: 0.2s;
         }
 
-        .contact-box {
-            background: linear-gradient(135deg, #142644, #111c30);
-            border: 1px solid #2b4265;
-            border-radius: 18px;
-            padding: 40px 25px;
-            text-align: center;
+        .social-button:hover {
+            background: #0b5ed7;
+            color: #fff;
         }
 
-        .contact-box p {
-            color: #94a3b8;
+        .footer {
+            color: #adb5bd;
+            font-size: 12px;
+            margin-top: 22px;
         }
 
-        footer {
-            border-top: 1px solid #202b40;
-            padding: 25px 0;
-            text-align: center;
-            color: #64748b;
-            font-size: 13px;
-        }
-
-        @media (max-width: 768px) {
-            .hero {
-                text-align: center;
-                padding-top: 55px;
+        @media (max-width: 767px) {
+            .sidebar {
+                min-height: auto;
+                width: 100%;
             }
 
-            .hero p {
-                margin-left: auto;
-                margin-right: auto;
+            .main-content {
+                padding: 16px;
             }
 
-            .profile-circle {
-                width: 230px;
-                height: 230px;
-            }
-
-            .floating-card {
-                right: 0;
-                bottom: 0;
-            }
-
-            .navbar .nav-link {
-                margin-left: 0;
+            .profile-body {
+                padding-left: 20px;
+                padding-right: 20px;
             }
         }
     </style>
@@ -277,278 +248,179 @@
 
 <div class="container-fluid">
     <div class="row">
+
         <!-- SIDEBAR -->
-        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
+        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sidebar">
+
             <h4 class="text-white mb-4">
                 JusticeAdmin
             </h4>
+
             <ul class="nav nav-pills flex-column">
+
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
                         Dashboard
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="menu1.php" class="nav-link text-white">
                         Kelola Siswa
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="menu2.php" class="nav-link text-white">
                         Kelola Guru
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="menu3.php" class="nav-link text-white">
                         Kelola Kelas
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="menu4.php" class="nav-link text-white">
                         Kelola Tahun Ajaran
                     </a>
                 </li>
-                 <li class="nav-item mb-2">
+
+                <li class="nav-item mb-2">
                     <a href="menu5.php" class="nav-link text-white">
                         Penempatan Siswa
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="menu6.php" class="nav-link text-white">
                         Kelola Wali Kelas
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="menu7.php" class="nav-link text-white">
                         Kelola Kategori Pelanggaran
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="menu8.php" class="nav-link text-white">
                         Kelola Jenis Pelanggaran
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
-                    <a href="about_me.php" class="nav-link active">
+                    <a href="about_me.php"
+                       class="nav-link active"
+                       aria-current="page">
                         About Me
                     </a>
                 </li>
+
                 <hr class="text-secondary">
+
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
                         Logout
                     </a>
                 </li>
+
             </ul>
         </div>
-        <!-- KONTEN -->
-        <main class="col-md-9 col-lg-10 p-4">
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg sticky-top">
-    <div class="container">
-        <a class="navbar-brand" href="#">MY PORTFOLIO.</a>
+        <!-- KONTEN ABOUT ME -->
+        <main class="col-md-9 col-lg-10 main-content">
 
-        <button class="navbar-toggler bg-light"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarMenu"
-                aria-controls="navbarMenu"
-                aria-expanded="false"
-                aria-label="Buka navigasi">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+            <div class="profile-card">
 
-        <div class="collapse navbar-collapse" id="navbarMenu">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="#home">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#about">About Me</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#skills">Skills</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#contact">Contact</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+                <div class="profile-header"></div>
 
-<!-- HERO -->
-<section class="hero" id="home">
-    <div class="container">
-        <div class="row align-items-center">
+                <div class="profile-body">
 
-            <div class="col-lg-7">
-                <span class="badge-custom">
-                    <i class="bi bi-code-slash"></i>
-                    ABOUT ME & MY JOURNEY
-                </span>
+                    <img
+                        src="https://placehold.co/200x200/png?text=Foto"
+                        alt="Foto profil"
+                        class="profile"
+                    >
 
-                <h1>
-                    Halo, Saya<br>
-                    <span class="highlight">Risqi Muhamad ihwani</span>
-                </h1>
+                    <h2>
+                        <?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>
+                    </h2>
 
-                <p>
-                    Saya seorang pelajar yang tertarik pada dunia teknologi,
-                    pemrograman, dan pengembangan website. Saya senang
-                    mempelajari hal baru dan membangun karya digital
-                    yang bermanfaat.
-                </p>
+                    <span class="role-badge">
+                        <?= htmlspecialchars(ucfirst($role), ENT_QUOTES, 'UTF-8') ?>
+                        | JusticeAdmin
+                    </span>
 
-                <a href="#about" class="btn-primary-custom">
-                    Kenali Saya <i class="bi bi-arrow-down-right"></i>
-                </a>
-
-                <a href="#contact" class="btn-outline-custom">
-                    Hubungi Saya
-                </a>
-            </div>
-
-            <div class="col-lg-5">
-                <div class="profile-wrapper">
-
-                    <div class="profile-circle">
-                        <!-- Ganti foto.jpg dengan foto kamu -->
-                        <img src="foto.jpg"
-                             alt="Foto profil"
-                             onerror="this.style.display='none'; this.parentElement.style.background='#172338';">
-                    </div>
-
-                    <div class="floating-card">
-                        <i class="bi bi-laptop"></i>
-                        Future Developer
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-<!-- ABOUT -->
-<section class="section" id="about">
-    <div class="container">
-
-        <div class="text-center">
-            <h2 class="section-title">
-                Tentang <span class="highlight">Saya</span>
-            </h2>
-            <p class="section-subtitle">
-                Mengenal saya lebih dekat.
-            </p>
-        </div>
-
-        <div class="row g-4">
-
-            <div class="col-md-4">
-                <div class="info-card">
-                    <div class="icon-box">
-                        <i class="bi bi-person"></i>
-                    </div>
-                    <h5>Profil Diri</h5>
-                    <p>
-                        Saya adalah seorang pelajar yang memiliki semangat
-                        untuk terus belajar, berkembang, dan mencoba
-                        berbagai hal baru di bidang teknologi.
+                    <p class="description">
+                        Halo! Saya pengguna JusticeAdmin yang tertarik
+                        mempelajari teknologi dan pemrograman.
+                        Saya ingin terus belajar, menambah pengalaman,
+                        dan mengembangkan kemampuan saya.
                     </p>
-                </div>
-            </div>
 
-            <div class="col-md-4">
-                <div class="info-card">
-                    <div class="icon-box">
-                        <i class="bi bi-code-square"></i>
+                    <div class="info-box">
+                        <span class="info-icon">🎓</span>
+                        <div>
+                            <div class="info-label">Status</div>
+                            <div class="info-value">Pelajar</div>
+                        </div>
                     </div>
-                    <h5>Pengembangan Web</h5>
-                    <p>
-                        Saya tertarik membuat website menggunakan HTML,
-                        CSS, PHP, dan MySQL untuk membangun aplikasi
-                        yang fungsional dan mudah digunakan.
-                    </p>
-                </div>
-            </div>
 
-            <div class="col-md-4">
-                <div class="info-card">
-                    <div class="icon-box">
-                        <i class="bi bi-rocket-takeoff"></i>
+                    <div class="info-box">
+                        <span class="info-icon">💻</span>
+                        <div>
+                            <div class="info-label">Minat</div>
+                            <div class="info-value">
+                                Programming dan Teknologi
+                            </div>
+                        </div>
                     </div>
-                    <h5>Tujuan Saya</h5>
-                    <p>
-                        Saya ingin meningkatkan kemampuan pemrograman,
-                        menghasilkan proyek yang berkualitas, dan menjadi
-                        developer yang terus berkembang.
-                    </p>
+
+                    <div class="info-box">
+                        <span class="info-icon">🎮</span>
+                        <div>
+                            <div class="info-label">Hobi</div>
+                            <div class="info-value">
+                                Gaming dan Mendengarkan Musik
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">
+                        Kemampuan yang Dipelajari
+                    </h3>
+
+                    <div>
+                        <span class="skill">HTML</span>
+                        <span class="skill">CSS</span>
+                        <span class="skill">Bootstrap</span>
+                        <span class="skill">PHP</span>
+                    </div>
+
+                    <a
+                        href="https://instagram.com/"
+                        class="social-button"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        My Instagram ↗
+                    </a>
+
+                    <div class="footer">
+                        &copy; 2026 | About Me
+                    </div>
+
                 </div>
             </div>
 
-        </div>
-    </div>
-</section>
-
-<!-- SKILLS -->
-<section class="section" id="skills">
-    <div class="container text-center">
-
-        <h2 class="section-title">
-            My <span class="highlight">Skills</span>
-        </h2>
-
-        <p class="section-subtitle">
-            Teknologi yang sedang saya pelajari.
-        </p>
-
-        <div>
-            <span class="skill"><i class="bi bi-filetype-html"></i> HTML</span>
-            <span class="skill"><i class="bi bi-filetype-css"></i> CSS</span>
-            <span class="skill"><i class="bi bi-filetype-php"></i> PHP</span>
-            <span class="skill"><i class="bi bi-database"></i> MySQL</span>
-            <span class="skill"><i class="bi bi-bootstrap"></i> Bootstrap</span>
-            <span class="skill"><i class="bi bi-git"></i> Git</span>
-        </div>
+        </main>
 
     </div>
-</section>
-
-<!-- CONTACT -->
-<section class="section" id="contact">
-    <div class="container">
-
-        <div class="contact-box">
-            <h2 class="section-title">
-                Mari Terhubung!
-            </h2>
-
-            <p>
-                Punya pertanyaan atau ingin mengenal saya lebih jauh?
-                Silakan hubungi saya melalui email.
-            </p>
-
-            <!-- Ganti dengan email kamu -->
-            <a href="mailto:emailkamu@example.com"
-               class="btn-primary-custom">
-                <i class="bi bi-envelope"></i>
-                Hubungi Saya
-            </a>
-        </div>
-
-    </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-    <div class="container">
-        &copy; <?= date('Y'); ?> Nama Kamu.
-        Dibuat dengan semangat belajar dan kreativitas.
-    </div>
-</footer>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 

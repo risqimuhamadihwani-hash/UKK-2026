@@ -25,7 +25,6 @@ if (!$data) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Kategori Pelanggaran</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet"
       href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
 
@@ -183,10 +182,15 @@ if (!$data) {
     </table>
 </div>
 
-<!-- JAVASCRIPT DATATABLES -->
+<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- DataTables -->
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+
+<!-- Integrasi DataTables dengan Bootstrap 5 -->
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
+
 
 <script>
 $(document).ready(function () {

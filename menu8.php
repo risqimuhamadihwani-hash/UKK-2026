@@ -23,7 +23,6 @@ $result = mysqli_stmt_get_result($stmt);
     <meta charset="UTF-8">
     <title>Kelola Jenis Pelanggaran</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet"
       href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
 
@@ -179,8 +178,13 @@ $result = mysqli_stmt_get_result($stmt);
 </div>
 </div>
 
+<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- DataTables -->
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+
+<!-- Integrasi DataTables dengan Bootstrap 5 -->
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
