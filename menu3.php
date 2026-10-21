@@ -70,7 +70,7 @@ if (!$result) {
                         Kelola Tahun Ajaran
                     </a>
                 </li>
-                <li class="nav-item mb-2">
+                 <li class="nav-item mb-2">
                     <a href="menu5.php" class="nav-link text-white">
                         Penempatan Siswa
                     </a>
@@ -88,6 +88,16 @@ if (!$result) {
                 <li class="nav-item mb-2">
                     <a href="menu8.php" class="nav-link text-white">
                         Kelola Jenis Pelanggaran
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu9.php" class="nav-link text-white">
+                        Laporan
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu10.php" class="nav-link text-white">
+                        Cetak/Export
                     </a>
                 </li>
                 <li class="nav-item mb-2">

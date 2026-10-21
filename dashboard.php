@@ -115,6 +115,16 @@ $jml_kelas = hitungData($koneksi, 't_kelas');
                     </a>
                 </li>
                 <li class="nav-item mb-2">
+                    <a href="menu9.php" class="nav-link text-white">
+                        Laporan
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu10.php" class="nav-link text-white">
+                        Cetak/Export
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
                         About Me
                     </a>

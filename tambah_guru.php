@@ -1,3 +1,4 @@
+
 <?php
 $koneksi = new mysqli("localhost", "root", "", "db_ukk_2026");
 
@@ -5,182 +6,144 @@ if ($koneksi->connect_error) {
     die("Koneksi database gagal: " . $koneksi->connect_error);
 }
 
-$pesan = "";
+$koneksi->set_charset("utf8mb4");
 
-if (isset($_POST['simpan'])) {
-    $nip = trim($_POST['nip']);
-    $nama = trim($_POST['nama']);
-    $email = trim($_POST['email']);
-    $status_aktif = (int) $_POST['status_aktif'];
-    $user_id = (int) $_POST['user_id'];
+$error = "";
 
-    if ($nip == "" || $nama == "" || $email == "" || $user_id <= 0) {
-        $pesan = "Semua data wajib diisi dan akun guru harus dipilih.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $pesan = "Format email tidak valid.";
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $nip = trim($_POST["nip"] ?? "");
+    $nama = trim($_POST["nama"] ?? "");
+    $email = trim($_POST["email"] ?? "");
+    $status = $_POST["status_aktif"] ?? "1";
+
+    if ($nip === "" || $nama === "") {
+        $error = "NIP dan Nama Guru wajib diisi.";
+    } elseif (!in_array($status, ["0", "1"], true)) {
+        $error = "Status guru tidak valid.";
+    } elseif ($email !== "" && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Format email tidak valid.";
     } else {
-        // Cek apakah NIP sudah terdaftar
-        $cek = $koneksi->prepare(
-            "SELECT id FROM t_guru WHERE nip = ?"
-        );
-        $cek->bind_param("s", $nip);
-        $cek->execute();
-        $hasil = $cek->get_result();
-
-        if ($hasil->num_rows > 0) {
-            $pesan = "NIP sudah terdaftar.";
-        } else {
-            // Cek apakah akun tersedia
-            $akun = $koneksi->prepare(
-                "SELECT id FROM t_users
-                 WHERE id = ? AND role = 'guru'"
+        try {
+            $stmt = $koneksi->prepare(
+                "INSERT INTO t_guru (nip, nama, email, status_aktif)
+                 VALUES (?, ?, ?, ?)"
             );
-            $akun->bind_param("i", $user_id);
-            $akun->execute();
-            $hasil_akun = $akun->get_result();
 
-            if ($hasil_akun->num_rows == 0) {
-                $pesan = "Akun guru tidak ditemukan.";
+            $statusInt = (int) $status;
+            $stmt->bind_param("sssi", $nip, $nama, $email, $statusInt);
+            $stmt->execute();
+            $stmt->close();
+
+            $koneksi->close();
+
+            header("Location: menu2.php?pesan=berhasil");
+            exit;
+        } catch (mysqli_sql_exception $e) {
+            if ($e->getCode() == 1062) {
+                $error = "NIP atau data unik lainnya sudah terdaftar.";
             } else {
-                // Cek apakah akun sudah terhubung ke guru lain
-                $cek_user = $koneksi->prepare(
-                    "SELECT id FROM t_guru WHERE user_id = ?"
-                );
-                $cek_user->bind_param("i", $user_id);
-                $cek_user->execute();
-                $hasil_user = $cek_user->get_result();
-
-                if ($hasil_user->num_rows > 0) {
-                    $pesan = "Akun tersebut sudah digunakan guru lain.";
-                } else {
-                    $stmt = $koneksi->prepare(
-                        "INSERT INTO t_guru
-                        (nip, nama, email, status_aktif, user_id,
-                         created_at, updated_at)
-                        VALUES (?, ?, ?, ?, ?, NOW(), NOW())"
-                    );
-
-                    $stmt->bind_param(
-                        "sssii",
-                        $nip,
-                        $nama,
-                        $email,
-                        $status_aktif,
-                        $user_id
-                    );
-
-                    if ($stmt->execute()) {
-                        $stmt->close();
-                        $cek_user->close();
-                        $akun->close();
-                        $cek->close();
-                        $koneksi->close();
-
-                        header("Location: menu2.php");
-                        exit;
-                    } else {
-                        $pesan = "Gagal menyimpan data guru: "
-                               . $stmt->error;
-                    }
-
-                    $stmt->close();
-                }
-
-                $cek_user->close();
+                $error = "Gagal menyimpan data guru: " . $e->getMessage();
             }
-
-            $akun->close();
         }
-
-        $cek->close();
     }
 }
-
-// Ambil akun yang memiliki role guru dan belum terhubung ke guru
-$data_akun = $koneksi->query(
-    "SELECT u.id, u.name
-     FROM t_users u
-     LEFT JOIN t_guru g ON g.user_id = u.id
-     WHERE u.role = 'guru' AND g.id IS NULL
-     ORDER BY u.id ASC"
-);
 ?>
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Tambah Guru</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
-<h1>Tambah Data Guru</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
 
-<?php if ($pesan != "") { ?>
-    <p style="color:red;">
-        <?= htmlspecialchars($pesan); ?>
-    </p>
-<?php } ?>
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h4 class="mb-0">Tambah Guru</h4>
+                </div>
 
-<form method="POST">
-    <label>NIP</label><br>
-    <input
-        type="text"
-        name="nip"
-        maxlength="30"
-        value="<?= htmlspecialchars($_POST['nip'] ?? ''); ?>"
-        required
-    >
-    <br><br>
+                <div class="card-body">
 
-    <label>Nama Guru</label><br>
-    <input
-        type="text"
-        name="nama"
-        maxlength="100"
-        value="<?= htmlspecialchars($_POST['nama'] ?? ''); ?>"
-        required
-    >
-    <br><br>
+                    <p class="text-muted">
+                        Silakan isi data guru di bawah ini.
+                    </p>
 
-    <label>Email</label><br>
-    <input
-        type="email"
-        name="email"
-        maxlength="100"
-        value="<?= htmlspecialchars($_POST['email'] ?? ''); ?>"
-        required
-    >
-    <br><br>
+                    <?php if ($error !== "") { ?>
+                        <div class="alert alert-danger">
+                            <?= htmlspecialchars($error, ENT_QUOTES, "UTF-8") ?>
+                        </div>
+                    <?php } ?>
 
-    <label>Akun Guru</label><br>
-    <select name="user_id" required>
-        <option value="">-- Pilih Akun Guru --</option>
+                    <form action="tambah_guru.php" method="POST">
 
-        <?php while ($akun = $data_akun->fetch_assoc()) { ?>
-            <option
-                value="<?= $akun['id']; ?>"
-                <?= (isset($_POST['user_id']) &&
-                    $_POST['user_id'] == $akun['id'])
-                    ? 'selected' : ''; ?>
-            >
-                <?= htmlspecialchars($akun['name']); ?>
-                (ID: <?= $akun['id']; ?>)
-            </option>
-        <?php } ?>
-    </select>
-    <br><br>
+                        <div class="mb-3">
+                            <label class="form-label">NIP:</label>
+                            <input type="text"
+                                   name="nip"
+                                   class="form-control"
+                                   placeholder="Masukkan NIP"
+                                   value="<?= htmlspecialchars($_POST["nip"] ?? "", ENT_QUOTES, "UTF-8") ?>"
+                                   required>
+                        </div>
 
-    <label>Status</label><br>
-    <select name="status_aktif" required>
-        <option value="1">Aktif</option>
-        <option value="0">Tidak Aktif</option>
-    </select>
-    <br><br>
+                        <div class="mb-3">
+                            <label class="form-label">Nama Guru:</label>
+                            <input type="text"
+                                   name="nama"
+                                   class="form-control"
+                                   placeholder="Masukkan Nama Guru"
+                                   value="<?= htmlspecialchars($_POST["nama"] ?? "", ENT_QUOTES, "UTF-8") ?>"
+                                   required>
+                        </div>
 
-    <button type="submit" name="simpan">Simpan Guru</button>
-    <a href="menu2.php"></a>
-</form>
+                        <div class="mb-3">
+                            <label class="form-label">Email:</label>
+                            <input type="email"
+                                   name="email"
+                                   class="form-control"
+                                   placeholder="Masukkan Email"
+                                   value="<?= htmlspecialchars($_POST["email"] ?? "", ENT_QUOTES, "UTF-8") ?>">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Status:</label>
+                            <select name="status_aktif" class="form-select">
+                                <option value="1"
+                                    <?= ($_POST["status_aktif"] ?? "1") === "1" ? "selected" : "" ?>>
+                                    Aktif
+                                </option>
+                                <option value="0"
+                                    <?= ($_POST["status_aktif"] ?? "1") === "0" ? "selected" : "" ?>>
+                                    Tidak Aktif
+                                </option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            Simpan Guru
+                        </button>
+
+                        <button type="reset" class="btn btn-secondary">
+                            Reset
+                        </button>
+
+                        <a href="menu2.php" class="btn btn-outline-dark">
+                            Kembali
+                        </a>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

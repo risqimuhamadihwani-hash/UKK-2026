@@ -17,7 +17,7 @@ $sql = "
 $result = $koneksi->query($sql);
 
 if (!$result) {
-    die("Query gagal: " . $koneksi->eror);
+    die("Query gagal: " . $koneksi->error);
 }
 ?>
 <!DOCTYPE html>
@@ -69,7 +69,7 @@ if (!$result) {
                         Kelola Tahun Ajaran
                     </a>
                 </li>
-                <li class="nav-item mb-2">
+                 <li class="nav-item mb-2">
                     <a href="menu5.php" class="nav-link text-white">
                         Penempatan Siswa
                     </a>
@@ -87,6 +87,16 @@ if (!$result) {
                 <li class="nav-item mb-2">
                     <a href="menu8.php" class="nav-link text-white">
                         Kelola Jenis Pelanggaran
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu9.php" class="nav-link text-white">
+                        Laporan
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu10.php" class="nav-link text-white">
+                        Cetak/Export
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -108,50 +118,73 @@ if (!$result) {
 
 <p>Halaman untuk mengelola data guru</p>
 
+<!-- TOMBOL TAMBAH GURU -->
+<div class="mb-3">
+    <button type="button" class="btn btn-secondary"
+            id="btnTambahGuru"
+            data-bs-toggle="collapse"
+            data-bs-target="#formTambahGuru"
+            aria-expanded="false"
+            aria-controls="formTambahGuru">
+        + Tambah Guru
+    </button>
+</div>
+
 <!-- FORM TAMBAH GURU -->
-<h2 class="mb-3">Tambah Guru</h2>
+<div class="collapse mb-4" id="formTambahGuru">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h3 class="mb-3">Tambah Guru</h3>
 
-<div class="card shadow-sm mb-4">
-    <div class="card-body">
-        <form action="proses_tambah_guru.php" method="POST">
-            <div class="row">
+            <form action="proses_tambah_guru.php" method="POST">
+                <div class="row">
 
-                <div class="col-md-4 mb-3">
-                    <label class="form-label">NIP:</label>
-                    <input type="text" name="nip" class="form-control"
-                           placeholder="Masukkan NIP" required>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">NIP:</label>
+                        <input type="text" name="nip"
+                               class="form-control"
+                               placeholder="Masukkan NIP" required>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Nama Guru:</label>
+                        <input type="text" name="nama_guru"
+                               class="form-control"
+                               placeholder="Masukkan Nama Guru" required>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Email:</label>
+                        <input type="email" name="email"
+                               class="form-control"
+                               placeholder="Masukkan Email">
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Status:</label>
+                        <select name="status_aktif" class="form-select">
+                            <option value="1">Aktif</option>
+                            <option value="0">Tidak Aktif</option>
+                        </select>
+                    </div>
+
                 </div>
 
-                <div class="col-md-4 mb-3">
-                    <label class="form-label">Nama Guru:</label>
-                    <input type="text" name="nama_guru" class="form-control"
-                           placeholder="Masukkan Nama Guru" required>
-                </div>
+                <button type="submit" class="btn btn-primary">
+                    + Tambah Guru
+                </button>
 
-                <div class="col-md-4 mb-3">
-                    <label class="form-label">Email:</label>
-                    <input type="email" name="email" class="form-control"
-                           placeholder="Masukkan Email">
-                </div>
+                <button type="reset" class="btn btn-secondary">
+                    Reset
+                </button>
 
-                <div class="col-md-4 mb-3">
-                    <label class="form-label">Status:</label>
-                    <select name="status_aktif" class="form-select">
-                        <option value="1">Aktif</option>
-                        <option value="0">Tidak Aktif</option>
-                    </select>
-                </div>
-
-            </div>
-
-            <button type="submit" class="btn btn-primary">
-                + Tambah Guru
-            </button>
-
-            <button type="reset" class="btn btn-secondary">
-                Reset
-            </button>
-        </form>
+                <button type="button" class="btn btn-outline-secondary"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#formTambahGuru">
+                    Tutup
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 

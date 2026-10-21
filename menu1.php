@@ -30,13 +30,11 @@ if (!$result) {
 <html lang="id">
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <meta charset="UTF-8">
     <title>Kelola Siswa</title>
 
     <!-- DataTables CSS -->
     <link rel="stylesheet"
     href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
-    <meta charset="UTF-8">
 
 </head>
 <body>
@@ -58,7 +56,7 @@ if (!$result) {
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu1.php" class= "nav-link active">
+                    <a href="menu1.php" class="nav-link active">
                         Kelola Siswa
                     </a>
                 </li>
@@ -77,7 +75,7 @@ if (!$result) {
                         Kelola Tahun Ajaran
                     </a>
                 </li>
-                <li class="nav-item mb-2">
+                 <li class="nav-item mb-2">
                     <a href="menu5.php" class="nav-link text-white">
                         Penempatan Siswa
                     </a>
@@ -95,6 +93,16 @@ if (!$result) {
                 <li class="nav-item mb-2">
                     <a href="menu8.php" class="nav-link text-white">
                         Kelola Jenis Pelanggaran
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu9.php" class="nav-link text-white">
+                        Laporan
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="menu10.php" class="nav-link text-white">
+                        Cetak/Export
                     </a>
                 </li>
                 <li class="nav-item mb-2">
