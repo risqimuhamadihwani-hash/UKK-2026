@@ -40,17 +40,17 @@ $name = $_SESSION['name'] ?? 'Guru';
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu1guru.php" class="nav-link text-white">
+                    <a href="Catat_Pelanggaran.php" class="nav-link text-white">
                         Catat pelanggaran
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu2guru.php" class="nav-link text-white">
+                    <a href="Tindakan.php" class="nav-link text-white">
                         Tindakan
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu3guru.php" class="nav-link text-white">
+                    <a href="rekap_poin.php" class="nav-link text-white">
                         Rekap Poin
                     </a>
                 </li>
