@@ -122,7 +122,7 @@ $total_poin = $ringkasan['total_poin'];
 
                 <li class="nav-item mb-2">
                     <a href="catat_pelanggaran.php" class="nav-link text-white">
-                        Catat pelanggaran
+                        Catat Pelanggaran
                     </a>
                 </li>
 
@@ -139,7 +139,7 @@ $total_poin = $ringkasan['total_poin'];
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a href="menu4guru.php" class="nav-link text-white">
+                    <a href="riwayat.php" class="nav-link text-white">
                         Riwayat
                     </a>
                 </li>

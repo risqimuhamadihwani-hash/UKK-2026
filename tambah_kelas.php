@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 
@@ -10,7 +11,6 @@ if ($koneksi->connect_error) {
 $koneksi->set_charset("utf8mb4");
 
 $pesan = "";
-$jenis_pesan = "danger";
 
 $nama = "";
 $tingkat = "";
@@ -18,6 +18,7 @@ $jurusan = "";
 $status_aktif = "1";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
+
     $nama = trim($_POST["nama"] ?? "");
     $tingkat = trim($_POST["tingkat"] ?? "");
     $jurusan = trim($_POST["jurusan"] ?? "");
@@ -30,13 +31,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
     } elseif (!in_array($status_aktif, ["0", "1"], true)) {
         $pesan = "Status kelas tidak valid.";
     } else {
-        $status_aktif = (int) $status_aktif;
+
+        $status_aktif = (int)$status_aktif;
 
         $sql = "INSERT INTO t_kelas
                 (nama, tingkat, jurusan, status_aktif, created_at, updated_at)
                 VALUES (?, ?, ?, ?, NOW(), NOW())";
 
         $stmt = $koneksi->prepare($sql);
+
+        if (!$stmt) {
+            die("Query gagal: " . $koneksi->error);
+        }
+
         $stmt->bind_param(
             "sssi",
             $nama,
@@ -52,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
             header("Location: menu3.php");
             exit;
         } else {
-            $pesan = "Gagal menyimpan data kelas. " . $stmt->error;
+            $pesan = "Gagal menyimpan data kelas: " . $stmt->error;
         }
 
         $stmt->close();
@@ -62,410 +69,202 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Tambah Data Kelas</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-          rel="stylesheet">
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background: #f1f5f9;
-            font-family: "Segoe UI", Arial, sans-serif;
-            color: #1e293b;
-        }
-
-        .topbar {
-            background: #ffffff;
-            padding: 18px 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .brand {
-            font-size: 20px;
-            font-weight: 700;
-            color: #2563eb;
-            margin: 0;
-        }
-
-        .page-container {
-            max-width: 900px;
-            margin: 45px auto;
-            padding: 0 20px;
-        }
-
-        .page-heading {
-            margin-bottom: 25px;
-        }
-
-        .page-heading h1 {
-            font-size: 29px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .page-heading p {
-            color: #64748b;
-            margin: 0;
-        }
-
-        .form-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.05);
-        }
-
-        .card-heading {
-            padding: 24px 28px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .card-heading h2 {
-            font-size: 19px;
-            font-weight: 700;
-            margin: 0 0 6px;
-        }
-
-        .card-heading p {
-            color: #64748b;
-            font-size: 14px;
-            margin: 0;
-        }
-
-        .form-content {
-            padding: 28px;
-        }
-
-        .form-label {
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 9px;
-        }
-
-        .form-control,
-        .form-select {
-            min-height: 46px;
-            border: 1px solid #cbd5e1;
-            border-radius: 9px;
-            padding: 11px 13px;
-            font-size: 14px;
-        }
-
-        .form-control:focus,
-        .form-select:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.13);
-        }
-
-        .form-text {
-            color: #64748b;
-            font-size: 12px;
-            margin-top: 7px;
-        }
-
-        .status-box {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 16px;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            flex-wrap: wrap;
-            padding-top: 24px;
-            margin-top: 8px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .btn {
-            border-radius: 9px;
-            padding: 11px 20px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .btn-primary {
-            background: #2563eb;
-            border-color: #2563eb;
-        }
-
-        .btn-primary:hover {
-            background: #1d4ed8;
-            border-color: #1d4ed8;
-        }
-
-        .required {
-            color: #dc2626;
-        }
-
-        @media (max-width: 576px) {
-            .page-container {
-                margin: 25px auto;
-                padding: 0 14px;
-            }
-
-            .page-heading h1 {
-                font-size: 24px;
-            }
-
-            .card-heading,
-            .form-content {
-                padding: 20px;
-            }
-
-            .form-actions {
-                flex-direction: column-reverse;
-            }
-
-            .form-actions .btn,
-            .form-actions a {
-                width: 100%;
-                text-align: center;
-            }
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
 <div class="container-fluid">
     <div class="row">
+
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
+
             <h4 class="text-white mb-4">
                 JusticeAdmin
             </h4>
+
             <ul class="nav nav-pills flex-column">
+
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
                         Dashboard
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="menu1.php" class="nav-link text-white">
                         Kelola Siswa
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="menu2.php" class="nav-link text-white">
                         Kelola Guru
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="menu3.php" class="nav-link active">
                         Kelola Kelas
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="menu4.php" class="nav-link text-white">
                         Kelola Tahun Ajaran
                     </a>
                 </li>
-                 <li class="nav-item mb-2">
+
+                <li class="nav-item mb-2">
                     <a href="menu5.php" class="nav-link text-white">
                         Penempatan Siswa
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="menu6.php" class="nav-link text-white">
                         Kelola Wali Kelas
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="menu7.php" class="nav-link text-white">
                         Kelola Kategori Pelanggaran
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="menu8.php" class="nav-link text-white">
                         Kelola Jenis Pelanggaran
                     </a>
                 </li>
+
+                <li class="nav-item mb-2">
+                    <a href="menu9.php" class="nav-link text-white">
+                        Laporan
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="menu10.php" class="nav-link text-white">
+                        Cetak/Export
+                    </a>
+                </li>
+
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
                         About Me
                     </a>
                 </li>
+
                 <hr class="text-secondary">
+
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
                         Logout
                     </a>
                 </li>
+
             </ul>
         </div>
+
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-<main class="page-container">
-
-    <div class="page-heading">
-        <h1>Tambah Data Kelas</h1>
-        <p>Tambahkan data kelas baru ke dalam sistem sekolah.</p>
-    </div>
-
-    <div class="form-card">
-
-        <div class="card-heading">
-            <h2>Informasi Kelas</h2>
-            <p>Lengkapi informasi kelas pada formulir berikut.</p>
-        </div>
-
-        <div class="form-content">
+            <h1 class="mb-4">Tambah Data Kelas</h1>
 
             <?php if ($pesan !== ""): ?>
-                <div class="alert alert-danger" role="alert">
-                    <?= htmlspecialchars($pesan, ENT_QUOTES, 'UTF-8'); ?>
+                <div class="alert alert-danger">
+                    <?= htmlspecialchars($pesan, ENT_QUOTES, 'UTF-8') ?>
                 </div>
             <?php endif; ?>
 
-            <form method="POST" action="">
-                <div class="row g-4">
+            <form method="POST">
 
-                    <div class="col-md-6">
-                        <label for="nama" class="form-label">
-                            Nama Kelas <span class="required">*</span>
-                        </label>
+                <div class="mb-4">
+                    <label class="form-label">Nama Kelas</label>
 
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="nama"
-                            name="nama"
-                            placeholder="Contoh: X RPL 1"
-                            value="<?= htmlspecialchars($nama, ENT_QUOTES, 'UTF-8'); ?>"
-                            maxlength="100"
-                            required
-                        >
-
-                        <div class="form-text">
-                            Masukkan nama kelas sesuai data sekolah.
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="tingkat" class="form-label">
-                            Tingkat <span class="required">*</span>
-                        </label>
-
-                        <select
-                            class="form-select"
-                            id="tingkat"
-                            name="tingkat"
-                            required
-                        >
-                            <option value="">-- Pilih Tingkat --</option>
-
-                            <option value="X"
-                                <?= $tingkat === "X" ? "selected" : ""; ?>>
-                                X (Sepuluh)
-                            </option>
-
-                            <option value="XI"
-                                <?= $tingkat === "XI" ? "selected" : ""; ?>>
-                                XI (Sebelas)
-                            </option>
-
-                            <option value="XII"
-                                <?= $tingkat === "XII" ? "selected" : ""; ?>>
-                                XII (Dua Belas)
-                            </option>
-                        </select>
-
-                        <div class="form-text">
-                            Pilih tingkat kelas siswa.
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="jurusan" class="form-label">
-                            Jurusan <span class="required">*</span>
-                        </label>
-
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="jurusan"
-                            name="jurusan"
-                            placeholder="Contoh: RPL, TSM, TKJ"
-                            value="<?= htmlspecialchars($jurusan, ENT_QUOTES, 'UTF-8'); ?>"
-                            maxlength="100"
-                            required
-                        >
-
-                        <div class="form-text">
-                            Masukkan nama atau kode jurusan.
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="status_aktif" class="form-label">
-                            Status Kelas <span class="required">*</span>
-                        </label>
-
-                        <div class="status-box">
-                            <select
-                                class="form-select"
-                                id="status_aktif"
-                                name="status_aktif"
-                                required
-                            >
-                                <option value="1"
-                                    <?= (string)$status_aktif === "1" ? "selected" : ""; ?>>
-                                    Aktif
-                                </option>
-
-                                <option value="0"
-                                    <?= (string)$status_aktif === "0" ? "selected" : ""; ?>>
-                                    Tidak Aktif
-                                </option>
-                            </select>
-
-                            <div class="form-text">
-                                Tentukan status kelas dalam sistem.
-                            </div>
-                        </div>
-                    </div>
-
+                    <input
+                        type="text"
+                        name="nama"
+                        class="form-control"
+                        placeholder="Contoh: X RPL 1"
+                        maxlength="100"
+                        value="<?= htmlspecialchars($nama, ENT_QUOTES, 'UTF-8') ?>"
+                        required
+                    >
                 </div>
 
-                <div class="form-actions">
-                    <a href="menu3.php" class="btn btn-outline-secondary">
-                        Kembali
-                    </a>
+                <div class="mb-4">
+                    <label class="form-label">Tingkat</label>
 
-                    <button type="reset" class="btn btn-light border">
-                        Reset
-                    </button>
+                    <select name="tingkat" class="form-select" required>
+                        <option value="">-- Pilih Tingkat --</option>
 
-                    <button type="submit" name="simpan" class="btn btn-primary">
-                        Simpan Kelas
-                    </button>
+                        <option value="X" <?= $tingkat === "X" ? "selected" : "" ?>>
+                            X (Sepuluh)
+                        </option>
+
+                        <option value="XI" <?= $tingkat === "XI" ? "selected" : "" ?>>
+                            XI (Sebelas)
+                        </option>
+
+                        <option value="XII" <?= $tingkat === "XII" ? "selected" : "" ?>>
+                            XII (Dua Belas)
+                        </option>
+                    </select>
                 </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Jurusan</label>
+
+                    <input
+                        type="text"
+                        name="jurusan"
+                        class="form-control"
+                        placeholder="Contoh: RPL, TSM, TKJ"
+                        maxlength="100"
+                        value="<?= htmlspecialchars($jurusan, ENT_QUOTES, 'UTF-8') ?>"
+                        required
+                    >
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Status Kelas</label>
+
+                    <select name="status_aktif" class="form-select" required>
+                        <option value="1" <?= $status_aktif === "1" ? "selected" : "" ?>>
+                            Aktif
+                        </option>
+
+                        <option value="0" <?= $status_aktif === "0" ? "selected" : "" ?>>
+                            Tidak Aktif
+                        </option>
+                    </select>
+                </div>
+
+                <button type="submit" name="simpan" class="btn btn-primary">
+                    Simpan
+                </button>
+
+                <a href="menu3.php" class="btn btn-secondary">
+                    Kembali
+                </a>
 
             </form>
-        </div>
-    </div>
 
-</main>
+        </main>
+
+    </div>
+</div>
 
 </body>
 </html>
-

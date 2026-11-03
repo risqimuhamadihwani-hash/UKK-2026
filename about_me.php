@@ -106,7 +106,7 @@ $isAdmin = ($role === 'admin');
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Catat_Pelanggaran.php" class="nav-link text-white">
-                        Catat pelanggaran
+                        Catat Pelanggaran
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -120,7 +120,7 @@ $isAdmin = ($role === 'admin');
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu4guru.php" class="nav-link text-white">
+                    <a href="riwayat.php" class="nav-link text-white">
                         Riwayat
                     </a>
                 </li>

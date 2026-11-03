@@ -8,6 +8,12 @@ if (!isset($_SESSION['id_user'])) {
     exit;
 }
 
+// CEK ROLE GURU
+if (strtolower($_SESSION['role'] ?? '') !== 'guru') {
+    header("Location: dashboard.php");
+    exit;
+}
+
 function e($data) {
     return htmlspecialchars((string)($data ?? ''), ENT_QUOTES, 'UTF-8');
 }
@@ -158,7 +164,7 @@ $selesai = mysqli_fetch_assoc(mysqli_query(
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Catat_Pelanggaran.php" class="nav-link text-white">
-                        Catat pelanggaran
+                        Catat Pelanggaran
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -172,7 +178,7 @@ $selesai = mysqli_fetch_assoc(mysqli_query(
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu4guru.php" class="nav-link text-white">
+                    <a href="riwayat.php" class="nav-link text-white">
                         Riwayat
                     </a>
                 </li>

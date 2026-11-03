@@ -128,13 +128,13 @@ if (!$data) {
 
             <p>Halaman untuk menampilkan data wali kelas</p>
 
-            <!-- TOMBOL TAMBAH -->
-            <p>
-                <a href="tambah_wali_kelas.php"
-                    class="btn btn-secondary mb-3">
-                    + Tambah Wali Kelas
-                </a>
-            </p>
+        <!-- TOMBOL TAMBAH -->
+        <div class="mb-2">
+    <a href="tambah_wali_kelas.php"
+         class="btn btn-secondary">
+         + Tambah Wali Kelas
+    </a>
+        </div>
 
 <!-- TABEL DATA -->
 <div class="table-responsive">
