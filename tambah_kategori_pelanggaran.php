@@ -240,7 +240,7 @@ if (isset($_POST['simpan'])) {
                     Simpan
                 </button>
 
-                <a href="menu7.php" class="btn btn-link">
+                <a href="menu7.php" class="btn btn-secondary">
                     Kembali
                 </a>
 

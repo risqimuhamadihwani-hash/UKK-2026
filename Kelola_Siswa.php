@@ -55,13 +55,13 @@ if (!$result) {
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a href="menu1.php" class="nav-link active">
+                    <a href="Kelola_Siswa.php" class="nav-link active">
                         Kelola Siswa
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a href="menu2.php" class="nav-link text-white">
+                    <a href="Kelola_Guru.php" class="nav-link text-white">
                         Kelola Guru
                     </a>
                 </li>
@@ -238,18 +238,13 @@ $(document).ready(function () {
     $('#tabelSiswa').DataTable({
 
         pageLength: 10,
-
         lengthMenu: [5, 10, 25, 50, 100],
-
         ordering: true,
-
         searching: true,
-
         paging: true,
-
         info: true,
-
         language: {
+
             search: "Cari siswa:",
             lengthMenu: "Tampilkan _MENU_ data",
             info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ siswa",

@@ -46,12 +46,12 @@ $result = mysqli_stmt_get_result($stmt);
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu1.php" class="nav-link text-white">
+                    <a href="Kelola_Siswa.php" class="nav-link text-white">
                         Kelola Siswa
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu2.php" class="nav-link text-white">
+                    <a href="Kelola_Guru.php" class="nav-link text-white">
                         Kelola Guru
                     </a>
                 </li>

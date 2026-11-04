@@ -381,7 +381,7 @@ if (!$tahun || !$kelas || !$guru) {
                     Simpan
                 </button>
 
-                <a href="menu6.php" class="btn btn-link">
+                <a href="menu6.php" class="btn btn-secondary">
                     Kembali
                 </a>
 

@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 
@@ -33,7 +32,6 @@ if (!$result) {
     <title>Kelola Guru</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
 </head>
 
@@ -58,13 +56,13 @@ if (!$result) {
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a href="menu1.php" class="nav-link text-white">
+                    <a href="Kelola_Siswa.php" class="nav-link text-white">
                         Kelola Siswa
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a href="menu2.php" class="nav-link active">
+                    <a href="Kelola_Guru.php" class="nav-link active">
                         Kelola Guru
                     </a>
                 </li>
@@ -147,9 +145,11 @@ if (!$result) {
                 </a>
             </div>
 
+            <!-- NOTIFIKASI BERHASIL DISIMPAN DI SINI -->
             <?php if (isset($_GET['pesan']) && $_GET['pesan'] === 'berhasil'): ?>
-                <div class="alert alert-success">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
                     Data guru berhasil ditambahkan.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             <?php endif; ?>
 
@@ -226,17 +226,15 @@ if (!$result) {
     </div>
 </div>
 
+<!-- jQuery & DataTables JS -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
-
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
 $(document).ready(function () {
-
     $('#tabelGuru').DataTable({
-
         pageLength: 10,
         lengthMenu: [5, 10, 25, 50, 100],
         ordering: true,
@@ -250,9 +248,7 @@ $(document).ready(function () {
                 searchable: false
             }
         ],
-
         language: {
-
             search: "Cari:",
             lengthMenu: "Tampilkan _MENU_ data",
             info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
@@ -265,11 +261,8 @@ $(document).ready(function () {
                 next: "Berikutnya",
                 previous: "Sebelumnya"
             }
-
         }
-
     });
-
 });
 </script>
 

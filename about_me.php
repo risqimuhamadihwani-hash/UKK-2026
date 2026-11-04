@@ -41,19 +41,18 @@ $isAdmin = ($role === 'admin');
 
                 <?php if ($isAdmin): ?>
 
-                    <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
                         Dashboard
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu1.php" class="nav-link text-white">
+                    <a href="Kelola_Siswa.php" class="nav-link text-white">
                         Kelola Siswa
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu2.php" class="nav-link text-white">
+                    <a href="Kelola_Guru.php" class="nav-link text-white">
                         Kelola Guru
                     </a>
                 </li>
@@ -96,9 +95,10 @@ $isAdmin = ($role === 'admin');
                     <a href="menu10.php" class="nav-link text-white">
                         Cetak/Export
                     </a>
+                </li>
+
                 <?php else: ?>
 
-                    <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
                         Dashboard
@@ -124,6 +124,7 @@ $isAdmin = ($role === 'admin');
                         Riwayat
                     </a>
                 </li>
+
                 <?php endif; ?>
 
                 <li class="nav-item mb-2">
@@ -154,88 +155,71 @@ $isAdmin = ($role === 'admin');
 
                     <div class="text-center mb-4">
 
-                        <div class="bg-primary text-white rounded-circle d-inline-flex justify-content-center align-items-center"
-                             style="width: 110px; height: 110px; font-size: 40px;">
-                            R
+                        <div class="overflow-hidden rounded-circle d-inline-flex justify-content-center align-items-center bg-primary"
+                             style="width: 110px; height: 110px;">
+                            <!-- Anda bisa mengganti teks inisial/div ini dengan tag <img src="path/foto.jpg" class="w-100 h-100 object-fit-cover"> jika ada fotonya -->
+                            <span class="text-white fw-bold" style="font-size: 40px;">R</span>
                         </div>
 
-                        <h3 class="mt-3">Risqi Muhamad Ihwani</h3>
+                        <h3 class="mt-3">Risqi</h3>
 
-                        <p class="text-muted">
-                            Student | Web Developer
+                        <p class="badge bg-primary">
+                            Siswa Rekayasa Perangkat Lunak
                         </p>
 
                     </div>
 
                     <hr>
 
-                    <h5>Informasi Pribadi</h5>
+                    <h5 class="mb-3">Informasi Pribadi</h5>
 
                     <table class="table table-bordered">
                         <tr>
                             <th width="30%">Nama</th>
-                            <td>Risqi Muhamad Ihwani</td>
+                            <td>Risqi</td>
                         </tr>
                         <tr>
-                            <th>Sekolah</th>
+                            <th>Nama Panggilan</th>
+                            <td>Qi</td>
+                        </tr>
+                        <tr>
+                            <th>Umur</th>
+                            <td>17 Tahun</td>
+                        </tr>
+                        <tr>
+                            <th>Cita-cita</th>
+                            <td>Streamer</td>
+                        </tr>
+                        <tr>
+                            <th>Asal Sekolah</th>
                             <td>SMK Muhammadiyah Tasikmalaya</td>
                         </tr>
                         <tr>
-                            <th>Jurusan</th>
-                            <td>Rekayasa Perangkat Lunak (RPL)</td>
+                            <th>Kota Tinggal</th>
+                            <td>Bungursari</td>
                         </tr>
                         <tr>
-                            <th>Status</th>
-                            <td>Pelajar</td>
+                            <th>Kota Asal</th>
+                            <td>Tasikmalaya</td>
                         </tr>
                     </table>
 
                     <hr>
 
-                    <h5>Tentang Saya</h5>
+                    <h5 class="mb-3">Bio / Tentang Saya</h5>
 
-                    <p>
-                        Halo! Perkenalkan, nama saya Risqi Muhamad Ihwani.
-                        Saya merupakan siswa jurusan Rekayasa Perangkat
-                        Lunak (RPL) yang memiliki ketertarikan dalam
-                        bidang teknologi, desain, dan pengembangan website.
-                    </p>
-
-                    <p>
-                        Website JusticeAdmin merupakan sebuah sistem
-                        informasi yang dibuat untuk membantu sekolah
-                        dalam mengelola data siswa, guru, kelas,
-                        serta pencatatan pelanggaran siswa.
-                    </p>
-
-                    <hr>
-
-                    <h5>Keahlian</h5>
-
-                    <ul>
-                        <li>HTML</li>
-                        <li>CSS</li>
-                        <li>Bootstrap</li>
-                        <li>PHP Dasar</li>
-                        <li>MySQL</li>
-                        <li>Desain Grafis</li>
-                    </ul>
-
-                    <hr>
-
-                    <h5>Tujuan</h5>
-
-                    <p>
-                        Terus belajar dan mengembangkan kemampuan
-                        di bidang teknologi informasi serta menciptakan
-                        aplikasi yang bermanfaat bagi banyak orang.
-                    </p>
-
-                    <hr>
+                    <div class="p-3 bg-light border rounded mb-4">
+                        <p class="mb-0 text-muted">
+                            Saya .
+                        </p>
+                    </div>
 
                     <div class="text-center mt-4">
+                        <a href="dashboard.php" class="btn btn-primary mb-3">
+                            &larr; Kembali ke Dashboard
+                        </a>
                         <p class="text-muted mb-0">
-                            © 2026 JusticeAdmin
+                            &copy; UKK 2026 - Rekayasa Perangkat Lunak
                         </p>
                         <p class="text-muted">
                             Created by Risqi Muhamad Ihwani

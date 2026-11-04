@@ -1,90 +1,268 @@
 <?php
-include "config/koneksi.php";
+session_start();
+require_once "config/koneksi.php";
 
-$id = $_GET['id'];
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-$data = mysqli_query(
-    $koneksi,
-    "SELECT * FROM t_tahun_ajaran WHERE id='$id'"
-);
-
-$tahun = mysqli_fetch_assoc($data);
-
-if (!$tahun) {
-    die("Data tahun ajaran tidak ditemukan");
+if ($id <= 0) {
+    die("ID tahun ajaran tidak valid.");
 }
 
-if (isset($_POST['update'])) {
+$stmt = $koneksi->prepare("SELECT * FROM t_tahun_ajaran WHERE id = ?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
 
-    $nama = $_POST['nama'];
-    $tanggal_mulai = $_POST['tanggal_mulai'];
-    $tanggal_selesai = $_POST['tanggal_selesai'];
-    $status_aktif = $_POST['status_aktif'];
+$result = $stmt->get_result();
+$tahun = $result->fetch_assoc();
 
-    mysqli_query($koneksi, "UPDATE t_tahun_ajaran SET
-        nama='$nama',
-        tanggal_mulai='$tanggal_mulai',
-        tanggal_selesai='$tanggal_selesai',
-        status_aktif='$status_aktif'
-        WHERE id='$id'
-    ");
+$stmt->close();
 
-    header("Location: menu4.php");
-    exit;
+if (!$tahun) {
+    die("Data tahun ajaran tidak ditemukan.");
+}
+
+$error = "";
+
+$nama = $tahun['nama'];
+$tanggal_mulai = $tahun['tanggal_mulai'];
+$tanggal_selesai = $tahun['tanggal_selesai'];
+$status_aktif = (string)$tahun['status_aktif'];
+
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update"])) {
+
+    $nama = trim($_POST["nama"] ?? "");
+    $tanggal_mulai = trim($_POST["tanggal_mulai"] ?? "");
+    $tanggal_selesai = trim($_POST["tanggal_selesai"] ?? "");
+    $status_aktif = $_POST["status_aktif"] ?? "";
+
+    if ($nama === "" || $tanggal_mulai === "" || $tanggal_selesai === "") {
+        $error = "Semua kolom wajib diisi.";
+    } elseif (!in_array($status_aktif, ["0", "1"], true)) {
+        $error = "Status aktif tidak valid.";
+    } else {
+
+        $stmt = $koneksi->prepare("
+            UPDATE t_tahun_ajaran
+            SET nama = ?, tanggal_mulai = ?, tanggal_selesai = ?, status_aktif = ?
+            WHERE id = ?
+        ");
+
+        if (!$stmt) {
+            die("Query gagal: " . $koneksi->error);
+        }
+
+        $statusInt = (int)$status_aktif;
+
+        $stmt->bind_param(
+            "sssii",
+            $nama,
+            $tanggal_mulai,
+            $tanggal_selesai,
+            $statusInt,
+            $id
+        );
+
+        if ($stmt->execute()) {
+            $stmt->close();
+            $koneksi->close();
+
+            header("Location: menu4.php?pesan=diubah");
+            exit;
+        } else {
+            $error = "Gagal mengubah data tahun ajaran: " . $stmt->error;
+        }
+
+        $stmt->close();
+    }
+}
+
+function e($nilai) {
+    return htmlspecialchars((string)($nilai ?? ""), ENT_QUOTES, "UTF-8");
 }
 ?>
 
-<h1>Edit Tahun Ajaran</h1>
+<!DOCTYPE html>
+<html lang="id">
 
-<form method="post">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    Nama Tahun Ajaran<br>
-    <input type="text"
-           name="nama"
-           value="<?= $tahun['nama']; ?>"
-           required>
+    <title>Edit Tahun Ajaran</title>
 
-    <br><br>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
 
-    Tanggal Mulai<br>
-    <input type="date"
-           name="tanggal_mulai"
-           value="<?= $tahun['tanggal_mulai']; ?>"
-           required>
+<body>
 
-    <br><br>
+<div class="container-fluid">
+    <div class="row">
 
-    Tanggal Selesai<br>
-    <input type="date"
-           name="tanggal_selesai"
-           value="<?= $tahun['tanggal_selesai']; ?>"
-           required>
+        <!-- SIDEBAR -->
+        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
 
-    <br><br>
+            <h4 class="text-white mb-4">
+                JusticeAdmin
+            </h4>
 
-    Status Aktif<br>
-    <select name="status_aktif">
+            <ul class="nav nav-pills flex-column">
 
-        <option value="1"
-            <?= $tahun['status_aktif'] == 1 ? 'selected' : ''; ?>>
-            Aktif
-        </option>
+                <li class="nav-item mb-2">
+                    <a href="dashboard.php" class="nav-link text-white">
+                        Dashboard
+                    </a>
+                </li>
 
-        <option value="0"
-            <?= $tahun['status_aktif'] == 0 ? 'selected' : ''; ?>>
-            Tidak Aktif
-        </option>
+                <li class="nav-item mb-2">
+                    <a href="menu1.php" class="nav-link text-white">
+                        Kelola Siswa
+                    </a>
+                </li>
 
-    </select>
+                <li class="nav-item mb-2">
+                    <a href="menu2.php" class="nav-link text-white">
+                        Kelola Guru
+                    </a>
+                </li>
 
-    <br><br>
+                <li class="nav-item mb-2">
+                    <a href="menu3.php" class="nav-link text-white">
+                        Kelola Kelas
+                    </a>
+                </li>
 
-    <button type="submit" name="update">
-        Update
-    </button>
+                <li class="nav-item mb-2">
+                    <a href="menu4.php" class="nav-link active">
+                        Kelola Tahun Ajaran
+                    </a>
+                </li>
 
-    <a href="menu4.php">
-        Kembali
-    </a>
+                <li class="nav-item mb-2">
+                    <a href="menu5.php" class="nav-link text-white">
+                        Penempatan Siswa
+                    </a>
+                </li>
 
-</form>
+                <li class="nav-item mb-2">
+                    <a href="menu6.php" class="nav-link text-white">
+                        Kelola Wali Kelas
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="menu7.php" class="nav-link text-white">
+                        Kelola Kategori Pelanggaran
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="menu8.php" class="nav-link text-white">
+                        Kelola Jenis Pelanggaran
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="menu9.php" class="nav-link text-white">
+                        Laporan
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="menu10.php" class="nav-link text-white">
+                        Cetak/Export
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="about_me.php" class="nav-link text-white">
+                        About Me
+                    </a>
+                </li>
+
+                <hr class="text-secondary">
+
+                <li class="nav-item">
+                    <a href="logout.php" class="nav-link text-danger">
+                        Logout
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+
+        <!-- KONTEN -->
+        <main class="col-md-9 col-lg-10 p-4">
+
+            <h1 class="mb-4">Edit Tahun Ajaran</h1>
+
+            <?php if ($error !== ""): ?>
+                <div class="alert alert-danger">
+                    <?= e($error) ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST">
+
+                <div class="mb-4">
+                    <label class="form-label">Nama Tahun Ajaran</label>
+                    <input
+                        type="text"
+                        name="nama"
+                        class="form-control"
+                        placeholder="Contoh: 2026/2027"
+                        value="<?= e($nama) ?>"
+                        required
+                    >
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Tanggal Mulai</label>
+                    <input
+                        type="date"
+                        name="tanggal_mulai"
+                        class="form-control"
+                        value="<?= e($tanggal_mulai) ?>"
+                        required
+                    >
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Tanggal Selesai</label>
+                    <input
+                        type="date"
+                        name="tanggal_selesai"
+                        class="form-control"
+                        value="<?= e($tanggal_selesai) ?>"
+                        required
+                    >
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Status Aktif</label>
+                    <select name="status_aktif" class="form-select" required>
+                        <option value="1" <?= $status_aktif === "1" ? "selected" : "" ?>>
+                            Aktif
+                        </option>
+                        <option value="0" <?= $status_aktif === "0" ? "selected" : "" ?>>
+                            Tidak Aktif
+                        </option>
+                    </select>
+                </div>
+
+                <button type="submit" name="update" class="btn btn-primary">
+                    Simpan Perubahan
+                </button>
+
+                <a href="menu4.php" class="btn btn-secondary">
+                    Kembali
+                </a>
+
+            </form>
+
+        </main>
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 
@@ -24,57 +23,115 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
     $email = trim($_POST["email"] ?? "");
     $status = $_POST["status_aktif"] ?? "1";
 
-    if ($nip === "" || $nama === "") {
-        $error = "NIP dan Nama Guru wajib diisi.";
-
+    // Validasi kosong dan panjang NIP maksimal 12 karakter
+    if ($nip === "" || $nama === "" || $email === "") {
+        $error = "NIP, Nama Guru, dan Email wajib diisi.";
+    } elseif (strlen($nip) > 12) {
+        $error = "NIP tidak boleh lebih dari 12 karakter.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Format email tidak valid.";
     } elseif (!in_array($status, ["0", "1"], true)) {
         $error = "Status guru tidak valid.";
-
-    } elseif ($email !== "" && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = "Format email tidak valid.";
-
     } else {
 
-        $stmt = $koneksi->prepare("
-            INSERT INTO t_guru
-            (nip, nama, email, status_aktif)
-            VALUES (?, ?, ?, ?)
-        ");
+        // Cek apakah NIP sudah terdaftar di database sebelumnya
+        $stmtCekNip = $koneksi->prepare("SELECT id FROM t_guru WHERE nip = ?");
+        $stmtCekNip->bind_param("s", $nip);
+        $stmtCekNip->execute();
+        $stmtCekNip->store_result();
 
-        if (!$stmt) {
-            die("Query gagal: " . $koneksi->error);
-        }
-
-        $statusInt = (int)$status;
-
-        $stmt->bind_param(
-            "sssi",
-            $nip,
-            $nama,
-            $email,
-            $statusInt
-        );
-
-        if ($stmt->execute()) {
-
-            $stmt->close();
-            $koneksi->close();
-
-            header("Location: menu2.php?pesan=berhasil");
-            exit;
-
+        if ($stmtCekNip->num_rows > 0) {
+            $error = "NIP sudah terdaftar. Gunakan NIP yang berbeda.";
+            $stmtCekNip->close();
         } else {
+            $stmtCekNip->close();
 
-            if ($stmt->errno == 1062) {
-                $error = "NIP atau data unik lainnya sudah terdaftar.";
-            } else {
-                $error = "Gagal menyimpan data guru: " . $stmt->error;
+            $koneksi->begin_transaction();
+
+            try {
+                // Membuat password otomatis
+                $passwordOtomatis = bin2hex(random_bytes(8));
+                $passwordHash = password_hash($passwordOtomatis, PASSWORD_DEFAULT);
+
+                $role = "guru";
+                $rememberToken = "";
+
+                // Membuat akun di t_users
+                $stmtUser = $koneksi->prepare("
+                    INSERT INTO t_users
+                    (name, email, password, remember_token, role)
+                    VALUES (?, ?, ?, ?, ?)
+                ");
+
+                if (!$stmtUser) {
+                    throw new Exception($koneksi->error);
+                }
+
+                $stmtUser->bind_param(
+                    "sssss",
+                    $nama,
+                    $email,
+                    $passwordHash,
+                    $rememberToken,
+                    $role
+                );
+
+                if (!$stmtUser->execute()) {
+                    throw new Exception($stmtUser->error);
+                }
+
+                $user_id = $koneksi->insert_id;
+                $stmtUser->close();
+
+                // Menyimpan data guru
+                $statusInt = (int)$status;
+
+                $stmtGuru = $koneksi->prepare("
+                    INSERT INTO t_guru
+                    (nip, nama, email, status_aktif, user_id)
+                    VALUES (?, ?, ?, ?, ?)
+                ");
+
+                if (!$stmtGuru) {
+                    throw new Exception($koneksi->error);
+                }
+
+                $stmtGuru->bind_param(
+                    "sssii",
+                    $nip,
+                    $nama,
+                    $email,
+                    $statusInt,
+                    $user_id
+                );
+
+                if (!$stmtGuru->execute()) {
+                    throw new Exception($stmtGuru->error);
+                }
+
+                $stmtGuru->close();
+
+                $koneksi->commit();
+                $koneksi->close();
+
+                header("Location: Kelola_Guru.php?pesan=berhasil");
+                exit;
+
+            } catch (Exception $e) {
+                $koneksi->rollback();
+
+                if ($koneksi->errno == 1062) {
+                    $error = "NIP atau email sudah terdaftar.";
+                } else {
+                    $error = "Gagal menambahkan guru: " . $e->getMessage();
+                }
             }
-
         }
-
-        $stmt->close();
     }
+}
+
+function e($nilai) {
+    return htmlspecialchars((string)($nilai ?? ""), ENT_QUOTES, "UTF-8");
 }
 ?>
 
@@ -94,6 +151,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
 
 <div class="container-fluid">
     <div class="row">
+
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
 
@@ -110,13 +168,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a href="menu1.php" class="nav-link text-white">
+                    <a href="Kelola_Siswa.php" class="nav-link text-white">
                         Kelola Siswa
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a href="menu2.php" class="nav-link active">
+                    <a href="Kelola_Guru.php" class="nav-link active">
                         Kelola Guru
                     </a>
                 </li>
@@ -193,21 +251,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
 
             <?php if ($error !== ""): ?>
                 <div class="alert alert-danger">
-                    <?= htmlspecialchars($error, ENT_QUOTES, "UTF-8") ?>
+                    <?= e($error) ?>
                 </div>
             <?php endif; ?>
 
             <form method="POST">
 
                 <div class="mb-4">
-                    <label class="form-label">NIP</label>
+                    <label class="form-label">NIP (Maksimal 12 Karakter)</label>
 
                     <input
                         type="text"
                         name="nip"
                         class="form-control"
-                        placeholder="Masukkan NIP"
-                        value="<?= htmlspecialchars($nip, ENT_QUOTES, "UTF-8") ?>"
+                        placeholder="Masukkan NIP (maks. 12 digit)"
+                        value="<?= e($nip) ?>"
+                        maxlength="12"
                         required
                     >
                 </div>
@@ -220,7 +279,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
                         name="nama"
                         class="form-control"
                         placeholder="Masukkan Nama Guru"
-                        value="<?= htmlspecialchars($nama, ENT_QUOTES, "UTF-8") ?>"
+                        value="<?= e($nama) ?>"
                         required
                     >
                 </div>
@@ -233,7 +292,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
                         name="email"
                         class="form-control"
                         placeholder="Masukkan Email"
-                        value="<?= htmlspecialchars($email, ENT_QUOTES, "UTF-8") ?>"
+                        value="<?= e($email) ?>"
+                        required
                     >
                 </div>
 
@@ -257,7 +317,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
                     Simpan Guru
                 </button>
 
-                <a href="menu2.php" class="btn btn-secondary">
+                <a href="Kelola_Guru.php" class="btn btn-secondary">
                     Kembali
                 </a>
 

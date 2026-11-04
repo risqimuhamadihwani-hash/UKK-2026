@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 include 'config/koneksi.php';
@@ -59,12 +58,12 @@ if (!$data) {
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu1.php" class="nav-link text-white">
+                    <a href="Kelola_Siswa.php" class="nav-link text-white">
                         Kelola Siswa
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu2.php" class="nav-link text-white">
+                    <a href="Kelola_Guru.php" class="nav-link text-white">
                         Kelola Guru
                     </a>
                 </li>

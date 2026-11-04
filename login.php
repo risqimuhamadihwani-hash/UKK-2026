@@ -6,47 +6,94 @@ if (isset($_SESSION['id_user'])) {
     exit;
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <meta charset="UTF-8">
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - JusticeAdmin</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        /* Mengatur latar belakang layar gelap persis seperti desain */
+        body {
+            background-color: #212529; /* Warna gelap ala dark mode */
+        }
+        /* Styling kotak form agar sudutnya melengkung halus dan elegan */
+        .login-card {
+            background-color: #ffffff;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 380px;
+        }
+        /* Tombol kustom warna gelap/hitam */
+        .btn-dark-custom {
+            background-color: #212529;
+            color: #ffffff;
+            border-radius: 20px;
+        }
+        .btn-dark-custom:hover {
+            background-color: #343a40;
+            color: #ffffff;
+        }
+        /* Kotak input abu-abu terang */
+        .form-control-custom {
+            background-color: #e9ecef;
+            border: none;
+            border-radius: 5px;
+        }
+        .form-control-custom:focus {
+            background-color: #dee2e6;
+            box-shadow: none;
+        }
+    </style>
 </head>
-<body>
+<body class="d-flex justify-content-center align-items-center vh-100 m-0">
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <div class="login-card p-4 shadow-lg text-center">
+        
+        <!-- Judul Aplikasi -->
+        <h4 class="fw-bold mb-4 text-dark">JusticeAdmin</h4>
 
-<h2>Login</h2>
-<form action="proses_login.php" method="POST">
-  <div class="form-group">
-    <label for="exampleInputEmail1">Email address</label>
-    <input type="email" name= "email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
-    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-  </div>
-  <div class="form-group">
-    <label for="exampleInputPassword1">Password</label>
-    <input type="password" name= "password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-  </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
-<!-- <form action="proses_login.php" method="POST">
+        <!-- Form Login (Mengarah ke proses_login.php dengan method POST) -->
+        <form action="proses_login.php" method="POST" class="text-start">
 
-    <label>Email</label><br>
-    <input type="email" name="email" required>
+            <div class="mb-3">
+                <label for="email" class="form-label text-muted small mb-1">Username</label>
+                <input 
+                    type="email" 
+                    name="email" 
+                    class="form-control form-control-custom py-2" 
+                    id="email" 
+                    placeholder="Masukkan email..." 
+                    required
+                >
+            </div>
 
-    <br><br>
+            <div class="mb-4">
+                <label for="password" class="form-label text-muted small mb-1">Password</label>
+                <input 
+                    type="password" 
+                    name="password" 
+                    class="form-control form-control-custom py-2" 
+                    id="password" 
+                    placeholder="Masukkan password..." 
+                    required
+                >
+            </div>
 
-    <label>Password</label><br>
-    <input type="password" name="password" required>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-dark-custom py-2 fw-semibold">LOGIN</button>
+            </div>
 
-    <br><br>
+        </form>
 
-    <button type="submit">Login</button>
+    </div>
 
-</form> -->
-
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

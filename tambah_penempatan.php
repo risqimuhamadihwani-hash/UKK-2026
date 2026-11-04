@@ -98,10 +98,11 @@ if (isset($_POST['simpan'])) {
     }
 }
 
-// DATA SISWA
+// DATA SISWA (Hanya ambil 1 data unik berdasarkan nama atau NIS)
 $siswa = mysqli_query($koneksi,
-    "SELECT id, nis, nama
+    "SELECT MIN(id) as id, nis, nama
      FROM t_siswa
+     GROUP BY nama
      ORDER BY nama ASC"
 );
 
@@ -380,10 +381,10 @@ $kelas = mysqli_query($koneksi,
                     name="simpan"
                     class="btn btn-primary"
                 >
-                    Simpan
+                    Tambah
                 </button>
 
-                <a href="menu5.php" class="btn btn-link">
+                <a href="menu5.php" class="btn btn-secondary">
                     Kembali
                 </a>
 

@@ -8,7 +8,7 @@ if (isset($_GET['id'])) {
     mysqli_stmt_bind_param($stmt, "i", $id);
 
     if (mysqli_stmt_execute($stmt)) {
-        header("Location: menu1.php");
+        header("Location: Kelola_Siswa.php");
         exit;
     } else {
         echo "Gagal menghapus data siswa: " . mysqli_error($koneksi);
@@ -16,7 +16,7 @@ if (isset($_GET['id'])) {
 
     mysqli_stmt_close($stmt);
 } else {
-    header("Location: menu1.php");
+    header("Location: Kelola_Siswa.php");
     exit;
 }
 ?>

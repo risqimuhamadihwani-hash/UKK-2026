@@ -75,12 +75,12 @@ $jml_kelas = hitungData($koneksi, 't_kelas');
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu1.php" class="nav-link text-white">
+                    <a href="Kelola_siswa.php" class="nav-link text-white">
                         Kelola Siswa
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu2.php" class="nav-link text-white">
+                    <a href="Kelola_Guru.php" class="nav-link text-white">
                         Kelola Guru
                     </a>
                 </li>
