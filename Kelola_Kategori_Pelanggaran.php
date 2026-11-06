@@ -117,7 +117,7 @@ if (!$data) {
 
 <p>Halaman untuk menampilkan data Pelanggaran</p>
 
-<a href="tambah_kategori_pelanggaran.php" class="btn btn-secondary mb-3"> + Tambah Kategori</a>
+<a href="tambah_kategori_pelanggaran.php" class="btn btn-primary mb-3"> + Tambah Kategori</a>
 
 <!-- TABEL DATA -->
 <div class="table-responsive">

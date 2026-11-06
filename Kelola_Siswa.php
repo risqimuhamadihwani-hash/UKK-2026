@@ -1,4 +1,3 @@
-
 <?php
 $koneksi = new mysqli("localhost", "root", "", "db_ukk_2026");
 
@@ -122,7 +121,7 @@ if (!$result) {
             <p>Halaman untuk mengelola data siswa</p>
 
             <div class="mb-3">
-                <a href="tambah_siswa.php" class="btn btn-secondary">
+                <a href="tambah_siswa.php" class="btn btn-primary">
                     + Tambah Siswa
                 </a>
             </div>

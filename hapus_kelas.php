@@ -2,7 +2,7 @@
 require_once "config/koneksi.php";
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    header("Location: menu3.php");
+    header("Location: Kelola_Kelas.php");
     exit;
 }
 

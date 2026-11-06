@@ -31,8 +31,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
 
     if ($nis === "" || $nama === "" || $jenis_kelamin === "") {
         $pesan = "NIS, nama, dan jenis kelamin wajib diisi.";
-    } elseif (!preg_match('/^[0-9]{1,8}$/', $nis)) {
-        $pesan = "NIS hanya boleh angka dan maksimal 8 digit.";
+    } elseif (!preg_match('/^[0-9]{1,9}$/', $nis)) {
+        $pesan = "NIS hanya boleh angka dan maksimal 9 digit.";
     } elseif ($nisn !== "" && !preg_match('/^[0-9]{1,10}$/', $nisn)) {
         $pesan = "NISN hanya boleh angka dan maksimal 10 digit.";
     } elseif (!in_array($jenis_kelamin, ["L", "P"], true)) {
@@ -42,7 +42,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
     } else {
 
         // Cek apakah NIS atau NISN sudah terdaftar di database
-        // Kita gunakan klausa OR untuk memeriksa kedua kolom sekaligus
         if ($nisn !== "") {
             $stmtCek = $koneksi->prepare("SELECT id FROM t_siswa WHERE nis = ? OR nisn = ?");
             $stmtCek->bind_param("ss", $nis, $nisn);
@@ -215,9 +214,9 @@ function e($data) {
                         type="text"
                         name="nis"
                         class="form-control"
-                        placeholder="Masukkan NIS (maksimal 8 digit)"
-                        maxlength="8"
-                        pattern="[0-9]{1,8}"
+                        placeholder="Masukkan NIS (maksimal 9 digit)"
+                        maxlength="9"
+                        pattern="[0-9]{1,9}"
                         inputmode="numeric"
                         value="<?= e($nis) ?>"
                         required

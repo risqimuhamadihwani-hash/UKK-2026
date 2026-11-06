@@ -9,7 +9,7 @@ if (!isset($_SESSION['id_user'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header("Location: menu7.php");
+    header("Location: Kelola_Kategori_Pelanggaran.php");
     exit;
 }
 

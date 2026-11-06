@@ -269,7 +269,7 @@ function e($data) {
                     <button type="submit" name="update" class="btn btn-primary">
                         Simpan
                     </button>
-                    <a href="menu5.php" class="btn btn-secondary">
+                    <a href="Penempatan_Siswa.php" class="btn btn-secondary">
                         Kembali
                     </a>
                 </div>

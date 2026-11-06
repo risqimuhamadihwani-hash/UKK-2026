@@ -30,7 +30,7 @@ if (isset($_GET['id'])) {
              htmlspecialchars($e->getMessage());
     }
 } else {
-    header("Location: menu4.php");
+    header("Location: Kelola_Tahun_Ajaran.php");
     exit;
 }
 ?>

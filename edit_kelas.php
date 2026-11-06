@@ -369,7 +369,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['simpan'])) {
                     Simpan Perubahan
                 </button>
 
-                <a href="menu3.php"
+                <a href="Kelola_Kelas.php"
                    class="btn btn-secondary">
                     Kembali
                 </a>

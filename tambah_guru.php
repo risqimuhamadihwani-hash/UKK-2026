@@ -23,11 +23,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
     $email = trim($_POST["email"] ?? "");
     $status = $_POST["status_aktif"] ?? "1";
 
-    // Validasi kosong dan panjang NIP maksimal 12 karakter
+    // Validasi kosong dan panjang NIP maksimal 18 karakter
     if ($nip === "" || $nama === "" || $email === "") {
         $error = "NIP, Nama Guru, dan Email wajib diisi.";
-    } elseif (strlen($nip) > 12) {
-        $error = "NIP tidak boleh lebih dari 12 karakter.";
+    } elseif (strlen($nip) > 18) {
+        $error = "NIP tidak boleh lebih dari 18 karakter.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Format email tidak valid.";
     } elseif (!in_array($status, ["0", "1"], true)) {
@@ -239,15 +239,15 @@ function e($nilai) {
             <form method="POST">
 
                 <div class="mb-4">
-                    <label class="form-label">NIP (Maksimal 12 Karakter)</label>
+                    <label class="form-label">NIP (Maksimal 18 Karakter)</label>
 
                     <input
                         type="text"
                         name="nip"
                         class="form-control"
-                        placeholder="Masukkan NIP (maks. 12 digit)"
+                        placeholder="Masukkan NIP (maks. 18 digit)"
                         value="<?= e($nip) ?>"
-                        maxlength="12"
+                        maxlength="18"
                         required
                     >
                 </div>

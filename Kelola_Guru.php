@@ -121,7 +121,7 @@ if (!$result) {
             <p>Halaman untuk mengelola data guru</p>
 
             <div class="mb-3">
-                <a href="tambah_guru.php" class="btn btn-secondary">
+                <a href="tambah_guru.php" class="btn btn-primary">
                     + Tambah Guru
                 </a>
             </div>

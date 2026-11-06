@@ -234,7 +234,7 @@ function e($nilai) {
                     Simpan Perubahan
                 </button>
 
-                <a href="menu4.php" class="btn btn-secondary">
+                <a href="Kelola_Tahun_Ajaran.php" class="btn btn-secondary">
                     Kembali
                 </a>
 

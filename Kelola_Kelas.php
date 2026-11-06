@@ -120,7 +120,9 @@ if (!$result) {
 <p>Halaman untuk mengelola data kelas</p>
 
 <a href="tambah_kelas.php">
-<button type="button" class="btn btn-secondary"> + Tambah Kelas</button>
+    <button type="button" class="btn btn-primary">
+     + Tambah Kelas
+    </button>
 </a>
 <br>
 

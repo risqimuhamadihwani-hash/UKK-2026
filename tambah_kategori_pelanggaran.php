@@ -219,7 +219,7 @@ if (isset($_POST['simpan'])) {
                     Simpan
                 </button>
 
-                <a href="menu7.php" class="btn btn-secondary">
+                <a href="Kelola_Kategori_Pelanggaran.php" class="btn btn-secondary">
                     Kembali
                 </a>
 

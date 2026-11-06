@@ -305,7 +305,7 @@ function e($data) {
                     <button type="submit" name="simpan" class="btn btn-primary">
                         Simpan Perubahan
                     </button>
-                    <a href="menu6.php" class="btn btn-secondary">
+                    <a href="Kelola_Wali_Kelas.php" class="btn btn-secondary">
                         Kembali
                     </a>
                 </div>

@@ -2,6 +2,11 @@
 session_start();
 require_once 'config/koneksi.php';
 
+if (!isset($_SESSION['id_user'])) {
+    header("Location: login.php");
+    exit;
+}
+
 if (!isset($koneksi) || $koneksi->connect_error) {
     die("Koneksi database gagal.");
 }
@@ -144,12 +149,14 @@ if ($export === 'csv') {
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cetak/Export Laporan</title>
+    <title>Cetak/Export Laporan - Sistem Informasi Pelanggaran Siswa</title>
 
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- DataTables Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
 </head>
 
 <body>
@@ -159,77 +166,52 @@ if ($export === 'csv') {
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
             <h4 class="text-white mb-4">
-                JusticeAdmin
+                Sistem Informasi Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
-                    <a href="dashboard.php" class="nav-link text-white">
-                        Dashboard
-                    </a>
+                    <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Siswa.php" class="nav-link text-white">
-                        Kelola Siswa
-                    </a>
+                    <a href="Kelola_Siswa.php" class="nav-link text-white">Kelola Siswa</a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Guru.php" class="nav-link text-white">
-                        Kelola Guru
-                    </a>
+                    <a href="Kelola_Guru.php" class="nav-link text-white">Kelola Guru</a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Kelas.php" class="nav-link text-white">
-                        Kelola Kelas
-                    </a>
+                    <a href="Kelola_Kelas.php" class="nav-link text-white">Kelola Kelas</a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
-                        Kelola Tahun Ajaran
-                    </a>
+                    <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">Kelola Tahun Ajaran</a>
                 </li>
                  <li class="nav-item mb-2">
-                    <a href="Penempatan_Siswa.php" class="nav-link text-white">
-                        Penempatan Siswa
-                    </a>
+                    <a href="Penempatan_Siswa.php" class="nav-link text-white">Penempatan Siswa</a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">
-                        Kelola Wali Kelas
-                    </a>
+                    <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">Kelola Wali Kelas</a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
-                        Kelola Kategori Pelanggaran
-                    </a>
+                    <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">Kelola Kategori Pelanggaran</a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
-                        Kelola Jenis Pelanggaran
-                    </a>
+                    <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">Kelola Jenis Pelanggaran</a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Laporan.php" class="nav-link text-white">
-                        Laporan
-                    </a>
+                    <a href="Laporan.php" class="nav-link text-white">Laporan</a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Cetak_Export.php" class="nav-link active">
-                        Cetak/Export
-                    </a>
+                    <a href="Cetak_Export.php" class="nav-link active">Cetak/Export</a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="about_me.php" class="nav-link text-white">
-                        About Me
-                    </a>
+                    <a href="about_me.php" class="nav-link text-white">About Me</a>
                 </li>
                 <hr class="text-secondary">
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-danger">
-                        Logout
-                    </a>
+                    <a href="logout.php" class="nav-link text-danger">Logout</a>
                 </li>
             </ul>
         </div>
+
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
@@ -243,34 +225,34 @@ if ($export === 'csv') {
             <!-- RINGKASAN -->
             <div class="row mb-4">
                 <div class="col-md-6 mb-3">
-                    <div class="card">
+                    <div class="card shadow-sm border-0">
                         <div class="card-body">
                             <h6 class="text-secondary">Total Laporan</h6>
-                            <h3><?= count($data) ?></h3>
+                            <h3 class="fw-bold mb-0"><?= count($data) ?></h3>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <div class="card">
+                    <div class="card shadow-sm border-0">
                         <div class="card-body">
                             <h6 class="text-secondary">
                                 Total Poin Pelanggaran
                             </h6>
-                            <h3><?= $totalPoin ?></h3>
+                            <h3 class="fw-bold mb-0"><?= $totalPoin ?></h3>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- FILTER -->
-            <div class="card mb-4">
-                <div class="card-header">
+            <div class="card shadow-sm mb-4 border-0">
+                <div class="card-header bg-white fw-semibold">
                     Filter Data Laporan
                 </div>
 
                 <div class="card-body">
-                    <form method="GET" action="menu10.php">
+                    <form method="GET" action="Cetak_Export.php">
                         <div class="row">
 
                             <div class="col-md-4 mb-3">
@@ -298,7 +280,7 @@ if ($export === 'csv') {
                                        value="<?= e($tanggal_selesai) ?>">
                             </div>
 
-                            <div class="col-md-2 mb-3 d-flex align-items-end">
+                            <div class="col-md-2 mb-3 d-flex align-items-end gap-2">
                                 <button type="submit"
                                         class="btn btn-primary w-100">
                                     Filter
@@ -307,7 +289,7 @@ if ($export === 'csv') {
 
                         </div>
 
-                        <a href="menu10.php"
+                        <a href="Cetak_Export.php"
                            class="btn btn-secondary btn-sm">
                             Reset Filter
                         </a>
@@ -316,13 +298,13 @@ if ($export === 'csv') {
             </div>
 
             <!-- TOMBOL CETAK DAN EXPORT -->
-            <div class="card mb-4">
-                <div class="card-header">
+            <div class="card shadow-sm mb-4 border-0">
+                <div class="card-header bg-white fw-semibold">
                     Cetak dan Export Data
                 </div>
 
                 <div class="card-body">
-                    <p>
+                    <p class="text-muted small">
                         Data yang dicetak atau diekspor mengikuti filter
                         pencarian dan tanggal yang dipilih.
                     </p>
@@ -333,7 +315,8 @@ if ($export === 'csv') {
                         Cetak Laporan
                     </button>
 
-                    <a href="menu10.php?<?= e(http_build_query([
+                    <!-- Tombol Export Excel (CSV) dengan warna hijau (btn-success) -->
+                    <a href="Cetak_Export.php?<?= e(http_build_query([
                         'cari' => $cari,
                         'tanggal_mulai' => $tanggal_mulai,
                         'tanggal_selesai' => $tanggal_selesai,
@@ -346,15 +329,15 @@ if ($export === 'csv') {
             </div>
 
             <!-- TABEL -->
-            <div class="card">
-                <div class="card-header">
-                    Data Pelanggaran Siswa
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white fw-semibold d-flex justify-content-between align-items-center">
+                    <span>Data Pelanggaran Siswa</span>
+                    <span class="badge bg-primary fs-6">Total Poin: <?= $totalPoin ?></span>
                 </div>
 
                 <div class="card-body">
                     <div class="table-responsive">
-
-                       <table id="tabelLaporan" class="table table-bordered table-striped table-hover">
+                        <table id="tabelLaporan" class="table table-bordered table-striped table-hover align-middle w-100">
                             <thead class="table-dark">
                                 <tr>
                                     <th>No</th>
@@ -387,71 +370,67 @@ if ($export === 'csv') {
                                                     ))
                                                     : '-' ?>
                                             </td>
-                                            <td><?= (int)$row['poin'] ?></td>
+                                            <td><span class="fw-bold text-danger"><?= (int)$row['poin'] ?></span></td>
                                             <td><?= e($row['tindakan']) ?></td>
                                             <td><?= e($row['keterangan']) ?></td>
-                                            <td><?= e($row['status']) ?></td>
+                                            <td>
+                                                <?php if (strtolower($row['status']) === 'selesai'): ?>
+                                                    <span class="badge bg-success">Selesai</span>
+                                                <?php elseif (strtolower($row['status']) === 'diproses'): ?>
+                                                    <span class="badge bg-warning text-dark">Diproses</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-secondary"><?= e(ucfirst($row['status'])) ?></span>
+                                                <?php endif; ?>
+                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
-                                <?php else: ?>
-                                    <tr>
-                                        <td colspan="10" class="text-center">
-                                            Tidak ada data pelanggaran.
-                                        </td>
-                                    </tr>
                                 <?php endif; ?>
                             </tbody>
-
-                            <tfoot>
-                                <tr>
-                                    <th colspan="6" class="text-end">
-                                        Total Poin
-                                    </th>
-                                    <th><?= $totalPoin ?></th>
-                                    <th colspan="3"></th>
-                                </tr>
-                            </tfoot>
                         </table>
+                    </div>
+                </div>
+            </div>
 
+        </main>
+    </div>
+</div>
+
+<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables JS -->
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const tabel = document.getElementById('tabelLaporan');
-
-    if (!tabel) return;
-
-    const isiTabel = tabel.querySelector('tbody');
-    const barisKosong = isiTabel.querySelector('td[colspan]');
-
-    if (!barisKosong) {
-        new DataTable('#tabelLaporan', {
-            pageLength: 10,
-            lengthMenu: [5, 10, 25, 50, 100],
-            ordering: true,
-            searching: true,
-            paging: true,
-            info: true,
-            language: {
-                search: 'Cari:',
-                searchPlaceholder: 'Cari data pelanggaran...',
-                lengthMenu: 'Tampilkan _MENU_ data',
-                info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
-                infoEmpty: 'Tidak ada data',
-                infoFiltered: '(difilter dari _MAX_ total data)',
-                zeroRecords: 'Data tidak ditemukan',
-                emptyTable: 'Belum ada data pelanggaran',
-                paginate: {
-                    first: 'Pertama',
-                    last: 'Terakhir',
-                    next: 'Berikutnya',
-                    previous: 'Sebelumnya'
-                }
+$(document).ready(function () {
+    $('#tabelLaporan').DataTable({
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50, 100],
+        ordering: true,
+        searching: true,
+        paging: true,
+        info: true,
+        // Pengaturan DOM agar teks 'Tampilkan data' & kotak pencarian berada rapi di atas tabel
+        dom: '<"row mb-3"<"col-md-6"l><"col-md-6"f>>rt<"row mt-3"<"col-md-6"i><"col-md-6"p>>',
+        language: {
+            search: 'Cari:',
+            searchPlaceholder: 'Cari data pelanggaran...',
+            lengthMenu: 'Tampilkan _MENU_ data',
+            info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+            infoEmpty: 'Tidak ada data',
+            infoFiltered: '(difilter dari _MAX_ total data)',
+            zeroRecords: 'Data tidak ditemukan',
+            emptyTable: 'Belum ada data laporan',
+            paginate: {
+                first: 'Pertama',
+                last: 'Terakhir',
+                next: 'Berikutnya',
+                previous: 'Sebelumnya'
             }
-        });
-    }
+        }
+    });
 });
 </script>
 </body>

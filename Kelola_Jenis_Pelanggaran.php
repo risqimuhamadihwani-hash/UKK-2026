@@ -114,7 +114,7 @@ $result = mysqli_stmt_get_result($stmt);
 
 <p>Halaman untuk menampilkan data jenis Pelanggaran</p>
 
-<a href="tambah_pelanggaran.php"  class="btn btn-secondary mb-3"> + Tambah Jenis Pelanggaran</a>
+<a href="tambah_pelanggaran.php"  class="btn btn-primary mb-3"> + Tambah Jenis Pelanggaran</a>
 
 
 <div class="table-responsive">

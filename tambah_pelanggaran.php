@@ -224,7 +224,7 @@ if (isset($_POST['simpan'])) {
                     Simpan
                 </button>
 
-                <a href="menu8.php" class="btn btn-secondary">
+                <a href="Kelola_Jenis_Pelanggaran.php" class="btn btn-secondary">
                     Kembali
                 </a>
             </form>

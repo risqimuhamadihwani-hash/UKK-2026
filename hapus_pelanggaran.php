@@ -23,7 +23,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         
         if (mysqli_stmt_execute($stmt)) {
             // Berhasil dihapus, arahkan kembali ke halaman menu8.php
-            header("Location: menu8.php?status=sukses_hapus");
+            header("Location: Kelola_Jenis_Pelanggaran.php?status=sukses_hapus");
             exit;
         } else {
             // Gagal eksekusi query

@@ -124,7 +124,7 @@ if (!$result) {
             <p>Halaman untuk mengelola data tahun ajaran</p>
 
             <a href="tambah_tahun_ajaran.php"
-               class="btn btn-secondary mb-3">
+               class="btn btn-primary mb-3">
                 + Tambah Tahun Ajaran 
             </a>
 
