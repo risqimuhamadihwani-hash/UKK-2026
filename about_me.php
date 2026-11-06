@@ -35,7 +35,9 @@ $isAdmin = ($role === 'admin');
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
 
-            <h4 class="text-white mb-4">JusticeAdmin</h4>
+            <h4 class="text-white mb-4">
+                <?= ($role === 'admin') ? 'JusticeAdmin' : 'JusticeGuru'; ?>
+            </h4>
 
             <ul class="nav nav-pills flex-column">
 
@@ -57,42 +59,42 @@ $isAdmin = ($role === 'admin');
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu3.php" class="nav-link text-white">
+                    <a href="Kelola_Kelas.php" class="nav-link text-white">
                         Kelola Kelas
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu4.php" class="nav-link text-white">
+                    <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
                         Kelola Tahun Ajaran
                     </a>
                 </li>
                  <li class="nav-item mb-2">
-                    <a href="menu5.php" class="nav-link text-white">
+                    <a href="Penempatan_Siswa.php" class="nav-link text-white">
                         Penempatan Siswa
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu6.php" class="nav-link text-white">
+                    <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">
                         Kelola Wali Kelas
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu7.php" class="nav-link text-white">
+                    <a href="Kelola_Katrgoti_Pelanggaran.php" class="nav-link text-white">
                         Kelola Kategori Pelanggaran
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu8.php" class="nav-link text-white">
+                    <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
                         Kelola Jenis Pelanggaran
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu9.php" class="nav-link text-white">
+                    <a href="Laporan.php" class="nav-link text-white">
                         Laporan
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu10.php" class="nav-link text-white">
+                    <a href="Cetak_Export.php" class="nav-link text-white">
                         Cetak/Export
                     </a>
                 </li>

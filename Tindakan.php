@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 require_once 'config/koneksi.php';
@@ -56,7 +55,7 @@ if (isset($_GET['pesan']) && $_GET['pesan'] === 'berhasil') {
     $pesan = "Tindakan berhasil diperbarui.";
 }
 
-// PENCARIAN
+// PENCARIAN (Bisa tetap digunakan bersama DataTables)
 $cari = trim($_GET['cari'] ?? '');
 $status_filter = trim($_GET['status'] ?? '');
 
@@ -141,63 +140,77 @@ $selesai = mysqli_fetch_assoc(mysqli_query(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Tindakan</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- DataTables Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
 </head>
 
 <body>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
 <div class="container-fluid">
     <div class="row">
+
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
+
             <h4 class="text-white mb-4">
-                JusticeAdmin
+                JusticeGuru
             </h4>
+
             <ul class="nav nav-pills flex-column">
+
                 <li class="nav-item mb-2">
-                    <a href="dashboard.php" class="nav-link text-white">
+                    <a href="guru.php" class="nav-link text-white">
                         Dashboard
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="Catat_Pelanggaran.php" class="nav-link text-white">
                         Catat Pelanggaran
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="Tindakan.php" class="nav-link active">
                         Tindakan
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="rekap_poin.php" class="nav-link text-white">
                         Rekap Poin
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="riwayat.php" class="nav-link text-white">
                         Riwayat
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
                         About Me
                     </a>
                 </li>
+
                 <hr class="text-secondary">
+
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
                         Logout
                     </a>
                 </li>
+
             </ul>
+
         </div>
+
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
-<div class="container-fluid p-4">
+<div class="container-fluid p-0">
 
     <div class="mb-4">
         <h3>Kelola Tindakan</h3>
@@ -259,41 +272,6 @@ $selesai = mysqli_fetch_assoc(mysqli_query(
 
     </div>
 
-    <!-- PENCARIAN -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-
-            <form method="GET" class="row g-2">
-
-                <div class="col-md-6">
-                    <input
-                        type="text"
-                        name="cari"
-                        class="form-control"
-                        placeholder="Cari nama siswa, kelas, pelanggaran..."
-                        value="<?= e($cari) ?>"
-                    >
-                </div>
-
-                <div class="col-md-3">
-                    <select name="status" class="form-select">
-                        <option value="">Semua Status</option>
-                        <option value="tercatat" <?= $status_filter === 'tercatat' ? 'selected' : '' ?>>Tercatat</option>
-                        <option value="diproses" <?= $status_filter === 'diproses' ? 'selected' : '' ?>>Diproses</option>
-                        <option value="selesai" <?= $status_filter === 'selesai' ? 'selected' : '' ?>>Selesai</option>
-                    </select>
-                </div>
-
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary">Cari</button>
-                    <a href="tindakan.php" class="btn btn-secondary">Reset</a>
-                </div>
-
-            </form>
-
-        </div>
-    </div>
-
     <!-- TABEL TINDAKAN -->
     <div class="card shadow-sm">
         <div class="card-body">
@@ -302,7 +280,8 @@ $selesai = mysqli_fetch_assoc(mysqli_query(
 
             <div class="table-responsive">
 
-                <table class="table table-bordered table-striped align-middle">
+                <!-- Tambahkan ID 'tabelTindakan' agar terbaca oleh DataTables -->
+                <table id="tabelTindakan" class="table table-bordered table-striped align-middle">
 
                     <thead class="table-dark">
                         <tr>
@@ -344,20 +323,20 @@ $selesai = mysqli_fetch_assoc(mysqli_query(
 
                                 <td><?= e($row['poin']) ?></td>
 
+                                <!-- Form dibungkus per baris untuk input tindakan & status -->
                                 <form method="POST">
-
                                     <td>
                                         <input
                                             type="text"
                                             name="tindakan"
-                                            class="form-control"
+                                            class="form-control form-control-sm"
                                             value="<?= e($row['tindakan']) ?>"
                                             required
                                         >
                                     </td>
 
                                     <td>
-                                        <select name="status" class="form-select" required>
+                                        <select name="status" class="form-select form-select-sm" required>
                                             <option value="tercatat" <?= $row['status'] === 'tercatat' ? 'selected' : '' ?>>
                                                 Tercatat
                                             </option>
@@ -383,19 +362,10 @@ $selesai = mysqli_fetch_assoc(mysqli_query(
                                             Simpan
                                         </button>
                                     </td>
-
                                 </form>
                             </tr>
 
                         <?php endwhile; ?>
-
-                    <?php else: ?>
-
-                        <tr>
-                            <td colspan="10" class="text-center">
-                                Data tindakan tidak ditemukan.
-                            </td>
-                        </tr>
 
                     <?php endif; ?>
 
@@ -409,6 +379,52 @@ $selesai = mysqli_fetch_assoc(mysqli_query(
     </div>
 
 </div>
+        </main>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    $('#tabelTindakan').DataTable({
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50, 100],
+        ordering: true,
+        searching: true,
+        paging: true,
+        info: true,
+        // Menonaktifkan sorting dan pencarian pada kolom interaktif terakhir (kolom aksi ke-9 / index 9)
+        columnDefs: [
+            {
+                targets: 9,
+                orderable: false,
+                searchable: false
+            }
+        ],
+        language: {
+            search: "Cari:",
+            lengthMenu: "Tampilkan _MENU_ data",
+            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+            infoEmpty: "Tidak ada data yang ditampilkan",
+            zeroRecords: "Data tindakan tidak ditemukan",
+            emptyTable: "Belum ada data tindakan pelanggaran",
+            paginate: {
+                first: "Pertama",
+                last: "Terakhir",
+                next: "Berikutnya",
+                previous: "Sebelumnya"
+            }
+        }
+    });
+});
+</script>
 
 </body>
 </html>

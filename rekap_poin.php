@@ -109,7 +109,7 @@ $total_poin = $ringkasan['total_poin'];
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
 
             <h4 class="text-white mb-4">
-                JusticeAdmin
+                JusticeGuru
             </h4>
 
             <ul class="nav nav-pills flex-column">
@@ -121,7 +121,7 @@ $total_poin = $ringkasan['total_poin'];
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a href="catat_pelanggaran.php" class="nav-link text-white">
+                    <a href="Catat_Pelanggaran.php" class="nav-link text-white">
                         Catat Pelanggaran
                     </a>
                 </li>
@@ -159,6 +159,7 @@ $total_poin = $ringkasan['total_poin'];
                 </li>
 
             </ul>
+
         </div>
 
         <!-- KONTEN -->

@@ -74,7 +74,7 @@ $total_selesai = $ringkasan['selesai'] ?? 0;
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
 
             <h4 class="text-white mb-4">
-                JusticeAdmin
+                JusticeGuru
             </h4>
 
             <ul class="nav nav-pills flex-column">

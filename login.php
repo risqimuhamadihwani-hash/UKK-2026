@@ -20,7 +20,7 @@ if (isset($_SESSION['id_user'])) {
     <style>
         /* Mengatur latar belakang layar gelap persis seperti desain */
         body {
-            background-color: #212529; /* Warna gelap ala dark mode */
+            background-color: #ffffff; /* Warna gelap ala dark mode */
         }
         /* Styling kotak form agar sudutnya melengkung halus dan elegan */
         .login-card {
@@ -56,7 +56,7 @@ if (isset($_SESSION['id_user'])) {
     <div class="login-card p-4 shadow-lg text-center">
         
         <!-- Judul Aplikasi -->
-        <h4 class="fw-bold mb-4 text-dark">JusticeAdmin</h4>
+        <h4 class="fw-bold mb-4 text-dark">Sistem Pelanggaran Siswa</h4>
 
         <!-- Form Login (Mengarah ke proses_login.php dengan method POST) -->
         <form action="proses_login.php" method="POST" class="text-start">

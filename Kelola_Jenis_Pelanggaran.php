@@ -1,32 +1,30 @@
-
 <?php
-session_start();
 include 'config/koneksi.php';
 
-if (!isset($_SESSION['id_user'])) {
-    header("Location: login.php");
-    exit;
-}
+$cari = isset($_GET['cari']) ? trim($_GET['cari']) : '';
 
-$data = mysqli_query($koneksi,
-    "SELECT * FROM t_pelanggaran_kategori ORDER BY id ASC"
-);
+$sql = "SELECT * FROM t_pelanggaran
+        WHERE kode LIKE ?
+        OR nama LIKE ?
+        ORDER BY id ASC";
 
-if (!$data) {
-    die("Gagal mengambil data: " . mysqli_error($koneksi));
-}
+$stmt = mysqli_prepare($koneksi, $sql);
+$keyword = "%$cari%";
+
+mysqli_stmt_bind_param($stmt, "ss", $keyword, $keyword);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Kategori Pelanggaran</title>
-
-    <link rel="stylesheet"
-      href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
+    
+    <title>Kelola Jenis Pelanggaran</title>
 
 </head>
 <body>
@@ -58,42 +56,42 @@ if (!$data) {
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu3.php" class="nav-link text-white">
+                    <a href="Kelola_Kelas.php" class="nav-link text-white">
                         Kelola Kelas
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu4.php" class="nav-link text-white">
+                    <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
                         Kelola Tahun Ajaran
                     </a>
                 </li>
                  <li class="nav-item mb-2">
-                    <a href="menu5.php" class="nav-link text-white">
+                    <a href="Penempatan_Siswa.php" class="nav-link text-white">
                         Penempatan Siswa
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu6.php" class="nav-link text-white">
+                    <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">
                         Kelola Wali Kelas
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu7.php" class="nav-link active">
+                    <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
                         Kelola Kategori Pelanggaran
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu8.php" class="nav-link text-white">
+                    <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link active">
                         Kelola Jenis Pelanggaran
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu9.php" class="nav-link text-white">
+                    <a href="Laporan.php" class="nav-link text-white">
                         Laporan
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="menu10.php" class="nav-link text-white">
+                    <a href="Cetak_Export.php" class="nav-link text-white">
                         Cetak/Export
                     </a>
                 </li>
@@ -112,22 +110,23 @@ if (!$data) {
         </div>
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
+<h2>Kelola Jenis Pelanggaran</h2>
 
-<h2>Kelola Kategori Pelanggaran</h2>
+<p>Halaman untuk menampilkan data jenis Pelanggaran</p>
 
-<p>Halaman untuk menampilkan data Pelanggaran</p>
+<a href="tambah_pelanggaran.php"  class="btn btn-secondary mb-3"> + Tambah Jenis Pelanggaran</a>
 
-<a href="tambah_kategori_pelanggaran.php" class="btn btn-secondary mb-3"> + Tambah Kategori</a>
 
-<!-- TABEL DATA -->
 <div class="table-responsive">
-    <table id="tabelKategori"
+    <table id="tabelPelanggaran"
            class="table table-hover table-striped table-bordered align-middle">
 
         <thead class="table-dark">
             <tr>
                 <th>No</th>
-                <th>Nama Kategori</th>
+                <th>Kode</th>
+                <th>Nama Pelanggaran</th>
+                <th>Poin</th>
                 <th>Deskripsi</th>
                 <th>Status</th>
                 <th>Aksi</th>
@@ -135,50 +134,47 @@ if (!$data) {
         </thead>
 
         <tbody>
-            <?php if (mysqli_num_rows($data) > 0): ?>
-                <?php $no = 1; ?>
+        <?php
+        $no = 1;
 
-                <?php while ($d = mysqli_fetch_assoc($data)): ?>
-                    <tr>
-                        <td><?= $no++ ?></td>
+        if (mysqli_num_rows($result) > 0):
+            while ($row = mysqli_fetch_assoc($result)):
+        ?>
+            <tr>
+                <td><?= $no++ ?></td>
+                <td><?= htmlspecialchars($row['kode']) ?></td>
+                <td><?= htmlspecialchars($row['nama']) ?></td>
+                <td><?= (int)$row['poin'] ?></td>
+                <td><?= htmlspecialchars($row['deskripsi'] ?? '') ?></td>
+                <td>
+                    <?php if ((int)$row['status_aktif'] === 1): ?>
+                        <span class="badge bg-success">Aktif</span>
+                    <?php else: ?>
+                        <span class="badge bg-secondary">Tidak Aktif</span>
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <a href="edit_pelanggaran.php?id=<?= (int)$row['id'] ?>"
+                       class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
 
-                        <td><?= htmlspecialchars($d['nama']) ?></td>
-
-                        <td><?= htmlspecialchars($d['deskripsi'] ?? '') ?></td>
-
-                        <td>
-                            <?php if ((int)$d['status_aktif'] === 1): ?>
-                                <span class="badge bg-success">Aktif</span>
-                            <?php else: ?>
-                                <span class="badge bg-secondary">Tidak Aktif</span>
-                            <?php endif; ?>
-                        </td>
-
-                        <td>
-                            <a href="edit_kategori_pelanggaran.php?id=<?= (int)$d['id'] ?>"
-                               class="btn btn-warning btn-sm">
-                                Edit
-                            </a>
-
-                            <form action="hapus_kategori_pelanggaran.php"
-                                  method="POST"
-                                  class="d-inline"
-                                  onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
-
-                                <input type="hidden" name="id"
-                                       value="<?= (int)$d['id'] ?>">
-
-                                <button type="submit" name="hapus"
-                                        class="btn btn-danger btn-sm">
-                                    Hapus
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-            <?php endif; ?>
+                    <a href="hapus_pelanggaran.php?id=<?= (int)$row['id'] ?>"
+                       onclick="return confirm('Yakin ingin menghapus data ini?')"
+                       class="btn btn-danger btn-sm">
+                        Hapus
+                    </a>
+                </td>
+            </tr>
+        <?php
+            endwhile;
+        endif;
+        ?>
         </tbody>
     </table>
+</div>
+</main>
+</div>
 </div>
 
 <!-- jQuery -->
@@ -190,12 +186,12 @@ if (!$data) {
 <!-- Integrasi DataTables dengan Bootstrap 5 -->
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
 
-
 <script>
 $(document).ready(function () {
-    $('#tabelKategori').DataTable({
-        pageLength: 5,
+    $('#tabelPelanggaran').DataTable({
+        pageLength: 10,
         lengthMenu: [5, 10, 25, 50, 100],
+
         ordering: true,
         searching: true,
         paging: true,
@@ -203,7 +199,7 @@ $(document).ready(function () {
 
         columnDefs: [
             {
-                targets: 4,
+                targets: 6,
                 orderable: false,
                 searchable: false
             }
@@ -215,8 +211,8 @@ $(document).ready(function () {
             info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
             infoEmpty: "Tidak ada data yang ditampilkan",
             infoFiltered: "(difilter dari _MAX_ total data)",
-            zeroRecords: "Data kategori tidak ditemukan",
-            emptyTable: "Belum ada data kategori pelanggaran",
+            zeroRecords: "Data pelanggaran tidak ditemukan",
+            emptyTable: "Belum ada data jenis pelanggaran",
 
             paginate: {
                 first: "Pertama",

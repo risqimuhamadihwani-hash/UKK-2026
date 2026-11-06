@@ -200,7 +200,7 @@ $result_status = mysqli_query($koneksi, $sql_status);
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
 
             <h4 class="text-white mb-4">
-                JusticeAdmin
+                JusticeGuru
             </h4>
 
             <ul class="nav nav-pills flex-column">
@@ -212,7 +212,7 @@ $result_status = mysqli_query($koneksi, $sql_status);
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a href="catat_pelanggaran.php" class="nav-link text-white">
+                    <a href="Catat_Pelanggaran.php" class="nav-link text-white">
                         Catat Pelanggaran
                     </a>
                 </li>
@@ -255,7 +255,6 @@ $result_status = mysqli_query($koneksi, $sql_status);
 
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
-
             <div class="mb-4">
 
                 <h3>Riwayat Pelanggaran</h3>
