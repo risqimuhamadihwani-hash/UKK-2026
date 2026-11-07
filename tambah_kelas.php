@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 
@@ -73,13 +72,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Tambah Data Kelas</title>
-
+    <title>Tambah Kelas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-label {
+            font-size: 0.9rem;
+            color: #212529;
+            margin-bottom: 0.3rem;
+        }
+    </style>
 </head>
 
-<body>
+<body class="bg-light">
 
 <div class="container-fluid">
     <div class="row">
@@ -157,90 +161,79 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
                 </li>
             </ul>
         </div>
+
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h1 class="mb-4">Tambah Data Kelas</h1>
+            <h3 class="fw-bold mb-4">Tambah Kelas</h3>
 
-            <?php if ($pesan !== ""): ?>
-                <div class="alert alert-danger">
-                    <?= htmlspecialchars($pesan, ENT_QUOTES, 'UTF-8') ?>
+            <div class="card shadow-sm border" style="background-color: #ffffff; border-color: #dee2e6 !important;">
+                <div class="card-body p-4">
+
+                    <?php if ($pesan !== ""): ?>
+                        <div class="alert alert-danger py-2">
+                            <?= htmlspecialchars($pesan, ENT_QUOTES, 'UTF-8') ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Nama Kelas</label>
+                            <input
+                                type="text"
+                                name="nama"
+                                class="form-control"
+                                placeholder="Contoh: X RPL 1"
+                                maxlength="100"
+                                value="<?= htmlspecialchars($nama, ENT_QUOTES, 'UTF-8') ?>"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tingkat</label>
+                            <select name="tingkat" class="form-select" required>
+                                <option value="">-- Pilih Tingkat --</option>
+                                <option value="X" <?= $tingkat === "X" ? "selected" : "" ?>>X (Sepuluh)</option>
+                                <option value="XI" <?= $tingkat === "XI" ? "selected" : "" ?>>XI (Sebelas)</option>
+                                <option value="XII" <?= $tingkat === "XII" ? "selected" : "" ?>>XII (Dua Belas)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Jurusan</label>
+                            <input
+                                type="text"
+                                name="jurusan"
+                                class="form-control"
+                                placeholder="Contoh: RPL"
+                                maxlength="100"
+                                value="<?= htmlspecialchars($jurusan, ENT_QUOTES, 'UTF-8') ?>"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Status Aktif</label>
+                            <select name="status_aktif" class="form-select" required>
+                                <option value="1" <?= $status_aktif === "1" ? "selected" : "" ?>>Aktif</option>
+                                <option value="0" <?= $status_aktif === "0" ? "selected" : "" ?>>Tidak Aktif</option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" name="simpan" class="btn btn-primary px-3 py-1 text-white" style="background-color: #0d6efd;">
+                                Tambah
+                            </button>
+
+                            <a href="Kelola_Kelas.php" class="btn btn-secondary px-3 py-1" style="background-color: #6c757d;">
+                                Kembali
+                            </a>
+                        </div>
+                    </form>
+
                 </div>
-            <?php endif; ?>
-
-            <form method="POST">
-
-                <div class="mb-4">
-                    <label class="form-label">Nama Kelas</label>
-
-                    <input
-                        type="text"
-                        name="nama"
-                        class="form-control"
-                        placeholder="Contoh: X RPL 1"
-                        maxlength="100"
-                        value="<?= htmlspecialchars($nama, ENT_QUOTES, 'UTF-8') ?>"
-                        required
-                    >
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">Tingkat</label>
-
-                    <select name="tingkat" class="form-select" required>
-                        <option value="">-- Pilih Tingkat --</option>
-
-                        <option value="X" <?= $tingkat === "X" ? "selected" : "" ?>>
-                            X (Sepuluh)
-                        </option>
-
-                        <option value="XI" <?= $tingkat === "XI" ? "selected" : "" ?>>
-                            XI (Sebelas)
-                        </option>
-
-                        <option value="XII" <?= $tingkat === "XII" ? "selected" : "" ?>>
-                            XII (Dua Belas)
-                        </option>
-                    </select>
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">Jurusan</label>
-
-                    <input
-                        type="text"
-                        name="jurusan"
-                        class="form-control"
-                        placeholder="Contoh: RPL, TSM, TKJ"
-                        maxlength="100"
-                        value="<?= htmlspecialchars($jurusan, ENT_QUOTES, 'UTF-8') ?>"
-                        required
-                    >
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">Status Kelas</label>
-
-                    <select name="status_aktif" class="form-select" required>
-                        <option value="1" <?= $status_aktif === "1" ? "selected" : "" ?>>
-                            Aktif
-                        </option>
-
-                        <option value="0" <?= $status_aktif === "0" ? "selected" : "" ?>>
-                            Tidak Aktif
-                        </option>
-                    </select>
-                </div>
-
-                <button type="submit" name="simpan" class="btn btn-primary">
-                    Simpan
-                </button>
-
-                <a href="Kelola_Kelas.php" class="btn btn-secondary">
-                    Kembali
-                </a>
-
-            </form>
+            </div>
 
         </main>
 

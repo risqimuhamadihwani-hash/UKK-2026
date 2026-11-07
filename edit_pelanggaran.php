@@ -116,7 +116,7 @@ function e($data) {
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Tahun_Ajaran.php" class="nav-link active">
+                    <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
                         Kelola Tahun Ajaran
                     </a>
                 </li>

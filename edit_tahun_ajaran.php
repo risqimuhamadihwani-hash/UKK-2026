@@ -87,13 +87,12 @@ function e($nilai) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Edit Tahun Ajaran</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
 
-<body>
+<body class="bg-light">
 
 <div class="container-fluid">
     <div class="row">
@@ -171,79 +170,89 @@ function e($nilai) {
                 </li>
             </ul>
         </div>
+
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h1 class="mb-4">Edit Tahun Ajaran</h1>
+            <h3 class="fw-bold mb-4">Edit Tahun Ajaran</h3>
 
-            <?php if ($error !== ""): ?>
-                <div class="alert alert-danger">
-                    <?= e($error) ?>
+            <div class="card shadow-sm border" style="background-color: #ffffff; border-color: #dee2e6 !important;">
+                <div class="card-body p-4">
+
+                    <?php if ($error !== ""): ?>
+                        <div class="alert alert-danger py-2">
+                            <?= e($error) ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <form method="POST">
+
+                        <div class="mb-3">
+                            <label class="form-label">Nama Tahun Ajaran</label>
+                            <input
+                                type="text"
+                                name="nama"
+                                class="form-control"
+                                placeholder="Contoh: 2026/2027"
+                                value="<?= e($nama) ?>"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tanggal Mulai</label>
+                            <input
+                                type="date"
+                                name="tanggal_mulai"
+                                class="form-control"
+                                value="<?= e($tanggal_mulai) ?>"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tanggal Selesai</label>
+                            <input
+                                type="date"
+                                name="tanggal_selesai"
+                                class="form-control"
+                                value="<?= e($tanggal_selesai) ?>"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Status Aktif</label>
+                            <select name="status_aktif" class="form-select" required>
+                                <option value="1" <?= $status_aktif === "1" ? "selected" : "" ?>>
+                                    Aktif
+                                </option>
+                                <option value="0" <?= $status_aktif === "0" ? "selected" : "" ?>>
+                                    Tidak Aktif
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" name="update" class="btn btn-primary px-3 py-1 text-white" style="background-color: #0d6efd;">
+                                Simpan Perubahan
+                            </button>
+
+                            <a href="Kelola_Tahun_Ajaran.php" class="btn btn-secondary px-3 py-1" style="background-color: #6c757d;">
+                                Kembali
+                            </a>
+                        </div>
+
+                    </form>
+
                 </div>
-            <?php endif; ?>
-
-            <form method="POST">
-
-                <div class="mb-4">
-                    <label class="form-label">Nama Tahun Ajaran</label>
-                    <input
-                        type="text"
-                        name="nama"
-                        class="form-control"
-                        placeholder="Contoh: 2026/2027"
-                        value="<?= e($nama) ?>"
-                        required
-                    >
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">Tanggal Mulai</label>
-                    <input
-                        type="date"
-                        name="tanggal_mulai"
-                        class="form-control"
-                        value="<?= e($tanggal_mulai) ?>"
-                        required
-                    >
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">Tanggal Selesai</label>
-                    <input
-                        type="date"
-                        name="tanggal_selesai"
-                        class="form-control"
-                        value="<?= e($tanggal_selesai) ?>"
-                        required
-                    >
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">Status Aktif</label>
-                    <select name="status_aktif" class="form-select" required>
-                        <option value="1" <?= $status_aktif === "1" ? "selected" : "" ?>>
-                            Aktif
-                        </option>
-                        <option value="0" <?= $status_aktif === "0" ? "selected" : "" ?>>
-                            Tidak Aktif
-                        </option>
-                    </select>
-                </div>
-
-                <button type="submit" name="update" class="btn btn-primary">
-                    Simpan Perubahan
-                </button>
-
-                <a href="Kelola_Tahun_Ajaran.php" class="btn btn-secondary">
-                    Kembali
-                </a>
-
-            </form>
+            </div>
 
         </main>
 
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

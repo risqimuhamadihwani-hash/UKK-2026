@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 
@@ -40,7 +39,7 @@ $stmt->close();
 
 if (!$kelas) {
     $koneksi->close();
-    header("Location: menu3.php");
+    header("Location: Kelola_Kelas.php");
     exit;
 }
 
@@ -53,17 +52,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['simpan'])) {
     $status_aktif = $_POST['status_aktif'] ?? '';
 
     if ($nama === '' || $tingkat === '' || $jurusan === '') {
-
         $pesan = "Semua kolom wajib diisi.";
-
     } elseif (!in_array($tingkat, ['X', 'XI', 'XII'], true)) {
-
         $pesan = "Tingkat kelas tidak valid.";
-
     } elseif (!in_array($status_aktif, ['0', '1'], true)) {
-
         $pesan = "Status kelas tidak valid.";
-
     } else {
 
         $status_aktif = (int)$status_aktif;
@@ -79,9 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['simpan'])) {
         $stmt = $koneksi->prepare($sql);
 
         if (!$stmt) {
-
             $pesan = "Query gagal: " . $koneksi->error;
-
         } else {
 
             $stmt->bind_param(
@@ -94,17 +85,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['simpan'])) {
             );
 
             if ($stmt->execute()) {
-
                 $stmt->close();
                 $koneksi->close();
 
-                header("Location: menu3.php");
+                header("Location: Kelola_Kelas.php");
                 exit;
-
             } else {
-
                 $pesan = "Gagal mengubah data kelas: " . $stmt->error;
-
             }
 
             $stmt->close();
@@ -123,20 +110,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['simpan'])) {
 <html lang="id">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Edit Data Kelas</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Kelas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
 </head>
 
-<body>
+<body class="bg-light">
 
 <div class="container-fluid">
     <div class="row">
@@ -214,172 +195,99 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['simpan'])) {
                 </li>
             </ul>
         </div>
+
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h1 class="mb-4">Edit Data Kelas</h1>
+            <h3 class="fw-bold mb-4">Edit Kelas</h3>
 
-            <!-- PESAN ERROR -->
-            <?php if ($pesan !== ''): ?>
+            <div class="card shadow-sm border" style="background-color: #ffffff; border-color: #dee2e6 !important;">
+                <div class="card-body p-4">
 
-                <div class="alert alert-danger">
-                    <?= htmlspecialchars($pesan, ENT_QUOTES, 'UTF-8') ?>
-                </div>
+                    <!-- PESAN ERROR -->
+                    <?php if ($pesan !== ''): ?>
+                        <div class="alert alert-danger py-2">
+                            <?= htmlspecialchars($pesan, ENT_QUOTES, 'UTF-8') ?>
+                        </div>
+                    <?php endif; ?>
 
-            <?php endif; ?>
+                    <!-- FORM EDIT KELAS -->
+                    <form method="POST" action="edit_kelas.php?id=<?= (int)$id ?>" autocomplete="off">
 
-            <!-- FORM EDIT KELAS -->
-            <form method="POST"
-                  action="edit_kelas.php?id=<?= (int)$id ?>"
-                  autocomplete="off">
+                        <!-- INPUT TERSEMBUNYI UNTUK AUTOFILL -->
+                        <input type="text" name="username_fake" autocomplete="username" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;">
+                        <input type="password" name="password_fake" autocomplete="new-password" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;">
 
-                <!-- INPUT TERSEMBUNYI UNTUK AUTOFILL -->
-                <input
-                    type="text"
-                    name="username_fake"
-                    autocomplete="username"
-                    tabindex="-1"
-                    aria-hidden="true"
-                    style="position:absolute;left:-9999px;"
-                >
+                        <div class="mb-3">
+                            <label class="form-label">Nama Kelas</label>
+                            <input
+                                type="text"
+                                name="nama"
+                                id="nama"
+                                class="form-control"
+                                placeholder="Contoh: X RPL 1"
+                                maxlength="100"
+                                value="<?= htmlspecialchars($kelas['nama'], ENT_QUOTES, 'UTF-8') ?>"
+                                autocomplete="off"
+                                readonly
+                                onfocus="this.removeAttribute('readonly')"
+                                required
+                            >
+                        </div>
 
-                <input
-                    type="password"
-                    name="password_fake"
-                    autocomplete="new-password"
-                    tabindex="-1"
-                    aria-hidden="true"
-                    style="position:absolute;left:-9999px;"
-                >
+                        <div class="mb-3">
+                            <label class="form-label">Tingkat</label>
+                            <select name="tingkat" class="form-select" required>
+                                <option value="">-- Pilih Tingkat --</option>
+                                <option value="X" <?= $kelas['tingkat'] === 'X' ? 'selected' : '' ?>>X (Sepuluh)</option>
+                                <option value="XI" <?= $kelas['tingkat'] === 'XI' ? 'selected' : '' ?>>XI (Sebelas)</option>
+                                <option value="XII" <?= $kelas['tingkat'] === 'XII' ? 'selected' : '' ?>>XII (Dua Belas)</option>
+                            </select>
+                        </div>
 
-                <!-- NAMA KELAS -->
-                <div class="mb-4">
+                        <div class="mb-3">
+                            <label class="form-label">Jurusan</label>
+                            <input
+                                type="text"
+                                name="jurusan"
+                                class="form-control"
+                                placeholder="Contoh: RPL, TSM, TKJ"
+                                maxlength="100"
+                                value="<?= htmlspecialchars($kelas['jurusan'], ENT_QUOTES, 'UTF-8') ?>"
+                                autocomplete="off"
+                                readonly
+                                onfocus="this.removeAttribute('readonly')"
+                                required
+                            >
+                        </div>
 
-                    <label class="form-label">
-                        Nama Kelas
-                    </label>
+                        <div class="mb-3">
+                            <label class="form-label">Status Aktif</label>
+                            <select name="status_aktif" class="form-select" required>
+                                <option value="1" <?= (string)$kelas['status_aktif'] === '1' ? 'selected' : '' ?>>Aktif</option>
+                                <option value="0" <?= (string)$kelas['status_aktif'] === '0' ? 'selected' : '' ?>>Tidak Aktif</option>
+                            </select>
+                        </div>
 
-                    <input
-                        type="text"
-                        name="nama"
-                        id="nama"
-                        class="form-control"
-                        placeholder="Contoh: X RPL 1"
-                        maxlength="100"
-                        value="<?= htmlspecialchars($kelas['nama'], ENT_QUOTES, 'UTF-8') ?>"
-                        autocomplete="off"
-                        readonly
-                        onfocus="this.removeAttribute('readonly')"
-                        required
-                    >
+                        <!-- TOMBOL -->
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" name="simpan" class="btn btn-primary px-3 py-1 text-white" style="background-color: #0d6efd;">
+                                Simpan Perubahan
+                            </button>
 
-                </div>
+                            <a href="Kelola_Kelas.php" class="btn btn-secondary px-3 py-1" style="background-color: #6c757d;">
+                                Kembali
+                            </a>
+                        </div>
 
-                <!-- TINGKAT -->
-                <div class="mb-4">
-
-                    <label class="form-label">
-                        Tingkat
-                    </label>
-
-                    <select
-                        name="tingkat"
-                        class="form-select"
-                        required
-                    >
-
-                        <option value="">
-                            -- Pilih Tingkat --
-                        </option>
-
-                        <option value="X"
-                            <?= $kelas['tingkat'] === 'X' ? 'selected' : '' ?>>
-                            X (Sepuluh)
-                        </option>
-
-                        <option value="XI"
-                            <?= $kelas['tingkat'] === 'XI' ? 'selected' : '' ?>>
-                            XI (Sebelas)
-                        </option>
-
-                        <option value="XII"
-                            <?= $kelas['tingkat'] === 'XII' ? 'selected' : '' ?>>
-                            XII (Dua Belas)
-                        </option>
-
-                    </select>
+                    </form>
 
                 </div>
-
-                <!-- JURUSAN -->
-                <div class="mb-4">
-
-                    <label class="form-label">
-                        Jurusan
-                    </label>
-
-                    <input
-                        type="text"
-                        name="jurusan"
-                        class="form-control"
-                        placeholder="Contoh: RPL, TSM, TKJ"
-                        maxlength="100"
-                        value="<?= htmlspecialchars($kelas['jurusan'], ENT_QUOTES, 'UTF-8') ?>"
-                        autocomplete="off"
-                        readonly
-                        onfocus="this.removeAttribute('readonly')"
-                        required
-                    >
-
-                </div>
-
-                <!-- STATUS KELAS -->
-                <div class="mb-4">
-
-                    <label class="form-label">
-                        Status Kelas
-                    </label>
-
-                    <select
-                        name="status_aktif"
-                        class="form-select"
-                        required
-                    >
-
-                        <option value="1"
-                            <?= (string)$kelas['status_aktif'] === '1' ? 'selected' : '' ?>>
-                            Aktif
-                        </option>
-
-                        <option value="0"
-                            <?= (string)$kelas['status_aktif'] === '0' ? 'selected' : '' ?>>
-                            Tidak Aktif
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <!-- TOMBOL -->
-                <button
-                    type="submit"
-                    name="simpan"
-                    class="btn btn-primary"
-                >
-                    Simpan Perubahan
-                </button>
-
-                <a href="Kelola_Kelas.php"
-                   class="btn btn-secondary">
-                    Kembali
-                </a>
-
-            </form>
+            </div>
 
         </main>
 
     </div>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>

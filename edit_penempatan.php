@@ -74,7 +74,7 @@ if (isset($_POST['update'])) {
             if (mysqli_stmt_execute($update)) {
                 mysqli_stmt_close($update);
                 mysqli_stmt_close($cek);
-                header("Location: menu5.php");
+                header("Location: Penempatan_Siswa.php");
                 exit;
             } else {
                 $pesan = "Gagal memperbarui data.";
@@ -109,11 +109,11 @@ function e($data) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Penempatan Siswa</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
 
-<body class="bg-light">
+<body>
 <div class="container-fluid">
     <div class="row">
         <!-- SIDEBAR -->
@@ -190,96 +190,104 @@ function e($data) {
                 </li>
             </ul>
         </div>
+
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h2 class="mb-4">Edit Penempatan Siswa</h2>
+            <h3 class="fw-bold mb-4">Edit Penempatan Siswa</h3>
 
-            <?php if ($pesan !== ""): ?>
-                <div class="alert alert-danger">
-                    <?= e($pesan) ?>
+            <div class="card shadow-sm border" style="background-color: #ffffff; border-color: #dee2e6 !important;">
+                <div class="card-body p-4">
+
+                    <?php if ($pesan !== ""): ?>
+                        <div class="alert alert-danger py-2">
+                            <?= e($pesan) ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <form method="POST">
+
+                        <div class="mb-3">
+                            <label class="form-label">Siswa</label>
+                            <select name="siswa_id" class="form-select" required>
+                                <?php while ($s = mysqli_fetch_assoc($siswa)): ?>
+                                    <option value="<?= $s['id'] ?>"
+                                        <?= $d['siswa_id'] == $s['id'] ? 'selected' : '' ?>>
+                                        <?= e($s['nis'] . ' - ' . $s['nama']) ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tahun Ajaran</label>
+                            <select name="tahun_ajaran_id" class="form-select" required>
+                                <?php while ($t = mysqli_fetch_assoc($tahun)): ?>
+                                    <option value="<?= $t['id'] ?>"
+                                        <?= $d['tahun_ajaran_id'] == $t['id'] ? 'selected' : '' ?>>
+                                        <?= e($t['nama']) ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Kelas</label>
+                            <select name="kelas_id" class="form-select" required>
+                                <?php while ($k = mysqli_fetch_assoc($kelas)): ?>
+                                    <option value="<?= $k['id'] ?>"
+                                        <?= $d['kelas_id'] == $k['id'] ? 'selected' : '' ?>>
+                                        <?= e($k['nama'] . ' - ' . $k['tingkat'] . ' - ' . $k['jurusan']) ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tanggal Mulai</label>
+                            <input type="date" name="tanggal_mulai"
+                                class="form-control"
+                                value="<?= e($d['tanggal_mulai']) ?>" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tanggal Selesai</label>
+                            <input type="date" name="tanggal_selesai"
+                                class="form-control"
+                                value="<?= e($d['tanggal_selesai']) ?>" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Status Aktif</label>
+                            <select name="status_aktif" class="form-select" required>
+                                <option value="1" <?= $d['status_aktif'] == 1 ? 'selected' : '' ?>>
+                                    Aktif
+                                </option>
+                                <option value="0" <?= $d['status_aktif'] == 0 ? 'selected' : '' ?>>
+                                    Tidak Aktif
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" name="update" class="btn btn-primary px-3 py-1 text-white" style="background-color: #0d6efd;">
+                                Simpan Perubahan
+                            </button>
+                            <a href="Penempatan_Siswa.php" class="btn btn-secondary px-3 py-1" style="background-color: #6c757d;">
+                                Kembali
+                            </a>
+                        </div>
+
+                    </form>
+
                 </div>
-            <?php endif; ?>
-
-            <form method="POST">
-
-                <div class="mb-3">
-                    <label class="form-label">Siswa</label>
-                    <select name="siswa_id" class="form-select" required>
-                        <?php while ($s = mysqli_fetch_assoc($siswa)): ?>
-                            <option value="<?= $s['id'] ?>"
-                                <?= $d['siswa_id'] == $s['id'] ? 'selected' : '' ?>>
-                                <?= e($s['nis'] . ' - ' . $s['nama']) ?>
-                            </option>
-                        <?php endwhile; ?>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Tahun Ajaran</label>
-                    <select name="tahun_ajaran_id" class="form-select" required>
-                        <?php while ($t = mysqli_fetch_assoc($tahun)): ?>
-                            <option value="<?= $t['id'] ?>"
-                                <?= $d['tahun_ajaran_id'] == $t['id'] ? 'selected' : '' ?>>
-                                <?= e($t['nama']) ?>
-                            </option>
-                        <?php endwhile; ?>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Kelas</label>
-                    <select name="kelas_id" class="form-select" required>
-                        <?php while ($k = mysqli_fetch_assoc($kelas)): ?>
-                            <option value="<?= $k['id'] ?>"
-                                <?= $d['kelas_id'] == $k['id'] ? 'selected' : '' ?>>
-                                <?= e($k['nama'] . ' - ' . $k['tingkat'] . ' - ' . $k['jurusan']) ?>
-                            </option>
-                        <?php endwhile; ?>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Tanggal Mulai</label>
-                    <input type="date" name="tanggal_mulai"
-                        class="form-control"
-                        value="<?= e($d['tanggal_mulai']) ?>" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Tanggal Selesai</label>
-                    <input type="date" name="tanggal_selesai"
-                        class="form-control"
-                        value="<?= e($d['tanggal_selesai']) ?>" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Status Aktif</label>
-                    <select name="status_aktif" class="form-select" required>
-                        <option value="1" <?= $d['status_aktif'] == 1 ? 'selected' : '' ?>>
-                            Aktif
-                        </option>
-                        <option value="0" <?= $d['status_aktif'] == 0 ? 'selected' : '' ?>>
-                            Tidak Aktif
-                        </option>
-                    </select>
-                </div>
-
-                <div class="d-flex gap-2 mt-4">
-                    <button type="submit" name="update" class="btn btn-primary">
-                        Simpan
-                    </button>
-                    <a href="Penempatan_Siswa.php" class="btn btn-secondary">
-                        Kembali
-                    </a>
-                </div>
-
-            </form>
+            </div>
 
         </main>
 
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

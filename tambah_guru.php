@@ -205,92 +205,86 @@ function e($nilai) {
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <div class="card shadow-sm border-0">
+            <h3 class="fw-bold mb-4">Tambah Guru</h3>
+
+            <div class="card shadow-sm border" style="background-color: #ffffff; border-color: #dee2e6 !important;">
                 <div class="card-body p-4">
-                    <h4 class="card-title mb-4">Tambah Guru Baru</h4>
 
                     <?php if ($error !== ""): ?>
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <div class="alert alert-danger alert-dismissible fade show py-2" role="alert">
                             <?= e($error) ?>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     <?php endif; ?>
 
                     <form method="POST">
-                        <div class="row">
-                            <!-- Kolom Kiri -->
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small">NIP (Maksimal 18 Karakter)</label>
-                                    <input
-                                        type="text"
-                                        name="nip"
-                                        class="form-control"
-                                        placeholder="Masukkan NIP (maks. 18 digit)"
-                                        value="<?= e($nip) ?>"
-                                        maxlength="18"
-                                        required
-                                    >
-                                </div>
+                        <div class="mb-3">
+                            <label class="form-label">NIP</label>
+                            <input
+                                type="text"
+                                name="nip"
+                                class="form-control"
+                                placeholder="Masukkan NIP (maks. 18 digit)"
+                                value="<?= e($nip) ?>"
+                                maxlength="18"
+                                required
+                            >
+                        </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small">Nama Guru</label>
-                                    <input
-                                        type="text"
-                                        name="nama"
-                                        class="form-control"
-                                        placeholder="Masukkan Nama Guru"
-                                        value="<?= e($nama) ?>"
-                                        required
-                                    >
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nama Guru</label>
+                            <input
+                                type="text"
+                                name="nama"
+                                class="form-control"
+                                placeholder="Masukkan Nama Guru"
+                                value="<?= e($nama) ?>"
+                                required
+                            >
+                        </div>
 
-                            <!-- Kolom Kanan -->
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small">Email (Digunakan untuk Login)</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        class="form-control"
-                                        placeholder="Masukkan Email"
-                                        value="<?= e($email) ?>"
-                                        required
-                                    >
-                                </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                class="form-control"
+                                placeholder="Masukkan Email untuk Login"
+                                value="<?= e($email) ?>"
+                                required
+                            >
+                        </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small">Password (Untuk Login Guru)</label>
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        class="form-control"
-                                        placeholder="Masukkan Password Minimal 6 Karakter"
-                                        required
-                                    >
-                                </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input
+                                type="password"
+                                name="password"
+                                class="form-control"
+                                placeholder="Masukkan Password Minimal 6 Karakter"
+                                required
+                            >
+                        </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small">Status Akun</label>
-                                    <select name="status_aktif" class="form-select" required>
-                                        <option value="1" <?= $status === "1" ? "selected" : "" ?>>Aktif</option>
-                                        <option value="0" <?= $status === "0" ? "selected" : "" ?>>Tidak Aktif</option>
-                                    </select>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label">Status Aktif</label>
+                            <select name="status_aktif" class="form-select" required>
+                                <option value="1" <?= $status === "1" ? "selected" : "" ?>>Aktif</option>
+                                <option value="0" <?= $status === "0" ? "selected" : "" ?>>Tidak Aktif</option>
+                            </select>
                         </div>
 
                         <div class="d-flex gap-2 mt-4">
-                            <button type="submit" name="simpan" class="btn btn-primary px-4">
-                                Simpan Guru & Akun Login
+                            <button type="submit" name="simpan" class="btn btn-primary px-3 py-1 text-white" style="background-color: #0d6efd;">
+                                Tambah
                             </button>
 
-                            <a href="Kelola_Guru.php" class="btn btn-secondary px-4">
-                                Batal
+                            <a href="Kelola_Guru.php" class="btn btn-secondary px-3 py-1" style="background-color: #6c757d;">
+                                Kembali
                             </a>
                         </div>
                     </form>
+
                 </div>
             </div>
 

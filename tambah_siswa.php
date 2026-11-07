@@ -31,9 +31,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
 
     if ($nis === "" || $nama === "" || $jenis_kelamin === "") {
         $pesan = "NIS, nama, dan jenis kelamin wajib diisi.";
-    } elseif (!preg_match('/^[0-9]{1,9}$/', $nis)) {
+    } elseif (!ctype_digit($nis) || strlen($nis) > 9) {
         $pesan = "NIS hanya boleh angka dan maksimal 9 digit.";
-    } elseif ($nisn !== "" && !preg_match('/^[0-9]{1,10}$/', $nisn)) {
+    } elseif ($nisn !== "" && (!ctype_digit($nisn) || strlen($nisn) > 10)) {
         $pesan = "NISN hanya boleh angka dan maksimal 10 digit.";
     } elseif (!in_array($jenis_kelamin, ["L", "P"], true)) {
         $pesan = "Jenis kelamin tidak valid.";
@@ -199,113 +199,105 @@ function e($data) {
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <div class="card shadow-sm border-0">
+            <h3 class="fw-bold mb-4">Tambah Siswa</h3>
+
+            <div class="card shadow-sm border" style="background-color: #ffffff; border-color: #dee2e6 !important;">
                 <div class="card-body p-4">
-                    <h4 class="card-title mb-4">Tambah Siswa</h4>
 
                     <?php if ($pesan !== ""): ?>
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger py-2">
                             <?= e($pesan) ?>
                         </div>
                     <?php endif; ?>
 
                     <form method="POST">
-                        <div class="row">
-                            <!-- Kolom Kiri -->
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small">NIS</label>
-                                    <input
-                                        type="text"
-                                        name="nis"
-                                        class="form-control"
-                                        placeholder="Contoh: 12345"
-                                        maxlength="9"
-                                        pattern="[0-9]{1,9}"
-                                        inputmode="numeric"
-                                        value="<?= e($nis) ?>"
-                                        required
-                                    >
-                                </div>
+                        <div class="mb-3">
+                            <label class="form-label">NIS</label>
+                            <input
+                                type="text"
+                                name="nis"
+                                class="form-control"
+                                placeholder="-- Masukkan NIS --"
+                                maxlength="9"
+                                inputmode="numeric"
+                                value="<?= e($nis) ?>"
+                                required
+                            >
+                        </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small">NISN</label>
-                                    <input
-                                        type="text"
-                                        name="nisn"
-                                        class="form-control"
-                                        placeholder="Contoh: 0081234567"
-                                        maxlength="10"
-                                        pattern="[0-9]{1,10}"
-                                        inputmode="numeric"
-                                        value="<?= e($nisn) ?>"
-                                    >
-                                </div>
+                        <div class="mb-3">
+                            <label class="form-label">NISN</label>
+                            <input
+                                type="text"
+                                name="nisn"
+                                class="form-control"
+                                placeholder="-- Masukkan NISN --"
+                                maxlength="10"
+                                inputmode="numeric"
+                                value="<?= e($nisn) ?>"
+                            >
+                        </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small">Nama Siswa</label>
-                                    <input
-                                        type="text"
-                                        name="nama"
-                                        class="form-control"
-                                        placeholder="Contoh: Ahmad Rizki"
-                                        value="<?= e($nama) ?>"
-                                        required
-                                    >
-                                </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nama Siswa</label>
+                            <input
+                                type="text"
+                                name="nama"
+                                class="form-control"
+                                placeholder="-- Masukkan Nama Siswa --"
+                                value="<?= e($nama) ?>"
+                                required
+                            >
+                        </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small">Jenis Kelamin</label>
-                                    <select name="jenis_kelamin" class="form-select" required>
-                                        <option value="">-- Pilih Jenis Kelamin --</option>
-                                        <option value="L" <?= $jenis_kelamin === "L" ? "selected" : "" ?>>Laki-laki</option>
-                                        <option value="P" <?= $jenis_kelamin === "P" ? "selected" : "" ?>>Perempuan</option>
-                                    </select>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label">Jenis Kelamin</label>
+                            <select name="jenis_kelamin" class="form-select" required>
+                                <option value="">-- Pilih Jenis Kelamin --</option>
+                                <option value="L" <?= $jenis_kelamin === "L" ? "selected" : "" ?>>Laki-laki</option>
+                                <option value="P" <?= $jenis_kelamin === "P" ? "selected" : "" ?>>Perempuan</option>
+                            </select>
+                        </div>
 
-                            <!-- Kolom Kanan -->
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small">Tanggal Lahir</label>
-                                    <input
-                                        type="date"
-                                        name="tanggal_lahir"
-                                        class="form-control"
-                                        value="<?= e($tanggal_lahir) ?>"
-                                    >
-                                </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tanggal Lahir</label>
+                            <input
+                                type="date"
+                                name="tanggal_lahir"
+                                class="form-control"
+                                value="<?= e($tanggal_lahir) ?>"
+                            >
+                        </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small">Alamat</label>
-                                    <textarea
-                                        name="alamat"
-                                        class="form-control"
-                                        rows="3"
-                                        placeholder="Masukkan alamat siswa"
-                                    ><?= e($alamat) ?></textarea>
-                                </div>
+                        <div class="mb-3">
+                            <label class="form-label">Alamat</label>
+                            <textarea
+                                name="alamat"
+                                class="form-control"
+                                rows="3"
+                                placeholder="-- Masukkan Alamat Siswa --"
+                            ><?= e($alamat) ?></textarea>
+                        </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small">Status Aktif</label>
-                                    <select name="status_aktif" class="form-select" required>
-                                        <option value="1" <?= $status_aktif === "1" ? "selected" : "" ?>>Aktif</option>
-                                        <option value="0" <?= $status_aktif === "0" ? "selected" : "" ?>>Tidak Aktif</option>
-                                    </select>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label">Status Aktif</label>
+                            <select name="status_aktif" class="form-select" required>
+                                <option value="1" <?= $status_aktif === "1" ? "selected" : "" ?>>Aktif</option>
+                                <option value="0" <?= $status_aktif === "0" ? "selected" : "" ?>>Tidak Aktif</option>
+                            </select>
                         </div>
 
                         <div class="d-flex gap-2 mt-4">
-                            <button type="submit" name="simpan" class="btn btn-primary px-4">
-                                Simpan
+                            <button type="submit" name="simpan" class="btn btn-primary px-3 py-1 text-white" style="background-color: #0d6efd;">
+                                Tambah
                             </button>
 
-                            <a href="Kelola_Siswa.php" class="btn btn-secondary px-4">
-                                Batal
+                            <a href="Kelola_Siswa.php" class="btn btn-secondary px-3 py-1" style="background-color: #6c757d;">
+                                Kembali
                             </a>
                         </div>
                     </form>
+
                 </div>
             </div>
 

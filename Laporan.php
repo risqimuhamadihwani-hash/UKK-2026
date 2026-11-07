@@ -271,7 +271,7 @@ if ($status !== '') {
             <!-- FORM FILTER / PENCARIAN -->
             <div class="card shadow-sm mb-4 border-0">
                 <div class="card-body">
-                    <form method="GET" action="menu9.php" class="row g-3">
+                    <form method="GET" action="Laporan.php" class="row g-3">
                         <div class="col-md-12">
                             <label class="form-label">Cari Data:</label>
                             <input type="text" name="cari" class="form-control"
@@ -306,7 +306,7 @@ if ($status !== '') {
 
                         <div class="col-12 mt-3">
                             <button type="submit" class="btn btn-primary">Cari / Filter</button>
-                            <a href="menu9.php" class="btn btn-secondary">Reset</a>
+                            <a href="Laporan.php" class="btn btn-secondary">Reset</a>
                             
                             <button type="button" onclick="window.print()" class="btn btn-success ms-2">Cetak Laporan</button>
                             <a href="?<?= e(http_build_query(array_merge($_GET, ['export' => 'csv']))) ?>" class="btn btn-info text-white">Export CSV</a>
