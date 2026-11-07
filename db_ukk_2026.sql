@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 06, 2026 at 10:24 AM
+-- Generation Time: Nov 07, 2026 at 06:42 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -43,7 +43,6 @@ CREATE TABLE `t_guru` (
 --
 
 INSERT INTO `t_guru` (`id`, `nip`, `nama`, `email`, `status_aktif`, `user_id`, `created_at`, `updated_at`) VALUES
-(1, '198001010001', 'Ahmad Hidayat', 'ahmad.hidayat@gmail.com', 1, 1, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
 (2, '198102020002', 'Budi Santoso', 'budi.santoso@gmail.com', 1, 2, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
 (3, '198203030003', 'Citra Lestari', 'citra.lestari@gmail.com', 1, 3, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
 (4, '198304040004', 'Dedi Kurniawan', 'dedi.kurniawan@gmail.com', 1, 4, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
@@ -214,7 +213,7 @@ INSERT INTO `t_kelas` (`id`, `nama`, `tingkat`, `jurusan`, `status_aktif`, `crea
 (97, 'TKR 3', 'XI', 'TKR', 1, '2026-07-04 01:00:00', '2026-07-04 01:00:00'),
 (98, 'TKR 4', 'XI', 'TKR', 1, '2026-07-05 01:00:00', '2026-07-05 01:00:00'),
 (99, 'BD', 'XI', 'BD', 1, '2026-07-06 01:00:00', '2026-07-06 01:00:00'),
-(100, 'TSM 1', 'XI', 'TSM', 1, '2026-07-07 01:00:00', '2026-07-07 01:00:00');
+(101, 'X RPL', 'XII', 'RPL', 0, '2026-11-07 04:19:42', '2026-11-07 04:19:42');
 
 -- --------------------------------------------------------
 
@@ -799,7 +798,10 @@ INSERT INTO `t_users` (`id`, `name`, `email`, `email_verified_at`, `password`, `
 (97, 'Galih Lestari', 'user097@sekolah.test', '2026-07-01 01:00:00', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llCk0s3ZQmQxK9v7l3M6', '', 'petugas', '2026-07-04 01:00:00', '2026-07-04 01:00:00'),
 (98, 'Hana Wijaya', 'user098@sekolah.test', '2026-07-01 01:00:00', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llCk0s3ZQmQxK9v7l3M6', '', 'petugas', '2026-07-05 01:00:00', '2026-07-05 01:00:00'),
 (99, 'Intan Fauzan', 'user099@sekolah.test', '2026-07-01 01:00:00', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llCk0s3ZQmQxK9v7l3M6', '', 'petugas', '2026-07-06 01:00:00', '2026-07-06 01:00:00'),
-(100, 'Joko Nabila', 'user100@sekolah.test', '2026-07-01 01:00:00', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llCk0s3ZQmQxK9v7l3M6', '', 'petugas', '2026-07-07 01:00:00', '2026-07-07 01:00:00');
+(100, 'Joko Nabila', 'user100@sekolah.test', '2026-07-01 01:00:00', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llCk0s3ZQmQxK9v7l3M6', '', 'petugas', '2026-07-07 01:00:00', '2026-07-07 01:00:00'),
+(101, 'mulyadi', 'mulyadi@gmail.com', '2026-11-07 04:17:07', '$2y$10$4xJJzYG6e3nktb3Rt4rUJOeNa4db1fBaiBiIvI52q0cE/2OXOpweq', '', 'guru', '2026-11-07 04:17:07', '2026-11-07 04:17:07'),
+(102, 'guru', 'guru@gmail.com', '2026-11-07 04:45:34', '$2y$10$U7wfrT/ZJwgdPWwxWEDu6ezmrgdJlsmRDJw4Hy1lecguGUGFSQQE2', '', 'guru', '2026-11-07 04:45:34', '2026-11-07 04:45:34'),
+(103, 'administrator', 'admin@gmail.com', '2026-11-07 05:06:27', '$2y$10$vWQ16sZ1bXD8BwV07wlLhux3XwoXTwQ94sns2VYzMgff.ygbJ43Hu', '', 'admin', '2026-11-07 05:06:27', '2026-11-07 05:06:27');
 
 -- --------------------------------------------------------
 
@@ -824,7 +826,6 @@ CREATE TABLE `t_wali_kelas` (
 --
 
 INSERT INTO `t_wali_kelas` (`id`, `tahun_ajaran_id`, `kelas_id`, `guru_id`, `tanggal_mulai`, `tanggal_selesai`, `status_aktif`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 1, '2026-07-01', '0000-00-00', 1, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
 (2, 1, 2, 2, '2026-07-01', '0000-00-00', 1, '2026-07-02 01:00:00', '2026-07-02 01:00:00'),
 (3, 1, 3, 3, '2026-07-01', '0000-00-00', 1, '2026-07-03 01:00:00', '2026-07-03 01:00:00'),
 (4, 1, 4, 4, '2026-07-01', '0000-00-00', 1, '2026-07-04 01:00:00', '2026-07-04 01:00:00'),
@@ -874,7 +875,6 @@ INSERT INTO `t_wali_kelas` (`id`, `tahun_ajaran_id`, `kelas_id`, `guru_id`, `tan
 (48, 1, 48, 48, '2026-07-01', '0000-00-00', 1, '2026-07-17 01:00:00', '2026-07-17 01:00:00'),
 (49, 1, 49, 49, '2026-07-01', '0000-00-00', 1, '2026-07-18 01:00:00', '2026-07-18 01:00:00'),
 (50, 1, 50, 50, '2026-07-01', '0000-00-00', 1, '2026-07-19 01:00:00', '2026-07-19 01:00:00'),
-(51, 1, 51, 1, '2026-07-01', '0000-00-00', 1, '2026-07-20 01:00:00', '2026-07-20 01:00:00'),
 (52, 1, 52, 2, '2026-07-01', '0000-00-00', 1, '2026-07-21 01:00:00', '2026-07-21 01:00:00'),
 (53, 1, 53, 3, '2026-07-01', '0000-00-00', 1, '2026-07-22 01:00:00', '2026-07-22 01:00:00'),
 (54, 1, 54, 4, '2026-07-01', '0000-00-00', 1, '2026-07-23 01:00:00', '2026-07-23 01:00:00'),
@@ -922,8 +922,7 @@ INSERT INTO `t_wali_kelas` (`id`, `tahun_ajaran_id`, `kelas_id`, `guru_id`, `tan
 (96, 1, 96, 46, '2026-07-01', '0000-00-00', 1, '2026-07-03 01:00:00', '2026-07-03 01:00:00'),
 (97, 1, 97, 47, '2026-07-01', '0000-00-00', 1, '2026-07-04 01:00:00', '2026-07-04 01:00:00'),
 (98, 1, 98, 48, '2026-07-01', '0000-00-00', 1, '2026-07-05 01:00:00', '2026-07-05 01:00:00'),
-(99, 1, 99, 49, '2026-07-01', '0000-00-00', 1, '2026-07-06 01:00:00', '2026-07-06 01:00:00'),
-(100, 1, 100, 50, '2026-07-01', '0000-00-00', 1, '2026-07-07 01:00:00', '2026-07-07 01:00:00');
+(99, 1, 99, 49, '2026-07-01', '0000-00-00', 1, '2026-07-06 01:00:00', '2026-07-06 01:00:00');
 
 --
 -- Indexes for dumped tables
@@ -1011,19 +1010,19 @@ ALTER TABLE `t_wali_kelas`
 -- AUTO_INCREMENT for table `t_guru`
 --
 ALTER TABLE `t_guru`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `t_kelas`
 --
 ALTER TABLE `t_kelas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
 
 --
 -- AUTO_INCREMENT for table `t_kelas_siswa`
 --
 ALTER TABLE `t_kelas_siswa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
 
 --
 -- AUTO_INCREMENT for table `t_pelanggaran`
@@ -1041,13 +1040,13 @@ ALTER TABLE `t_pelanggaran_kategori`
 -- AUTO_INCREMENT for table `t_pelanggaran_siswa`
 --
 ALTER TABLE `t_pelanggaran_siswa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=109;
 
 --
 -- AUTO_INCREMENT for table `t_siswa`
 --
 ALTER TABLE `t_siswa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=125;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
 
 --
 -- AUTO_INCREMENT for table `t_tahun_ajaran`
@@ -1059,7 +1058,7 @@ ALTER TABLE `t_tahun_ajaran`
 -- AUTO_INCREMENT for table `t_users`
 --
 ALTER TABLE `t_users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
 
 --
 -- AUTO_INCREMENT for table `t_wali_kelas`
