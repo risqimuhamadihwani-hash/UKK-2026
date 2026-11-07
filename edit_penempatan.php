@@ -18,7 +18,7 @@ $d = mysqli_fetch_assoc($result);
 mysqli_stmt_close($stmt);
 
 if (!$d) {
-    header("Location: menu5.php");
+    header("Location: Penempatan_Siswa.php");
     exit;
 }
 

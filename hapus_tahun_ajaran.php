@@ -22,7 +22,7 @@ if (isset($_GET['id'])) {
         $stmt->execute();
         $stmt->close();
 
-        header("Location: menu4.php");
+        header("Location: Kelola_Tahun_Ajaran.php");
         exit;
 
     } catch (mysqli_sql_exception $e) {

@@ -84,7 +84,7 @@ if (isset($_POST['simpan'])) {
                 mysqli_stmt_close($stmt);
                 mysqli_stmt_close($cek);
 
-                header("Location: menu6.php");
+                header("Location: Kelola_Wali_Kelas.php");
                 exit;
 
             } else {

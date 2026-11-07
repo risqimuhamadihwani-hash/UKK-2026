@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
             $stmt->close();
             $koneksi->close();
 
-            header("Location: menu3.php");
+            header("Location: Kelola_Kelas.php");
             exit;
         } else {
             $pesan = "Gagal menyimpan data kelas: " . $stmt->error;

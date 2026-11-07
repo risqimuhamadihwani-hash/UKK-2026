@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update"])) {
             $stmt->close();
             $koneksi->close();
 
-            header("Location: menu4.php?pesan=diubah");
+            header("Location: Kelola_Tahun_Ajaran.php?pesan=diubah");
             exit;
         } else {
             $error = "Gagal mengubah data tahun ajaran: " . $stmt->error;

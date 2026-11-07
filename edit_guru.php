@@ -37,8 +37,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update"])) {
 
     if ($nip === "" || $nama === "") {
         $error = "NIP dan Nama Guru wajib diisi.";
-    } elseif (strlen($nip) > 12) {
-        $error = "NIP tidak boleh lebih dari 12 karakter.";
+    } elseif (strlen($nip) > 18) {
+        $error = "NIP tidak boleh lebih dari 18 karakter.";
     } elseif (!in_array($status, ["0", "1"], true)) {
         $error = "Status guru tidak valid.";
     } elseif ($email !== "" && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -109,13 +109,11 @@ function e($nilai) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Edit Guru</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="bg-light">
 
 <div class="container-fluid">
     <div class="row">
@@ -193,83 +191,85 @@ function e($nilai) {
                 </li>
             </ul>
         </div>
+
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h1 class="mb-4">Edit Guru</h1>
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-4">Edit Guru</h4>
 
-            <?php if ($error !== ""): ?>
-                <div class="alert alert-danger">
-                    <?= e($error) ?>
+                    <?php if ($error !== ""): ?>
+                        <div class="alert alert-danger">
+                            <?= e($error) ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <form method="POST">
+                        <div class="row">
+                            <!-- Kolom Kiri -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small">NIP (Maksimal 18 Karakter)</label>
+                                    <input
+                                        type="text"
+                                        name="nip"
+                                        class="form-control"
+                                        placeholder="Masukkan NIP (maks. 18 digit)"
+                                        value="<?= e($nip) ?>"
+                                        maxlength="18"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small">Nama Guru</label>
+                                    <input
+                                        type="text"
+                                        name="nama"
+                                        class="form-control"
+                                        placeholder="Masukkan Nama Guru"
+                                        value="<?= e($nama) ?>"
+                                        required
+                                    >
+                                </div>
+                            </div>
+
+                            <!-- Kolom Kanan -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small">Email</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        class="form-control"
+                                        placeholder="Masukkan Email"
+                                        value="<?= e($email) ?>"
+                                    >
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small">Status</label>
+                                    <select name="status_aktif" class="form-select" required>
+                                        <option value="1" <?= $status === "1" ? "selected" : "" ?>>Aktif</option>
+                                        <option value="0" <?= $status === "0" ? "selected" : "" ?>>Tidak Aktif</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" name="update" class="btn btn-primary px-4">
+                                Simpan Perubahan
+                            </button>
+
+                            <a href="Kelola_Guru.php" class="btn btn-secondary px-4">
+                                Kembali
+                            </a>
+                        </div>
+                    </form>
                 </div>
-            <?php endif; ?>
-
-            <form method="POST">
-
-                <div class="mb-4">
-                    <label class="form-label">NIP (Maksimal 12 Karakter)</label>
-
-                    <input
-                        type="text"
-                        name="nip"
-                        class="form-control"
-                        placeholder="Masukkan NIP (maks. 12 digit)"
-                        value="<?= e($nip) ?>"
-                        maxlength="12"
-                        required
-                    >
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">Nama Guru</label>
-
-                    <input
-                        type="text"
-                        name="nama"
-                        class="form-control"
-                        placeholder="Masukkan Nama Guru"
-                        value="<?= e($nama) ?>"
-                        required
-                    >
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">Email</label>
-
-                    <input
-                        type="email"
-                        name="email"
-                        class="form-control"
-                        placeholder="Masukkan Email"
-                        value="<?= e($email) ?>"
-                    >
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label">Status</label>
-
-                    <select name="status_aktif" class="form-select" required>
-
-                        <option value="1" <?= $status === "1" ? "selected" : "" ?>>
-                            Aktif
-                        </option>
-
-                        <option value="0" <?= $status === "0" ? "selected" : "" ?>>
-                            Tidak Aktif
-                        </option>
-
-                    </select>
-                </div>
-
-                <button type="submit" name="update" class="btn btn-primary">
-                    Simpan Perubahan
-                </button>
-
-                <a href="Kelola_Guru.php" class="btn btn-secondary">
-                    Kembali
-                </a>
-
-            </form>
+            </div>
 
         </main>
 

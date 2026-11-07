@@ -53,7 +53,7 @@ if (isset($_POST['simpan'])) {
 
             if (mysqli_stmt_execute($stmt)) {
                 mysqli_stmt_close($stmt);
-                header("Location: menu8.php");
+                header("Location: Kelola_jenis_Pelanggran.php");
                 exit;
             } else {
                 $pesan = "Gagal menyimpan data: " .

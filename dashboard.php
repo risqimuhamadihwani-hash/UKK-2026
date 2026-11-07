@@ -6,7 +6,7 @@ if (!isset($_SESSION['id_user'])) {
     exit;
 }
 
-$name = $_SESSION['name'] ?? 'Pengguna';
+$name = $_SESSION['name'] ?? 'administrator';
 $role = strtolower($_SESSION['role'] ?? '');
 
 if ($role === 'guru') {
@@ -29,7 +29,8 @@ if ($koneksi->connect_error) {
 
 // Menghitung jumlah data dengan aman
 function hitungData($koneksi, $tabel) {
-    $daftarTabel = ['t_siswa', 't_guru', 't_kelas'];
+    // Sesuaikan nama tabel 't_pelanggaran' dengan nama tabel pelanggaran di database Anda jika berbeda
+    $daftarTabel = ['t_siswa', 't_guru', 't_kelas', 't_pelanggaran'];
 
     if (!in_array($tabel, $daftarTabel, true)) {
         return 0;
@@ -47,19 +48,28 @@ function hitungData($koneksi, $tabel) {
 $jml_siswa = hitungData($koneksi, 't_siswa');
 $jml_guru  = hitungData($koneksi, 't_guru');
 $jml_kelas = hitungData($koneksi, 't_kelas');
+$jml_pelanggaran = hitungData($koneksi, 't_pelanggaran'); // Ganti 't_pelanggaran' jika nama tabelnya beda
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-     
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card-stat {
+            border: none;
+            border-radius: 8px;
+            background-color: #ffffff;
+        }
+    </style>
 </head>
 <body>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
 <div class="container-fluid">
     <div class="row">
@@ -94,7 +104,7 @@ $jml_kelas = hitungData($koneksi, 't_kelas');
                         Kelola Tahun Ajaran
                     </a>
                 </li>
-                 <li class="nav-item mb-2">
+                <li class="nav-item mb-2">
                     <a href="Penempatan_Siswa.php" class="nav-link text-white">
                         Penempatan Siswa
                     </a>
@@ -137,55 +147,79 @@ $jml_kelas = hitungData($koneksi, 't_kelas');
                 </li>
             </ul>
         </div>
+
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
-        <h2>Dashboard</h2>
-        <p>Selamat datang
-    <?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>
-        </p>
-<div class="row">
-    
-    <!-- DATA SISWA -->
-    <div class="col-md-4 mb-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Data Siswa</h5>
-                <h2 class="jumlah">
-                    <?= $jml_siswa ?>
-                </h2>
-            </div>
-        </div>
-    </div>
+            <h2 class="fw-bold">Dashboard</h2>
+            <p class="text-muted mb-4">
+                Selamat datang, <?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>. Berikut ringkasan Sistem Informasi Pelanggaran Siswa.
+            </p>
 
-    <!-- DATA GURU -->
-    <div class="col-md-4 mb-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Data Guru</h5>
-                <h2 class="jumlah">
-                    <?= $jml_guru ?>
-                </h2>
-            </div>
-        </div>
-    </div>
+            <!-- STATISTIK (4 KARTU) -->
+            <div class="row mb-4">
+                <!-- DATA SISWA -->
+                <div class="col-md-3 mb-3">
+                    <div class="card card-stat shadow-sm p-2">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted fw-normal">Data Siswa</h6>
+                            <h2 class="display-6 fw-bold text-primary mb-0">
+                                <?= $jml_siswa ?>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- DATA KELAS -->
-    <div class="col-md-4 mb-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Kelas</h5>
-                <h2 class="jumlah">
-                    <?= $jml_kelas ?>
-                </h2>
-            </div>
-        </div>
-    </div>
+                <!-- DATA GURU -->
+                <div class="col-md-3 mb-3">
+                    <div class="card card-stat shadow-sm p-2">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted fw-normal">Data Guru</h6>
+                            <h2 class="display-6 fw-bold text-success mb-0">
+                                <?= $jml_guru ?>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- DATA KELAS -->
+                <div class="col-md-3 mb-3">
+                    <div class="card card-stat shadow-sm p-2">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted fw-normal">Data Kelas</h6>
+                            <h2 class="display-6 fw-bold text-warning mb-0">
+                                <?= $jml_kelas ?>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CATATAN PELANGGARAN -->
+                <div class="col-md-3 mb-3">
+                    <div class="card card-stat shadow-sm p-2">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted fw-normal">Catatan Pelanggaran</h6>
+                            <h2 class="display-6 fw-bold text-danger mb-0">
+                                <?= $jml_pelanggaran ?>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ALUR PENGGUNAAN -->
+            <div class="card card-stat shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-2">Alur penggunaan</h5>
+                    <p class="text-muted mb-0">
+                        Pilih menu di sidebar untuk mengelola data, mencatat pelanggaran, melihat riwayat, serta mencetak laporan sesuai hak akses akun.
+                    </p>
+                </div>
+            </div>
+
+        </main>
+    </div>
 </div>
 
-</main>
-</div>
-</div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

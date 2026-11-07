@@ -195,108 +195,119 @@ function e($data) {
                 </li>
             </ul>
         </div>
+
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h1 class="mb-4">Tambah Siswa</h1>
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-4">Tambah Siswa</h4>
 
-            <?php if ($pesan !== ""): ?>
-                <div class="alert alert-danger">
-                    <?= e($pesan) ?>
+                    <?php if ($pesan !== ""): ?>
+                        <div class="alert alert-danger">
+                            <?= e($pesan) ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <form method="POST">
+                        <div class="row">
+                            <!-- Kolom Kiri -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small">NIS</label>
+                                    <input
+                                        type="text"
+                                        name="nis"
+                                        class="form-control"
+                                        placeholder="Contoh: 12345"
+                                        maxlength="9"
+                                        pattern="[0-9]{1,9}"
+                                        inputmode="numeric"
+                                        value="<?= e($nis) ?>"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small">NISN</label>
+                                    <input
+                                        type="text"
+                                        name="nisn"
+                                        class="form-control"
+                                        placeholder="Contoh: 0081234567"
+                                        maxlength="10"
+                                        pattern="[0-9]{1,10}"
+                                        inputmode="numeric"
+                                        value="<?= e($nisn) ?>"
+                                    >
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small">Nama Siswa</label>
+                                    <input
+                                        type="text"
+                                        name="nama"
+                                        class="form-control"
+                                        placeholder="Contoh: Ahmad Rizki"
+                                        value="<?= e($nama) ?>"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small">Jenis Kelamin</label>
+                                    <select name="jenis_kelamin" class="form-select" required>
+                                        <option value="">-- Pilih Jenis Kelamin --</option>
+                                        <option value="L" <?= $jenis_kelamin === "L" ? "selected" : "" ?>>Laki-laki</option>
+                                        <option value="P" <?= $jenis_kelamin === "P" ? "selected" : "" ?>>Perempuan</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Kolom Kanan -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small">Tanggal Lahir</label>
+                                    <input
+                                        type="date"
+                                        name="tanggal_lahir"
+                                        class="form-control"
+                                        value="<?= e($tanggal_lahir) ?>"
+                                    >
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small">Alamat</label>
+                                    <textarea
+                                        name="alamat"
+                                        class="form-control"
+                                        rows="3"
+                                        placeholder="Masukkan alamat siswa"
+                                    ><?= e($alamat) ?></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small">Status Aktif</label>
+                                    <select name="status_aktif" class="form-select" required>
+                                        <option value="1" <?= $status_aktif === "1" ? "selected" : "" ?>>Aktif</option>
+                                        <option value="0" <?= $status_aktif === "0" ? "selected" : "" ?>>Tidak Aktif</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" name="simpan" class="btn btn-primary px-4">
+                                Simpan
+                            </button>
+
+                            <a href="Kelola_Siswa.php" class="btn btn-secondary px-4">
+                                Batal
+                            </a>
+                        </div>
+                    </form>
                 </div>
-            <?php endif; ?>
-
-            <form method="POST">
-
-                <div class="mb-3">
-                    <label class="form-label">NIS</label>
-                    <input
-                        type="text"
-                        name="nis"
-                        class="form-control"
-                        placeholder="Masukkan NIS (maksimal 9 digit)"
-                        maxlength="9"
-                        pattern="[0-9]{1,9}"
-                        inputmode="numeric"
-                        value="<?= e($nis) ?>"
-                        required
-                    >
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">NISN</label>
-                    <input
-                        type="text"
-                        name="nisn"
-                        class="form-control"
-                        placeholder="Masukkan NISN (maksimal 10 digit)"
-                        maxlength="10"
-                        pattern="[0-9]{1,10}"
-                        inputmode="numeric"
-                        value="<?= e($nisn) ?>"
-                    >
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Nama Siswa</label>
-                    <input
-                        type="text"
-                        name="nama"
-                        class="form-control"
-                        placeholder="Masukkan nama siswa"
-                        value="<?= e($nama) ?>"
-                        required
-                    >
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Jenis Kelamin</label>
-                    <select name="jenis_kelamin" class="form-select" required>
-                        <option value="">-- Pilih Jenis Kelamin --</option>
-                        <option value="L" <?= $jenis_kelamin === "L" ? "selected" : "" ?>>Laki-laki</option>
-                        <option value="P" <?= $jenis_kelamin === "P" ? "selected" : "" ?>>Perempuan</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Tanggal Lahir</label>
-                    <input
-                        type="date"
-                        name="tanggal_lahir"
-                        class="form-control"
-                        value="<?= e($tanggal_lahir) ?>"
-                    >
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Alamat</label>
-                    <textarea
-                        name="alamat"
-                        class="form-control"
-                        rows="3"
-                        placeholder="Masukkan alamat siswa"
-                    ><?= e($alamat) ?></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Status Aktif</label>
-                    <select name="status_aktif" class="form-select" required>
-                        <option value="1" <?= $status_aktif === "1" ? "selected" : "" ?>>Aktif</option>
-                        <option value="0" <?= $status_aktif === "0" ? "selected" : "" ?>>Tidak Aktif</option>
-                    </select>
-                </div>
-
-                <div class="d-flex gap-2 mt-4">
-                    <button type="submit" name="simpan" class="btn btn-primary">
-                        Simpan
-                    </button>
-
-                    <a href="Kelola_Siswa.php" class="btn btn-secondary">
-                        Kembali
-                    </a>
-                </div>
-
-            </form>
+            </div>
 
         </main>
 

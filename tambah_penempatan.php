@@ -82,7 +82,7 @@ if (isset($_POST['simpan'])) {
                 mysqli_stmt_close($stmt);
                 mysqli_stmt_close($cek);
 
-                header("Location: menu5.php");
+                header("Location: Penempatan_Siswa.php");
                 exit;
 
             } else {

@@ -35,7 +35,7 @@ if (mysqli_stmt_execute($stmt)) {
     mysqli_stmt_close($stmt);
 
     if ($jumlah > 0) {
-        header("Location: menu7.php");
+        header("Location: Kelola_Kategori_Pelanggaran.php");
         exit;
     }
 

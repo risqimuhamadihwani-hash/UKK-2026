@@ -53,7 +53,7 @@ if (isset($_POST['simpan'])) {
 
         if (mysqli_stmt_execute($stmt)) {
             mysqli_stmt_close($stmt);
-            header("Location: menu4.php");
+            header("Location: Kelola_tahun_Ajaran.php");
             exit;
         } else {
             $pesan = "Gagal menyimpan data: " . mysqli_stmt_error($stmt);

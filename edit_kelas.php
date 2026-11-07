@@ -15,7 +15,7 @@ $pesan = "";
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if ($id <= 0) {
-    header("Location: menu3.php");
+    header("Location: Kelola_Kelas.php");
     exit;
 }
 

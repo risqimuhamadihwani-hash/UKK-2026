@@ -36,7 +36,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     }
 } else {
     // Jika ID tidak valid atau tidak ada, kembalikan ke menu
-    header("Location: menu8.php");
+    header("Location: Kelola_Jenis_Pelanggaran.php");
     exit;
 }
 ?>

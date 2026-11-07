@@ -17,7 +17,7 @@ mysqli_stmt_bind_param($stmt, "i", $id);
 
 if (mysqli_stmt_execute($stmt)) {
     mysqli_stmt_close($stmt);
-    header("Location: menu3.php?status=hapus_berhasil");
+    header("Location: Kelola_Kelas.php?status=hapus_berhasil");
     exit;
 }
 

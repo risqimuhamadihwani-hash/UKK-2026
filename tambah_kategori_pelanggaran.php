@@ -41,7 +41,7 @@ if (isset($_POST['simpan'])) {
 
             mysqli_stmt_close($stmt);
 
-            header("Location: menu7.php");
+            header("Location: Kelola_Kategori_Pelanggaran.php");
             exit;
 
         } else {

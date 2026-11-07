@@ -10,7 +10,7 @@ if (!isset($_SESSION['id_user'])) {
 $id = (int) ($_GET['id'] ?? 0);
 
 if ($id <= 0) {
-    header("Location: menu6.php");
+    header("Location: Kelola_Wali_Kelas.php");
     exit;
 }
 
