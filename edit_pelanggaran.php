@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'config/koneksi.php';
+require_once 'config/koneksi.php';
 
 if (!isset($_SESSION['id_user'])) {
     header("Location: login.php");
@@ -36,7 +36,7 @@ if (isset($_POST['simpan'])) {
     $deskripsi = trim($_POST['deskripsi'] ?? '');
     $status_aktif = (int)($_POST['status_aktif'] ?? -1);
 
-    if ($kode === '' || $nama === '' || $poin < 0 || !in_array($status_aktif, [0, 1], true)) {
+    if ($kode === '' || $nama === '' || $poin <= 0 || $deskripsi === '' || !in_array($status_aktif, [0, 1], true)) {
         $pesan = "Data tidak valid. Periksa kembali form.";
     } else {
         $update = mysqli_prepare($koneksi,
@@ -51,7 +51,7 @@ if (isset($_POST['simpan'])) {
 
         if (mysqli_stmt_execute($update)) {
             mysqli_stmt_close($update);
-            header("Location: menu8.php");
+            header("Location: Kelola_Jenis_Pelanggaran.php");
             exit;
         } else {
             if (mysqli_stmt_errno($update) == 1062) {
@@ -82,7 +82,6 @@ function e($data) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Jenis Pelanggaran</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -163,10 +162,11 @@ function e($data) {
                 </li>
             </ul>
         </div>
+
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h2 class="mb-4">Edit Jenis Pelanggaran</h2>
+            <h3 class="mb-4 fw-bold">Edit Jenis Pelanggaran</h3>
 
             <?php if ($pesan !== ''): ?>
                 <div class="alert alert-danger">
@@ -174,66 +174,108 @@ function e($data) {
                 </div>
             <?php endif; ?>
 
-            <form method="POST">
+            <!-- KARTU FORM -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form method="POST">
 
-                <div class="mb-3">
-                    <label class="form-label">Kode</label>
-                    <input type="text" name="kode" maxlength="50"
-                           class="form-control"
-                           placeholder="Masukkan kode pelanggaran"
-                           value="<?= e($data['kode']) ?>"
-                           required>
+                        <!-- DROPDOWN KODE PELANGGARAN -->
+                        <div class="mb-4">
+                            <label class="form-label">Kode Pelanggaran</label>
+                            <select name="kode" class="form-select" required>
+                                <option value="" disabled>-- Pilih Kode Pelanggaran --</option>
+                                <?php
+                                for ($i = 1; $i <= 100; $i++) {
+                                    $formattedCode = "PG-" . str_pad($i, 3, "0", STR_PAD_LEFT);
+                                    $selectedCode = ($data['kode'] === $formattedCode) ? 'selected' : '';
+                                    echo "<option value=\"$formattedCode\" $selectedCode>$formattedCode</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+
+                        <!-- DROPDOWN NAMA PELANGGARAN -->
+                        <div class="mb-4">
+                            <label class="form-label">Nama Pelanggaran</label>
+                            <select name="nama" class="form-select" required>
+                                <option value="" disabled>-- Pilih Nama Pelanggaran --</option>
+                                <?php
+                                $masterPelanggaran = [
+                                    "Terlambat datang ke sekolah",
+                                    "Tidak memakai atribut lengkap",
+                                    "Tidak memakai seragam sesuai ketentuan",
+                                    "Meninggalkan kelas tanpa izin",
+                                    "Tidak mengerjakan tugas",
+                                    "Rambut tidak sesuai aturan",
+                                    "Membawa barang terlarang",
+                                    "Berkata tidak sopan",
+                                    "Membuang sampah sembarangan",
+                                    "Tidak mengikuti upacara"
+                                ];
+
+                                for ($i = 1; $i <= 100; $i++) {
+                                    $index = ($i - 1) % 10;
+                                    $namaPelanggaran = $masterPelanggaran[$index] . " #" . str_pad($i, 3, "0", STR_PAD_LEFT);
+                                    $selectedNama = ($data['nama'] === $namaPelanggaran) ? 'selected' : '';
+                                    echo "<option value=\"$namaPelanggaran\" $selectedNama>$namaPelanggaran</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+
+                        <!-- DROPDOWN POIN (1 sampai 10) -->
+                        <div class="mb-4">
+                            <label class="form-label">Poin</label>
+                            <select name="poin" class="form-select" required>
+                                <option value="" disabled>-- Pilih Jumlah Poin --</option>
+                                <?php
+                                for ($p = 1; $p <= 10; $p++) {
+                                    $selectedPoin = ($data['poin'] == $p) ? 'selected' : '';
+                                    echo "<option value=\"$p\" $selectedPoin>$p</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+
+                        <!-- DROPDOWN DESKRIPSI -->
+                        <div class="mb-4">
+                            <label class="form-label">Deskripsi</label>
+                            <select name="deskripsi" class="form-select" required>
+                                <option value="" disabled>-- Pilih Deskripsi Pelanggaran --</option>
+                                <?php
+                                for ($i = 1; $i <= 100; $i++) {
+                                    $descVal = "Deskripsi pelanggaran nomor $i.";
+                                    $selectedDesc = ($data['deskripsi'] === $descVal) ? 'selected' : '';
+                                    echo "<option value=\"$descVal\" $selectedDesc>$descVal</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+
+                        <!-- STATUS AKTIF -->
+                        <div class="mb-4">
+                            <label class="form-label">Status Aktif</label>
+                            <select name="status_aktif" class="form-select" required>
+                                <option value="1" <?= $data['status_aktif'] == 1 ? 'selected' : '' ?>>
+                                    Aktif
+                                </option>
+                                <option value="0" <?= $data['status_aktif'] == 0 ? 'selected' : '' ?>>
+                                    Tidak Aktif
+                                </option>
+                            </select>
+                        </div>
+
+                        <button type="submit" name="simpan" class="btn btn-primary px-4">
+                            Simpan Perubahan
+                        </button>
+                        
+                        <a href="Kelola_Jenis_Pelanggaran.php" class="btn btn-secondary px-4">
+                            Kembali
+                        </a>
+
+                    </form>
                 </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Nama Pelanggaran</label>
-                    <input type="text" name="nama" maxlength="150"
-                           class="form-control"
-                           placeholder="Masukkan nama pelanggaran"
-                           value="<?= e($data['nama']) ?>"
-                           required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Poin</label>
-                    <input type="number" name="poin"
-                           class="form-control"
-                           placeholder="Masukkan jumlah poin"
-                           value="<?= (int)$data['poin'] ?>"
-                           min="0"
-                           required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Deskripsi</label>
-                    <textarea name="deskripsi"
-                              class="form-control"
-                              rows="3"
-                              placeholder="Masukkan deskripsi (opsional)"><?= e($data['deskripsi'] ?? '') ?></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Status Aktif</label>
-                    <select name="status_aktif" class="form-select" required>
-                        <option value="1" <?= $data['status_aktif'] == 1 ? 'selected' : '' ?>>
-                            Aktif
-                        </option>
-                        <option value="0" <?= $data['status_aktif'] == 0 ? 'selected' : '' ?>>
-                            Tidak Aktif
-                        </option>
-                    </select>
-                </div>
-
-                <div class="d-flex gap-2 mt-4">
-                    <button type="submit" name="simpan" class="btn btn-primary">
-                        Simpan Perubahan
-                    </button>
-                    <a href="Kelola_Jenis_Pelanggaran.php" class="btn btn-secondary">
-                        Kembali
-                    </a>
-                </div>
-
-            </form>
+            </div>
 
         </main>
 

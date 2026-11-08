@@ -188,9 +188,13 @@ $isAdmin = ($role === 'admin');
                             <th>Umur</th>
                             <td>17 Tahun</td>
                         </tr>
+                         <tr>
+                            <th>Hobi</th>
+                            <td>Nonton film</td>
+                        </tr>
                         <tr>
                             <th>Cita-cita</th>
-                            <td>Streamer</td>
+                            <td>Streamer Minecraft</td>
                         </tr>
                         <tr>
                             <th>Asal Sekolah</th>
