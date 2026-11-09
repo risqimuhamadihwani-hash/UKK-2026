@@ -18,7 +18,7 @@ $d = mysqli_fetch_assoc($result);
 mysqli_stmt_close($stmt);
 
 if (!$d) {
-    header("Location: Penempatan_Siswa.php");
+    header("Location: Kelola_Penempatan_Siswa.php");
     exit;
 }
 
@@ -74,7 +74,7 @@ if (isset($_POST['update'])) {
             if (mysqli_stmt_execute($update)) {
                 mysqli_stmt_close($update);
                 mysqli_stmt_close($cek);
-                header("Location: Penempatan_Siswa.php");
+                header("Location: Kelola_Penempatan_Siswa.php");
                 exit;
             } else {
                 $pesan = "Gagal memperbarui data.";
@@ -148,8 +148,8 @@ function e($data) {
                     </a>
                 </li>
                  <li class="nav-item mb-2">
-                    <a href="Penempatan_Siswa.php" class="nav-link active">
-                        Penempatan Siswa
+                    <a href="Kelola_Penempatan_Siswa.php" class="nav-link active">
+                        Kelola Penempatan Siswa
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -273,7 +273,7 @@ function e($data) {
                             <button type="submit" name="update" class="btn btn-primary px-3 py-1 text-white" style="background-color: #0d6efd;">
                                 Simpan Perubahan
                             </button>
-                            <a href="Penempatan_Siswa.php" class="btn btn-secondary px-3 py-1" style="background-color: #6c757d;">
+                            <a href="Kelola_Penempatan_Siswa.php" class="btn btn-secondary px-3 py-1" style="background-color: #6c757d;">
                                 Kembali
                             </a>
                         </div>

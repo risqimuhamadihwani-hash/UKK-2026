@@ -236,6 +236,12 @@ $result_status = mysqli_query($koneksi, $sql_status);
                 </li>
 
                 <li class="nav-item mb-2">
+                    <a href="Laporan.php" class="nav-link text-white">
+                        Laporan
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
                         About Me
                     </a>
@@ -248,9 +254,6 @@ $result_status = mysqli_query($koneksi, $sql_status);
                         Logout
                     </a>
                 </li>
-
-            </ul>
-
         </div>
 
         <!-- KONTEN -->

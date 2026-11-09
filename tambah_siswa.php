@@ -292,7 +292,7 @@ function e($data) {
                                 Tambah
                             </button>
 
-                            <a href="Kelola_Siswa.php" class="btn btn-secondary px-3 py-1" style="background-color: #6c757d;">
+                            <a href="Kelola_Siswa.php" class="btn btn-dark px-3 py-1" style="background-color: #000000;">
                                 Kembali
                             </a>
                         </div>

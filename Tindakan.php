@@ -191,6 +191,12 @@ $selesai = mysqli_fetch_assoc(mysqli_query(
                 </li>
 
                 <li class="nav-item mb-2">
+                    <a href="Laporan.php" class="nav-link text-white">
+                        Laporan
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
                         About Me
                     </a>
@@ -203,9 +209,6 @@ $selesai = mysqli_fetch_assoc(mysqli_query(
                         Logout
                     </a>
                 </li>
-
-            </ul>
-
         </div>
 
         <!-- KONTEN -->

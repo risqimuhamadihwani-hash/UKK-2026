@@ -205,29 +205,57 @@ $pelanggaranList = $koneksi->query(
             <h4 class="text-white mb-4">JusticeGuru</h4>
             
             <ul class="nav nav-pills flex-column">
+
                 <li class="nav-item mb-2">
-                    <a href="guru.php" class="nav-link text-white">Dashboard</a>
+                    <a href="guru.php" class="nav-link text-white">
+                        Dashboard
+                    </a>
                 </li>
+
                 <li class="nav-item mb-2">
-                    <a href="Catat_Pelanggaran.php" class="nav-link active">Catat Pelanggaran</a>
+                    <a href="Catat_Pelanggaran.php" class="nav-link active">
+                        Catat Pelanggaran
+                    </a>
                 </li>
+
                 <li class="nav-item mb-2">
-                    <a href="Tindakan.php" class="nav-link text-white">Tindakan</a>
+                    <a href="Tindakan.php" class="nav-link text-white">
+                        Tindakan
+                    </a>
                 </li>
+
                 <li class="nav-item mb-2">
-                    <a href="rekap_poin.php" class="nav-link text-white">Rekap Poin</a>
+                    <a href="rekap_poin.php" class="nav-link text-white">
+                        Rekap Poin
+                    </a>
                 </li>
+
                 <li class="nav-item mb-2">
-                    <a href="riwayat.php" class="nav-link text-white">Riwayat</a>
+                    <a href="riwayat.php" class="nav-link text-white">
+                        Riwayat
+                    </a>
                 </li>
+
                 <li class="nav-item mb-2">
-                    <a href="about_me.php" class="nav-link text-white">About Me</a>
+                    <a href="Laporan.php" class="nav-link text-white">
+                        Laporan
+                    </a>
                 </li>
+
+                <li class="nav-item mb-2">
+                    <a href="about_me.php" class="nav-link text-white">
+                        About Me
+                    </a>
+                </li>
+
                 <hr class="text-secondary">
+
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-danger">Logout</a>
+                    <a href="logout.php" class="nav-link text-danger">
+                        Logout
+                    </a>
                 </li>
-            </ul>
+
         </div>
 
         <!-- KONTEN UTAMA -->

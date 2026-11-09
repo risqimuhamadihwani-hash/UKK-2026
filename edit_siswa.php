@@ -185,8 +185,8 @@ function e($data) {
                     </a>
                 </li>
                  <li class="nav-item mb-2">
-                    <a href="Penempatan_Siswa.php" class="nav-link text-white">
-                        Penempatan Siswa
+                    <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
+                        Kelola Penempatan Siswa
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -324,7 +324,7 @@ function e($data) {
                                 Simpan Perubahan
                             </button>
 
-                            <a href="Kelola_Siswa.php" class="btn btn-secondary px-3 py-1" style="background-color: #6c757d;">
+                            <a href="Kelola_Siswa.php" class="btn btn-secondary px-3 py-1" style="background-color: #000000;">
                                 Kembali
                             </a>
                         </div>

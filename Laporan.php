@@ -164,13 +164,13 @@ if ($status !== '') {
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
 </head>
 <body>
-
+<?php if ($_SESSION['role'] == 'admin'): ?>
 <div class="container-fluid">
     <div class="row">
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
             <h4 class="text-white mb-4">
-                JusticeAdmin
+                 Sistem Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
@@ -199,8 +199,8 @@ if ($status !== '') {
                     </a>
                 </li>
                  <li class="nav-item mb-2">
-                    <a href="Penempatan_Siswa.php" class="nav-link text-white">
-                        Penempatan Siswa
+                    <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
+                        Kelola Penempatan Siswa
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -241,7 +241,69 @@ if ($status !== '') {
                 </li>
             </ul>
         </div>
+        <?php endif; ?>
+        <?php if ($_SESSION['role'] == 'guru'): ?>
+<div class="container-fluid">
+    <div class="row">
+        <!-- SIDEBAR -->
+        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
+            <h4 class="text-white mb-4">
+                 Sistem Pelanggaran Siswa
+            </h4>
+            <ul class="nav nav-pills flex-column">
 
+                <li class="nav-item mb-2">
+                    <a href="guru.php" class="nav-link text-white">
+                        Dashboard
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="Catat_Pelanggaran.php" class="nav-link text-white">
+                        Catat Pelanggaran
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="Tindakan.php" class="nav-link text-white">
+                        Tindakan
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="rekap_poin.php" class="nav-link text-white">
+                        Rekap Poin
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="riwayat.php" class="nav-link text-white">
+                        Riwayat
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="Laporan.php" class="nav-link active">
+                        Laporan
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="about_me.php" class="nav-link text-white">
+                        About Me
+                    </a>
+                </li>
+
+                <hr class="text-secondary">
+
+                <li class="nav-item">
+                    <a href="logout.php" class="nav-link text-danger">
+                        Logout
+                    </a>
+                </li>
+
+        </div>
+        <?php endif; ?>
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 

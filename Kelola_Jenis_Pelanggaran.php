@@ -37,7 +37,7 @@ $result = mysqli_stmt_get_result($stmt);
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
             <h4 class="text-white mb-4">
-                JusticeAdmin
+                Sistem Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
@@ -66,8 +66,8 @@ $result = mysqli_stmt_get_result($stmt);
                     </a>
                 </li>
                  <li class="nav-item mb-2">
-                    <a href="Penempatan_Siswa.php" class="nav-link text-white">
-                        Penempatan Siswa
+                    <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
+                        Kelola Penempatan Siswa
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -113,8 +113,15 @@ $result = mysqli_stmt_get_result($stmt);
 <h2>Kelola Jenis Pelanggaran</h2>
 
 <p>Halaman untuk menampilkan data jenis Pelanggaran</p>
-
-<a href="tambah_pelanggaran.php"  class="btn btn-primary mb-3"> + Tambah Jenis Pelanggaran</a>
+ 
+        <div class="mb-3">
+            <a href="tambah_pelanggaran.php" class="btn btn-primary">
+                + Tambah Kategori 
+            </a>
+            <a href="dashboard.php" class="btn btn-dark">
+                Kembali ke Dashboard
+            </a>
+        </div>
 
 
 <div class="table-responsive">
@@ -172,7 +179,8 @@ $result = mysqli_stmt_get_result($stmt);
         ?>
         </tbody>
     </table>
-</div>
+
+    </div>
 </main>
 </div>
 </div>

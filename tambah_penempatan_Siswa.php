@@ -81,7 +81,7 @@ if (isset($_POST['simpan'])) {
                 mysqli_stmt_close($stmt);
                 mysqli_stmt_close($cek);
 
-                header("Location: Penempatan_Siswa.php");
+                header("Location: Kelola_Penempatan_Siswa.php");
                 exit;
 
             } else {
@@ -172,7 +172,7 @@ $kelas = mysqli_query($koneksi,
                     </a>
                 </li>
                  <li class="nav-item mb-2">
-                    <a href="Penempatan_Siswa.php" class="nav-link active">
+                    <a href="Kelola_Penempatan_Siswa.php" class="nav-link active">
                         Penempatan Siswa
                     </a>
                 </li>
@@ -230,7 +230,7 @@ $kelas = mysqli_query($koneksi,
                     <?php endif; ?>
 
                     <!-- FORM -->
-                    <form method="POST" action="tambah_penempatan.php">
+                    <form method="POST" action="tambah_penempatan_Siswa.php">
 
                         <div class="mb-3">
                             <label class="form-label">Siswa</label>
@@ -310,7 +310,7 @@ $kelas = mysqli_query($koneksi,
                                 Tambah
                             </button>
 
-                            <a href="Penempatan_Siswa.php" class="btn btn-secondary px-3 py-1" style="background-color: #6c757d;">
+                            <a href="Kelola_Penempatan_Siswa.php" class="btn btn-secondary px-3 py-1" style="background-color: #6c757d;">
                                 Kembali
                             </a>
                         </div>

@@ -145,6 +145,12 @@ $total_poin = $ringkasan['total_poin'];
                 </li>
 
                 <li class="nav-item mb-2">
+                    <a href="Laporan.php" class="nav-link text-white">
+                        Laporan
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
                         About Me
                     </a>
@@ -158,7 +164,6 @@ $total_poin = $ringkasan['total_poin'];
                     </a>
                 </li>
 
-            </ul>
 
         </div>
 

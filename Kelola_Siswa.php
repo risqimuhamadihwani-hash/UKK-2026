@@ -27,7 +27,7 @@ if (!$result) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Kelola Siswa</title>
+    <title class="bold">Kelola Siswa</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -42,7 +42,7 @@ if (!$result) {
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
             <h4 class="text-white mb-4">
-                JusticeAdmin
+                My Website
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
@@ -52,7 +52,7 @@ if (!$result) {
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Siswa.php" class="nav-link active">
-                        Kelola Siswa
+                    <h8 class="fw-bold mb-4">Kelola Siswa</h8>  
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -71,8 +71,8 @@ if (!$result) {
                     </a>
                 </li>
                  <li class="nav-item mb-2">
-                    <a href="Penempatan_Siswa.php" class="nav-link text-white">
-                        Penempatan Siswa
+                    <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
+                        Kelola Penempatan Siswa
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -119,10 +119,13 @@ if (!$result) {
             <h1>Kelola Siswa</h1>
 
             <p>Halaman untuk mengelola data siswa</p>
-
+            
             <div class="mb-3">
                 <a href="tambah_siswa.php" class="btn btn-primary">
-                    + Tambah Siswa
+                   + Tambah Siswa
+                </a>
+                <a href="dashboard.php" class="btn btn-dark">
+                     Kembali ke Dashboard
                 </a>
             </div>
 
@@ -204,9 +207,9 @@ if (!$result) {
             </table>
 
         </main>
-
     </div>
 </div>
+
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 

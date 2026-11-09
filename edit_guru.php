@@ -149,8 +149,8 @@ function e($nilai) {
                     </a>
                 </li>
                  <li class="nav-item mb-2">
-                    <a href="Penempatan_Siswa.php" class="nav-link text-white">
-                        Penempatan Siswa
+                    <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
+                        Kelola Penempatan Siswa
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -252,11 +252,11 @@ function e($nilai) {
                         </div>
 
                         <div class="d-flex gap-2 mt-4">
-                            <button type="submit" name="update" class="btn btn-primary px-3 py-1 text-white" style="background-color: #0d6efd;">
+                            <button type="submit" name="update" class="btn btn-primary">
                                 Simpan Perubahan
                             </button>
 
-                            <a href="Kelola_Guru.php" class="btn btn-secondary px-3 py-1" style="background-color: #6c757d;">
+                            <a href="Kelola_Guru.php" class="btn btn-dark">
                                 Kembali
                             </a>
                         </div>

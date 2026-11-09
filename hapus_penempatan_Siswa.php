@@ -22,6 +22,6 @@ if (isset($_GET['id'])) {
     }
 }
 
-header("Location: Penempatan_Siswa.php");
+header("Location: Kelola_Penempatan_Siswa.php");
 exit;
 ?>

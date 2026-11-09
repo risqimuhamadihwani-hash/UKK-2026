@@ -89,44 +89,70 @@ function e($data) {
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
-                    <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
+                    <a href="dashboard.php" class="nav-link text-white">
+                        Dashboard
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Siswa.php" class="nav-link text-white">Kelola Siswa</a>
+                    <a href="Kelola_Siswa.php" class="nav-link text-white">
+                        Kelola Siswa
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Guru.php" class="nav-link text-white">Kelola Guru</a>
+                    <a href="Kelola_Guru.php" class="nav-link text-white">
+                        Kelola Guru
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Kelas.php" class="nav-link text-white">Kelola Kelas</a>
+                    <a href="Kelola_Kelas.php" class="nav-link text-white">
+                        Kelola Kelas
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">Kelola Tahun Ajaran</a>
+                    <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
+                        Kelola Tahun Ajaran
+                    </a>
                 </li>
                  <li class="nav-item mb-2">
-                    <a href="Penempatan_Siswa.php" class="nav-link text-white">Penempatan Siswa</a>
+                    <a href="Penempatan_Siswa.php" class="nav-link text-white">
+                        Penempatan Siswa
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">Kelola Wali Kelas</a>
+                    <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">
+                        Kelola Wali Kelas
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link active">Kelola Kategori Pelanggaran</a>
+                    <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link active">
+                        Kelola Kategori Pelanggaran
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">Kelola Jenis Pelanggaran</a>
+                    <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
+                        Kelola Jenis Pelanggaran
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Laporan.php" class="nav-link text-white">Laporan</a>
+                    <a href="Laporan.php" class="nav-link text-white">
+                        Laporan
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Cetak_Export.php" class="nav-link text-white">Cetak/Export</a>
+                    <a href="Cetak_Export.php" class="nav-link text-white">
+                        Cetak/Export
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="about_me.php" class="nav-link text-white">About Me</a>
+                    <a href="about_me.php" class="nav-link text-white">
+                        About Me
+                    </a>
                 </li>
                 <hr class="text-secondary">
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-danger">Logout</a>
+                    <a href="logout.php" class="nav-link text-danger">
+                        Logout
+                    </a>
                 </li>
             </ul>
         </div>
@@ -165,19 +191,10 @@ function e($data) {
                             </select>
                         </div>
 
-                        <!-- DROPDOWN DESKRIPSI -->
+                        <!-- DESKRIPSI (DIUBAH MENJADI TEXTAREA AGAR BISA DIKETIK) -->
                         <div class="mb-4">
                             <label class="form-label">Deskripsi</label>
-                            <select name="deskripsi" class="form-select" required>
-                                <option value="" disabled>-- Pilih Deskripsi Kategori --</option>
-                                <?php
-                                for ($i = 1; $i <= 100; $i++) {
-                                    $descVal = "Kategori pelanggaran nomor $i";
-                                    $selectedDesc = ($data['deskripsi'] === $descVal) ? 'selected' : '';
-                                    echo "<option value=\"$descVal\" $selectedDesc>$descVal</option>";
-                                }
-                                ?>
-                            </select>
+                            <textarea name="deskripsi" class="form-control" rows="3" placeholder="Masukkan deskripsi kategori pelanggaran..." required><?= e($data['deskripsi']) ?></textarea>
                         </div>
 
                         <div class="mb-4">

@@ -50,48 +50,74 @@ if (!$data) {
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
             <h4 class="text-white mb-4">
-                JusticeAdmin
+                Sistem Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
-                    <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
+                    <a href="dashboard.php" class="nav-link text-white">
+                        Dashboard
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Siswa.php" class="nav-link text-white">Kelola Siswa</a>
+                    <a href="Kelola_Siswa.php" class="nav-link text-white">
+                        Kelola Siswa
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Guru.php" class="nav-link text-white">Kelola Guru</a>
+                    <a href="Kelola_Guru.php" class="nav-link text-white">
+                        Kelola Guru
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Kelas.php" class="nav-link text-white">Kelola Kelas</a>
+                    <a href="Kelola_Kelas.php" class="nav-link text-white">
+                        Kelola Kelas
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">Kelola Tahun Ajaran</a>
+                    <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
+                        Kelola Tahun Ajaran
+                    </a>
                 </li>
                  <li class="nav-item mb-2">
-                    <a href="Penempatan_Siswa.php" class="nav-link text-white">Penempatan Siswa</a>
+                    <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
+                        Kelola Penempatan Siswa
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Wali_Kelas.php" class="nav-link active">Kelola Wali Kelas</a>
+                    <a href="Kelola_Wali_Kelas.php" class="nav-link active">
+                        Kelola Wali Kelas
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">Kelola Kategori Pelanggaran</a>
+                    <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
+                        Kelola Kategori Pelanggaran
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">Kelola Jenis Pelanggaran</a>
+                    <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
+                        Kelola Jenis Pelanggaran
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Laporan.php" class="nav-link text-white">Laporan</a>
+                    <a href="Laporan.php" class="nav-link text-white">
+                        Laporan
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Cetak_Export.php" class="nav-link text-white">Cetak/Export</a>
+                    <a href="Cetak_Export.php" class="nav-link text-white">
+                        Cetak/Export
+                    </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="about_me.php" class="nav-link text-white">About Me</a>
+                    <a href="about_me.php" class="nav-link text-white">
+                        About Me
+                    </a>
                 </li>
                 <hr class="text-secondary">
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-danger">Logout</a>
+                    <a href="logout.php" class="nav-link text-danger">
+                        Logout
+                    </a>
                 </li>
             </ul>
         </div>
@@ -102,10 +128,14 @@ if (!$data) {
             <h1>Kelola Wali Kelas</h1>
             <p>Halaman untuk menampilkan data wali kelas</p>
 
-            <!-- TOMBOL TAMBAH DI ATAS -->
+            <!-- TOMBOL TAMBAH -->
             <div class="mb-3">
                 <a href="tambah_wali_kelas.php" class="btn btn-primary">
-                    + Tambah Wali Kelas
+                   + Tambah Wali Kelas
+                </a>
+
+                <a href="dashboard.php" class="btn btn-dark">
+                     Kembali ke Dashboard
                 </a>
             </div>
 
@@ -160,8 +190,8 @@ if (!$data) {
                         <?php endif; ?>
                     </tbody>
                 </table>
-            </div>
 
+            </div>
         </main>
     </div>
 </div>

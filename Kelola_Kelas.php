@@ -42,7 +42,7 @@ if (!$result) {
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
             <h4 class="text-white mb-4">
-                JusticeAdmin
+                Sistem Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
@@ -71,8 +71,8 @@ if (!$result) {
                     </a>
                 </li>
                  <li class="nav-item mb-2">
-                    <a href="Penempatan_Siswa.php" class="nav-link text-white">
-                        Penempatan Siswa
+                    <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
+                        Kelola Penempatan Siswa
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -115,19 +115,20 @@ if (!$result) {
         </div>
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
-<h1>Kelola Kelas</h1>
+        <h1>Kelola Kelas</h1>
 
-<p>Halaman untuk mengelola data kelas</p>
+            <p>Halaman untuk mengelola data kelas</p>
 
-<a href="tambah_kelas.php">
-    <button type="button" class="btn btn-primary">
-     + Tambah Kelas
-    </button>
-</a>
-<br>
+            <div class="mb-3">
+                <a href="tambah_kelas.php" class="btn btn-primary">
+                    + Tambah Kelas
+                </a>
+                <a href="dashboard.php" class="btn btn-dark">
+                     Kembali ke Dashboard
+                </a>
+            </div>
 
-
-<div class="table-responsive">
+    <div class="table-responsive">
     <table id="tabelKelas"
            class="table table-hover table-striped table-bordered align-middle">
 
@@ -172,9 +173,11 @@ if (!$result) {
             <?php } ?>
         </tbody>
     </table>
-</div>
-</main>
-</div>
+
+
+            </main>
+        </div>
+    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

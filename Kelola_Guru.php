@@ -42,7 +42,7 @@ if (!$result) {
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
             <h4 class="text-white mb-4">
-                JusticeAdmin
+                Sistem Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
@@ -71,8 +71,8 @@ if (!$result) {
                     </a>
                 </li>
                  <li class="nav-item mb-2">
-                    <a href="Penempatan_Siswa.php" class="nav-link text-white">
-                        Penempatan Siswa
+                    <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
+                        Kelola Penempatan Siswa
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -123,6 +123,9 @@ if (!$result) {
             <div class="mb-3">
                 <a href="tambah_guru.php" class="btn btn-primary">
                     + Tambah Guru
+                </a>
+                <a href="dashboard.php" class="btn btn-dark">
+                     Kembali ke Dashboard
                 </a>
             </div>
 
@@ -200,10 +203,8 @@ if (!$result) {
 
                 </table>
 
-            </div>
-
-        </main>
-
+            </main>
+        </div>
     </div>
 </div>
 

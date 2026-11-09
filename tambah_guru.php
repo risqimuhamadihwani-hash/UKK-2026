@@ -279,7 +279,7 @@ function e($nilai) {
                                 Tambah
                             </button>
 
-                            <a href="Kelola_Guru.php" class="btn btn-secondary px-3 py-1" style="background-color: #6c757d;">
+                            <a href="Kelola_Guru.php" class="btn btn-secondary px-3 py-1" style="background-color: #000000;">
                                 Kembali
                             </a>
                         </div>

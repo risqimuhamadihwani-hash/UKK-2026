@@ -39,7 +39,7 @@ if (!$data) {
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
             <h4 class="text-white mb-4">
-                JusticeAdmin
+                Sistem Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
@@ -68,8 +68,8 @@ if (!$data) {
                     </a>
                 </li>
                  <li class="nav-item mb-2">
-                    <a href="Penempatan_Siswa.php" class="nav-link text-white">
-                        Penempatan Siswa
+                    <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
+                        Kelola Penempatan Siswa
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -113,11 +113,18 @@ if (!$data) {
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-<h2>Kelola Kategori Pelanggaran</h2>
+        <h2>Kelola Kategori Pelanggaran</h2>
 
-<p>Halaman untuk menampilkan data Pelanggaran</p>
+        <p>Halaman untuk menampilkan data Pelanggaran</p>
 
-<a href="tambah_kategori_pelanggaran.php" class="btn btn-primary mb-3"> + Tambah Kategori</a>
+            <div class="mb-3">
+                <a href="tambah_kategori_pelanggaran.php" class="btn btn-primary">
+                   + Tambah Kategori 
+                </a>
+                <a href="dashboard.php" class="btn btn-dark">
+                     Kembali ke Dashboard
+                </a>
+            </div>
 
 <!-- TABEL DATA -->
 <div class="table-responsive">
@@ -179,6 +186,7 @@ if (!$data) {
             <?php endif; ?>
         </tbody>
     </table>
+
 </div>
 
 <!-- jQuery -->

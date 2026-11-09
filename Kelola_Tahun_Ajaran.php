@@ -46,7 +46,7 @@ if (!$result) {
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
             <h4 class="text-white mb-4">
-                JusticeAdmin
+                Sistem Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
@@ -75,8 +75,8 @@ if (!$result) {
                     </a>
                 </li>
                  <li class="nav-item mb-2">
-                    <a href="Penempatan_Siswa.php" class="nav-link text-white">
-                        Penempatan Siswa
+                    <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
+                        Kelola Penempatan Siswa
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -123,10 +123,14 @@ if (!$result) {
 
             <p>Halaman untuk mengelola data tahun ajaran</p>
 
-            <a href="tambah_tahun_ajaran.php"
-               class="btn btn-primary mb-3">
-                + Tambah Tahun Ajaran 
-            </a>
+            <div class="mb-3">
+                <a href="tambah_tahun_ajaran.php" class="btn btn-primary">
+                   + Tambah Tahun Ajaran
+                </a>
+                <a href="dashboard.php" class="btn btn-dark">
+                     Kembali ke Dashboard
+                </a>
+            </div>
 
             <!-- TABEL TAHUN AJARAN -->
             <div class="table-responsive">
@@ -191,6 +195,7 @@ if (!$result) {
             <?php } ?>
         </tbody>
     </table>
+
 </div>
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

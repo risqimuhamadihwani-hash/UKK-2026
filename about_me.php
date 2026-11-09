@@ -36,7 +36,7 @@ $isAdmin = ($role === 'admin');
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
 
             <h4 class="text-white mb-4">
-                <?= ($role === 'admin') ? 'JusticeAdmin' : 'JusticeGuru'; ?>
+                <?= ($role === 'admin') ? 'Sistem Pelanggaran Siswa' : 'Sistem Pelanggaran Siswa'; ?>
             </h4>
 
             <ul class="nav nav-pills flex-column">
@@ -69,8 +69,8 @@ $isAdmin = ($role === 'admin');
                     </a>
                 </li>
                  <li class="nav-item mb-2">
-                    <a href="Penempatan_Siswa.php" class="nav-link text-white">
-                        Penempatan Siswa
+                    <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
+                        Kelola Penempatan Siswa
                     </a>
                 </li>
                 <li class="nav-item mb-2">
@@ -124,6 +124,11 @@ $isAdmin = ($role === 'admin');
                 <li class="nav-item mb-2">
                     <a href="riwayat.php" class="nav-link text-white">
                         Riwayat
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="Laporan.php" class="nav-link text-white">
+                        Laporan
                     </a>
                 </li>
 

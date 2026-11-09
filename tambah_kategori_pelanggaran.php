@@ -18,7 +18,7 @@ if (isset($_POST['simpan'])) {
     $status_aktif = (int)($_POST['status_aktif'] ?? 0);
 
     if ($nama === '' || $deskripsi === '' || !in_array($status_aktif, [0, 1], true)) {
-        $pesan = "Nama kategori dan deskripsi wajib dipilih.";
+        $pesan = "Nama kategori dan deskripsi wajib diisi.";
     } else {
         $stmt = mysqli_prepare($koneksi,
             "INSERT INTO t_pelanggaran_kategori
@@ -143,19 +143,10 @@ if (isset($_POST['simpan'])) {
                             </select>
                         </div>
 
-                        <!-- DROPDOWN DESKRIPSI (BERDASARKAN GAMBAR 1 - 100) -->
+                        <!-- DESKRIPSI (DIUBAH MENJADI TEXTAREA AGAR BISA DIKETIK) -->
                         <div class="mb-4">
                             <label class="form-label">Deskripsi</label>
-                            <select name="deskripsi" class="form-select" required>
-                                <option value="" disabled selected>-- Pilih Deskripsi Kategori --</option>
-                                <?php
-                                for ($i = 1; $i <= 100; $i++) {
-                                    $descVal = "Kategori pelanggaran nomor $i";
-                                    $selectedDesc = (($_POST['deskripsi'] ?? '') === $descVal) ? 'selected' : '';
-                                    echo "<option value=\"$descVal\" $selectedDesc>$descVal</option>";
-                                }
-                                ?>
-                            </select>
+                            <textarea name="deskripsi" class="form-control" rows="3" placeholder="Masukkan deskripsi kategori pelanggaran..." required><?= htmlspecialchars($_POST['deskripsi'] ?? '') ?></textarea>
                         </div>
 
                         <div class="mb-4">
@@ -166,11 +157,7 @@ if (isset($_POST['simpan'])) {
                             </select>
                         </div>
 
-                        <button
-                            type="submit"
-                            name="simpan"
-                            class="btn btn-primary px-4"
-                        >
+                        <button type="submit" name="simpan" class="btn btn-primary px-4">
                             Tambah
                         </button>
 
