@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 07, 2026 at 06:42 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Waktu pembuatan: 09 Nov 2026 pada 06.33
+-- Versi server: 10.4.27-MariaDB
+-- Versi PHP: 8.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `t_guru`
+-- Struktur dari tabel `t_guru`
 --
 
 CREATE TABLE `t_guru` (
@@ -39,64 +39,70 @@ CREATE TABLE `t_guru` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `t_guru`
+-- Dumping data untuk tabel `t_guru`
 --
 
 INSERT INTO `t_guru` (`id`, `nip`, `nama`, `email`, `status_aktif`, `user_id`, `created_at`, `updated_at`) VALUES
-(2, '198102020002', 'Budi Santoso', 'budi.santoso@gmail.com', 1, 2, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(3, '198203030003', 'Citra Lestari', 'citra.lestari@gmail.com', 1, 3, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(4, '198304040004', 'Dedi Kurniawan', 'dedi.kurniawan@gmail.com', 1, 4, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(5, '198405050005', 'Eka Wulandari', 'eka.wulandari@gmail.com', 1, 5, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(6, '198506060006', 'Fajar Nugraha', 'fajar.nugraha@gmail.com', 1, 6, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(7, '198607070007', 'Gina Permata', 'gina.permata@gmail.com', 1, 7, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(8, '198708080008', 'Hendra Wijaya', 'hendra.wijaya@gmail.com', 1, 8, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(9, '198809090009', 'Indah Sari', 'indah.sari@gmail.com', 1, 9, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(10, '198910100010', 'Joko Susanto', 'joko.susanto@gmail.com', 1, 10, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(11, '198011110011', 'Kartika Dewi', 'kartika.dewi@gmail.com', 1, 11, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(12, '198112120012', 'Lukman Hakim', 'lukman.hakim@gmail.com', 1, 12, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(13, '198213130013', 'Maya Sari', 'maya.sari@gmail.com', 1, 13, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(14, '198314140014', 'Nanda Saputra', 'nanda.saputra@gmail.com', 1, 14, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(15, '198415150015', 'Olivia Putri', 'olivia.putri@gmail.com', 1, 15, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(16, '198516160016', 'Pandu Setiawan', 'pandu.setiawan@gmail.com', 1, 16, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(17, '198617170017', 'Qori Ananda', 'qori.ananda@gmail.com', 1, 17, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(18, '198718180018', 'Rudi Hartono', 'rudi.hartono@gmail.com', 1, 18, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(19, '198819190019', 'Siti Rahma', 'siti.rahma@gmail.com', 1, 19, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(20, '198920200020', 'Taufik Hidayat', 'taufik.hidayat@gmail.com', 1, 20, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(21, '198021210021', 'Umi Kalsum', 'umi.kalsum@gmail.com', 1, 21, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(22, '198122220022', 'Vina Maharani', 'vina.maharani@gmail.com', 1, 22, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(23, '198223230023', 'Wahyu Ramadhan', 'wahyu.ramadhan@gmail.com', 1, 23, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(24, '198324240024', 'Yuni Astuti', 'yuni.astuti@gmail.com', 1, 24, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(25, '198425250025', 'Zainal Abidin', 'zainal.abidin@gmail.com', 1, 25, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(26, '198526260026', 'Agus Setiawan', 'agus.setiawan@gmail.com', 1, 26, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(27, '198627270027', 'Bella Anggraini', 'bella.anggraini@gmail.com', 1, 27, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(28, '198728280028', 'Cahyo Pratama', 'cahyo.pratama@gmail.com', 1, 28, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(29, '198829290029', 'Dian Puspita', 'dian.puspita@gmail.com', 1, 29, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(30, '198930300030', 'Eko Prasetyo', 'eko.prasetyo@gmail.com', 1, 30, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(31, '198031310031', 'Fitria Ningsih', 'fitria.ningsih@gmail.com', 1, 31, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(32, '198132320032', 'Galih Firmansyah', 'galih.firmansyah@gmail.com', 1, 32, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(33, '198233330033', 'Hani Marlina', 'hani.marlina@gmail.com', 1, 33, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(34, '198334340034', 'Irwan Maulana', 'irwan.maulana@gmail.com', 1, 34, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(35, '198435350035', 'Jihan Safitri', 'jihan.safitri@gmail.com', 1, 35, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(36, '198536360036', 'Kurniawan Dwi', 'kurniawan.dwi@gmail.com', 1, 36, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(37, '198637370037', 'Lilis Karlina', 'lilis.karlina@gmail.com', 1, 37, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(38, '198738380038', 'Maman Suherman', 'maman.suherman@gmail.com', 1, 38, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(39, '198839390039', 'Nia Ramadhani', 'nia.ramadhani@gmail.com', 1, 39, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(40, '198940400040', 'Oki Setiawan', 'oki.setiawan@gmail.com', 1, 40, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(41, '198041410041', 'Putri Amelia', 'putri.amelia@gmail.com', 1, 41, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(42, '198142420042', 'Rian Kurnia', 'rian.kurnia@gmail.com', 1, 42, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(43, '198243430043', 'Salsa Nabila', 'salsa.nabila@gmail.com', 1, 43, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(44, '198344440044', 'Teguh Prakoso', 'teguh.prakoso@gmail.com', 1, 44, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(45, '198445450045', 'Utami Sari', 'utami.sari@gmail.com', 1, 45, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(46, '198546460046', 'Vicky Ramadhan', 'vicky.ramadhan@gmail.com', 1, 46, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(47, '198647470047', 'Wulan Pertiwi', 'wulan.pertiwi@gmail.com', 1, 47, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(48, '198748480048', 'Yusuf Maulana', 'yusuf.maulana@gmail.com', 1, 48, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(49, '198849490049', 'Zahra Aulia', 'zahra.aulia@gmail.com', 1, 49, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(50, '198950500050', 'Andi Firmansyah', 'andi.firmansyah@gmail.com', 1, 50, '2026-07-01 01:00:00', '2026-07-01 01:00:00');
+(1, 'NIP20260001', 'Wawan Kurniawan, S.Pd.I', 'WawanKurniawan@gmail.com', 1, 55, '2025-12-31 18:00:00', '2025-12-31 18:00:00'),
+(2, 'NIP20260002', 'Ai Nuryaidah, S.Pd', 'AiNuryaidah@gmail.com', 1, 56, '2026-02-01 18:00:00', '2026-02-01 18:00:00'),
+(3, 'NIP20260003', 'Maya Permata Endah, S.Pd', 'MayaPermataEndah@gmail.com', 1, 57, '2026-03-02 18:00:00', '2026-03-02 18:00:00'),
+(4, 'NIP20260004', 'Dody Jaenudin, S.Pd', 'DodyJaenudin@gmail.com', 1, 58, '2026-04-03 18:00:00', '2026-04-03 18:00:00'),
+(5, 'NIP20260005', 'Dedi Kardiman, S.Pd', 'DediKardiman@gmail.com', 1, 59, '2026-05-04 18:00:00', '2026-05-04 18:00:00'),
+(6, 'NIP20260006', 'Uca Musa Yusenda, S.Pd', 'UcaMusaYusenda@gmail.com', 1, 60, '2026-06-05 18:00:00', '2026-06-05 18:00:00'),
+(7, 'NIP20260007', 'Drs. Ahmad Nur Mukhlis', 'AhmadNurMukhlis@gmail.com', 1, 61, '2026-07-06 18:00:00', '2026-07-06 18:00:00'),
+(8, 'NIP20260008', 'Drs. Heri', 'Heri@gmail.com', 1, 62, '2026-08-07 18:00:00', '2026-08-07 18:00:00'),
+(9, 'NIP20260009', 'Asep Bastaman', 'AsepBastaman@gmail.com', 1, 63, '2026-09-08 18:00:00', '2026-09-08 18:00:00'),
+(10, 'NIP20260010', 'H. Encep Maemun, S.T., M.Pd', 'EncepMaemun@gmail.com', 1, 64, '2026-10-09 18:00:00', '2026-10-09 18:00:00'),
+(11, 'NIP20260011', 'Opik', 'Opik@gmail.com', 1, 65, '2026-11-10 18:00:00', '2026-11-10 18:00:00'),
+(12, 'NIP20260012', 'Ida Farida, S.Pd', 'IdaFarida@gmail.com', 1, 66, '2026-12-11 18:00:00', '2026-12-11 18:00:00'),
+(13, 'NIP20260013', 'Idah Mahmudah, S.Pd', 'IdahMahmudah@gmail.com', 1, 67, '2026-01-12 18:00:00', '2026-01-12 18:00:00'),
+(14, 'NIP20260014', 'Drs. Muhamad Ali', 'MuhamadAli@gmail.com', 1, 68, '2026-02-13 18:00:00', '2026-02-13 18:00:00'),
+(15, 'NIP20260015', 'Helmi Ali Akbar, S.Pd.I', 'HelmiAliAkbar@gmail.com', 1, 69, '2026-03-14 18:00:00', '2026-03-14 18:00:00'),
+(16, 'NIP20260016', 'Syeni Suswarini, S.Pd', 'SyeniSuswarini@gmail.com', 1, 70, '2026-04-15 18:00:00', '2026-04-15 18:00:00'),
+(17, 'NIP20260017', 'Wiwid Yulianti, S.Pd', 'WiwidYulianti@gmail.com', 1, 71, '2026-05-16 18:00:00', '2026-05-16 18:00:00'),
+(18, 'NIP20260018', 'Ansor Muhajir, S.T', 'AnsorMuhajir@gmail.com', 1, 72, '2026-06-17 18:00:00', '2026-06-17 18:00:00'),
+(19, 'NIP20260019', 'Ogi Gaosun Gais, S.Pd.I', 'OgiGaosunGais@gmail.com', 1, 73, '2026-07-18 18:00:00', '2026-07-18 18:00:00'),
+(20, 'NIP20260020', 'Sandi Mulyana, S.Pd', 'SandiMulyana@gmail.com', 1, 74, '2026-08-19 18:00:00', '2026-08-19 18:00:00'),
+(21, 'NIP20260021', 'Erna Suryani, S.Pd', 'ErnaSuryani@gmail.com', 1, 75, '2026-09-20 18:00:00', '2026-09-20 18:00:00'),
+(22, 'NIP20260022', 'Ai Wahidah, S.Ag', 'AiWahidah@gmail.com', 1, 76, '2026-10-21 18:00:00', '2026-10-21 18:00:00'),
+(23, 'NIP20260023', 'Chandra Aditya Yusup, S.Pd', 'ChandraAdityaYusup@gmail.com', 1, 77, '2026-11-22 18:00:00', '2026-11-22 18:00:00'),
+(24, 'NIP20260024', 'Arif Kusmawan, S.Pd', 'ArifKusmawan@gmail.com', 1, 78, '2026-12-23 18:00:00', '2026-12-23 18:00:00'),
+(25, 'NIP20260025', 'Asep Taufiq Hidayat, S.Kom', 'AsepTaufiqHidayat@gmail.com', 1, 79, '2026-01-24 18:00:00', '2026-01-24 18:00:00'),
+(26, 'NIP20260026', 'Rendy Ichsan Kusumah, S.T', 'RendyIchsanKusumah@gmail.com', 1, 80, '2026-02-25 18:00:00', '2026-02-25 18:00:00'),
+(27, 'NIP20260027', 'Feri Rahmawan, S.Pd', 'FeriRahmawan@gmail.com', 1, 81, '2026-03-26 18:00:00', '2026-03-26 18:00:00'),
+(28, 'NIP20260028', 'Ari Sandriana, S.Kom', 'AriSandriana@gmail.com', 1, 82, '2026-04-27 18:00:00', '2026-04-27 18:00:00'),
+(29, 'NIP20260029', 'Yaneu Nurdian, S.Pd, M.Pd', 'YaneuNurdian@gmail.com', 1, 83, '2026-04-30 18:00:00', '2026-04-30 18:00:00'),
+(30, 'NIP20260030', 'Ucu Muhammad Khoer N, S.Pd', 'UcuMuhammadKhoerN@gmail.com', 1, 84, '2026-06-01 18:00:00', '2026-06-01 18:00:00'),
+(31, 'NIP20260031', 'Mira Dwi Rahmawati, S.Ag', 'MiraDwiRahmawati@gmail.com', 1, 85, '2026-07-02 18:00:00', '2026-07-02 18:00:00'),
+(32, 'NIP20260032', 'Aldi Maulana, S.Pd', 'AldiMaulana@gmail.com', 1, 3, '2026-08-03 18:00:00', '2026-08-03 18:00:00'),
+(33, 'NIP20260033', 'Eli Rosliah, S.Pd', 'EliRosliah@gmail.com', 1, 86, '2026-09-04 18:00:00', '2026-09-04 18:00:00'),
+(34, 'NIP20260034', 'Isni Nur Fitriani, S.Pd', 'IsniNurFitriani@gmail.com', 1, 87, '2026-10-05 18:00:00', '2026-10-05 18:00:00'),
+(35, 'NIP20260035', 'Aanisah Putri Nur Aini, S.Pd', 'AanisahPutriNurAini@gmail.com', 1, 88, '2026-11-06 18:00:00', '2026-11-06 18:00:00'),
+(36, 'NIP20260036', 'Yusi Luthfiani, S.Sos.I', 'YusiLuthfiani@gmail.com', 1, 89, '2026-12-07 18:00:00', '2026-12-07 18:00:00'),
+(37, 'NIP20260037', 'Lilis Rustandy Mawardi, S.Pd.,', 'LilisRustandyMawardi@gmail.com', 1, 90, '2026-01-08 18:00:00', '2026-01-08 18:00:00'),
+(38, 'NIP20260038', 'Yusrin Noer Sabrina, S.Pd', 'YusrinNoerSabrina@gmail.com', 1, 91, '2026-02-09 18:00:00', '2026-02-09 18:00:00'),
+(39, 'NIP20260039', 'Senny Indayani, S.Pd', 'SennyIndayani@gmail.com', 1, 39, '2026-03-10 18:00:00', '2026-03-10 18:00:00'),
+(40, 'NIP20260040', 'Ilma Amalia, S.Pd', 'IlmaAmalia@gmail.com', 1, 40, '2026-04-11 18:00:00', '2026-04-11 18:00:00'),
+(41, 'NIP20260041', 'Alvira Sofwatunnisa, S.Pd', 'AlviraSofwatunnisa@gmail.com', 1, 41, '2026-05-12 18:00:00', '2026-05-12 18:00:00'),
+(42, 'NIP20260042', 'Risna Andriyani, S.Pd', 'RisnaAndriyani@gmail.com', 1, 42, '2026-06-13 18:00:00', '2026-06-13 18:00:00'),
+(43, 'NIP20260043', 'Dra. Tintin Noerhayati', 'TintinNoerhayati@gmail.com', 1, 43, '2026-07-14 18:00:00', '2026-07-14 18:00:00'),
+(44, 'NIP20260044', 'Rizkia Fahira, S.Pd', 'RizkiaFahira@gmail.com', 1, 44, '2026-08-15 18:00:00', '2026-08-15 18:00:00'),
+(45, 'NIP20260045', 'Frasetio', 'Frasetio@gmail.com', 1, 45, '2026-09-16 18:00:00', '2026-09-16 18:00:00'),
+(46, 'NIP20260046', 'Ratnaningsih Hatil Aeni, S.Pd', 'RatnaningsihHatilAeni@gmail.com', 1, 46, '2026-10-17 18:00:00', '2026-10-17 18:00:00'),
+(47, 'NIP20260047', 'Dheny Darajatul Hasani, S.Pd', 'DhenyDarajatulHasani@gmail.com', 1, 47, '2026-11-18 18:00:00', '2026-11-18 18:00:00'),
+(48, 'NIP20260048', 'Fahrullah, S.Pd', 'Fahrullah@gmail.com', 1, 48, '2026-12-19 18:00:00', '2026-12-19 18:00:00'),
+(49, 'NIP20260049', 'Aan Andriana, S.T', 'AanAndriana@gmail.com', 1, 49, '2026-01-20 18:00:00', '2026-01-20 18:00:00'),
+(50, 'NIP20260050', 'Fitri Fauziah, S.T', 'FitriFauziah@gmail.com', 1, 50, '2026-02-21 18:00:00', '2026-02-21 18:00:00'),
+(51, 'NIP20260051', 'Nida Aulia, S.Pd', 'NidaAulia@gmail.com', 1, 51, '2026-10-21 17:45:15', '2026-10-21 17:45:15'),
+(52, 'NIP20260052', 'Sri Nurrizki Putri Krisnadi, S', 'SriNurrizkiPutriKrisnad@gmail.com', 1, 52, '2026-10-21 18:00:17', '2026-10-21 18:00:17'),
+(53, 'NIP20260053', 'Riesy Putri Navia, S.Kom', 'RiesyPutriNavia@gmail.com', 1, 0, '2026-11-04 19:15:47', '2026-11-04 19:15:47'),
+(54, 'NIP20260054', 'Rurry Febriani Maryadi, S.Pd', 'RurryFebrianiMaryadi@gmail.com', 1, 0, '2026-11-04 19:15:47', '2026-11-04 19:15:47'),
+(55, 'NIP20260055', 'Irvan Rizal, S.Pd', 'IrvanRizal@gmail.com', 1, 54, '2026-11-04 19:19:21', '2026-11-04 19:19:21');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `t_kelas`
+-- Struktur dari tabel `t_kelas`
 --
 
 CREATE TABLE `t_kelas` (
@@ -110,7 +116,7 @@ CREATE TABLE `t_kelas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `t_kelas`
+-- Dumping data untuk tabel `t_kelas`
 --
 
 INSERT INTO `t_kelas` (`id`, `nama`, `tingkat`, `jurusan`, `status_aktif`, `created_at`, `updated_at`) VALUES
@@ -218,7 +224,7 @@ INSERT INTO `t_kelas` (`id`, `nama`, `tingkat`, `jurusan`, `status_aktif`, `crea
 -- --------------------------------------------------------
 
 --
--- Table structure for table `t_kelas_siswa`
+-- Struktur dari tabel `t_kelas_siswa`
 --
 
 CREATE TABLE `t_kelas_siswa` (
@@ -233,10 +239,17 @@ CREATE TABLE `t_kelas_siswa` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data untuk tabel `t_kelas_siswa`
+--
+
+INSERT INTO `t_kelas_siswa` (`id`, `siswa_id`, `tahun_ajaran_id`, `kelas_id`, `tanggal_mulai`, `tanggal_selesai`, `status_aktif`, `created_at`, `updated_at`) VALUES
+(104, 14, 99, 1, '2026-11-06', '2027-12-09', 1, '2026-11-09 03:10:01', '2026-11-09 03:10:01');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `t_pelanggaran`
+-- Struktur dari tabel `t_pelanggaran`
 --
 
 CREATE TABLE `t_pelanggaran` (
@@ -252,7 +265,7 @@ CREATE TABLE `t_pelanggaran` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `t_pelanggaran`
+-- Dumping data untuk tabel `t_pelanggaran`
 --
 
 INSERT INTO `t_pelanggaran` (`id`, `pelanggaran_kategori_id`, `kode`, `nama`, `poin`, `deskripsi`, `status_aktif`, `created_at`, `updated_at`) VALUES
@@ -360,7 +373,7 @@ INSERT INTO `t_pelanggaran` (`id`, `pelanggaran_kategori_id`, `kode`, `nama`, `p
 -- --------------------------------------------------------
 
 --
--- Table structure for table `t_pelanggaran_kategori`
+-- Struktur dari tabel `t_pelanggaran_kategori`
 --
 
 CREATE TABLE `t_pelanggaran_kategori` (
@@ -373,7 +386,7 @@ CREATE TABLE `t_pelanggaran_kategori` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `t_pelanggaran_kategori`
+-- Dumping data untuk tabel `t_pelanggaran_kategori`
 --
 
 INSERT INTO `t_pelanggaran_kategori` (`id`, `nama`, `deskripsi`, `status_aktif`, `created_at`, `updated_at`) VALUES
@@ -481,7 +494,7 @@ INSERT INTO `t_pelanggaran_kategori` (`id`, `nama`, `deskripsi`, `status_aktif`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `t_pelanggaran_siswa`
+-- Struktur dari tabel `t_pelanggaran_siswa`
 --
 
 CREATE TABLE `t_pelanggaran_siswa` (
@@ -508,7 +521,7 @@ CREATE TABLE `t_pelanggaran_siswa` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `t_siswa`
+-- Struktur dari tabel `t_siswa`
 --
 
 CREATE TABLE `t_siswa` (
@@ -525,39 +538,39 @@ CREATE TABLE `t_siswa` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `t_siswa`
+-- Dumping data untuk tabel `t_siswa`
 --
 
 INSERT INTO `t_siswa` (`id`, `nis`, `nisn`, `nama`, `jenis_kelamin`, `tanggal_lahir`, `alamat`, `status_aktif`, `created_at`, `updated_at`) VALUES
-(101, '1001', '0081234001', 'Alvin Rahadian', 'L', '2008-08-03', 'Jl. Merdeka No. 12', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(102, '1002', '0081234002', 'Alisa Ramadhani', 'P', '2008-09-28', 'Jl. Mawar No. 05', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(103, '1003', '0081234003', 'Alma Aura Livia', 'P', '2008-08-26', 'Jl. Anggrek No. 08', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(104, '1004', '0081234004', 'Anis Khoerunnisa N.R', 'P', '2008-09-25', 'Jl. Melati No. 15', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(105, '1005', '0091234005', 'Azmil Amira', 'P', '2009-10-30', 'Jl. Kenanga No. 02', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(106, '1006', '0081234006', 'Azril Akbar', 'L', '2008-08-21', 'Jl. Pemuda No. 44', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(107, '1007', '0081234007', 'Erlangga Saputra', 'L', '2008-06-06', 'Jl. Diponegoro No. 19', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(108, '1008', '0091234008', 'Hilma Himmatunnajah', 'P', '2009-03-25', 'Jl. Dahlia No. 07', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(109, '1009', '0091234009', 'Ilma Nazya', 'P', '2009-02-16', 'Jl. Teratai No. 11', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(110, '1010', '0081234010', 'Julianda Dharma Pangestu', 'L', '2008-07-02', 'Jl. Sudirman No. 23', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(111, '1011', '0091234011', 'Kayila Nur Fadilah', 'P', '2009-07-15', 'Jl. Flamboyan No. 30', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(112, '1012', '0081234012', 'Moza Dina Nabillah', 'P', '2008-11-21', 'Jl. Kamboja No. 09', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(113, '1013', '0081234013', 'Muhammad Al Farizi', 'L', '2008-11-13', 'Jl. Gajah Mada No. 17', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(114, '1014', '0081234014', 'Fahrin', 'L', '2008-12-20', 'Jl. Ahmad Yani No. 51', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(115, '1015', '0061234015', 'Muhammad Zidan', 'L', '2006-03-30', 'Jl. Pahlawan No. 14', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(116, '1016', '0091234016', 'Muhammad Zulfan', 'L', '2009-01-27', 'Jl. Veteran No. 33', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(117, '1017', '0081234019', 'Natiya Nur Azkiya', 'P', '2008-12-26', 'Jl. Tulip No. 16', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(118, '1018', '0081234020', 'Novita Puspitasari', 'P', '2008-11-02', 'Jl. Sakura No. 21', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(119, '1019', '0081234022', 'Nucky Andreas Febrian', 'L', '2008-02-16', 'Jl. Raden Intan No. 10', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(120, '1020', '0091234017', 'Raditya Jeti Prasetya', 'L', '2009-09-01', 'Jl. Kartini No. 03', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(121, '1021', '0081234018', 'Rangga Ramadiyanto Nurhakim', 'L', '2008-05-21', 'Jl. Gatot Subroto No. 27', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(122, '1022', '0091234021', 'Risqi Muhamad Ihwani', 'L', '2009-07-22', 'Jl. Siliwangi No. 88', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(123, '1023', '0081234023', 'Salwa Sabilatul Barkah', 'P', '2008-09-24', 'Jl. Cikanyere No. 04', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13'),
-(124, '1024', '0091234024', 'Tazkia Zahra', 'P', '2009-01-09', 'Jl. Cendrawasih No. 18', 1, '2026-11-06 09:23:13', '2026-11-06 09:23:13');
+(1, '1001', '0081234001', 'Alvin Rahadian', 'L', '2008-08-03', 'Jl. Merdeka No. 12', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(2, '1002', '0081234002', 'Alisa Ramadhani', 'P', '2008-09-28', 'Jl. Mawar No. 05', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(3, '1003', '0081234003', 'Alma Aura Livia', 'P', '2008-08-26', 'Jl. Anggrek No. 08', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(4, '1004', '0081234004', 'Anis Khoerunnisa N.R', 'P', '2008-09-25', 'Jl. Melati No. 15', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(5, '1005', '0091234005', 'Azmil Amira', 'P', '2009-10-30', 'Jl. Kenanga No. 02', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(6, '1006', '0081234006', 'Azril Akbar', 'L', '2008-08-21', 'Jl. Pemuda No. 44', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(7, '1007', '0081234007', 'Erlangga Saputra', 'L', '2008-06-06', 'Jl. Diponegoro No. 19', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(8, '1008', '0091234008', 'Hilma Himmatunnajah', 'P', '2009-03-25', 'Jl. Dahlia No. 07', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(9, '1009', '0091234009', 'Ilma Nazya', 'P', '2009-02-16', 'Jl. Teratai No. 11', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(10, '1010', '0081234010', 'Julianda Dharma Pangestu', 'L', '2008-07-02', 'Jl. Sudirman No. 23', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(11, '1011', '0091234011', 'Kayila Nur Fadilah', 'P', '2009-07-15', 'Jl. Flamboyan No. 30', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(12, '1012', '0081234012', 'Moza Dina Nabillah', 'P', '2008-11-21', 'Jl. Kamboja No. 09', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(13, '1013', '0081234013', 'Muhammad Al Farizi', 'L', '2008-11-13', 'Jl. Gajah Mada No. 17', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(14, '1014', '0081234014', 'Fahrin', 'L', '2008-12-20', 'Jl. Ahmad Yani No. 51', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(15, '1015', '0061234015', 'Muhammad Zidan', 'L', '2006-03-30', 'Jl. Pahlawan No. 14', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(16, '1016', '0091234016', 'Muhammad Zulfan', 'L', '2009-01-27', 'Jl. Veteran No. 33', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(17, '1017', '0081234019', 'Natiya Nur Azkiya', 'P', '2008-12-26', 'Jl. Tulip No. 16', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(18, '1018', '0081234020', 'Novita Puspitasari', 'P', '2008-11-02', 'Jl. Sakura No. 21', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(19, '1019', '0081234022', 'Nucky Andreas Febrian', 'L', '2008-02-16', 'Jl. Raden Intan No. 10', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(20, '1020', '0091234017', 'Raditya Jeti Prasetya', 'L', '2009-09-01', 'Jl. Kartini No. 03', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(21, '1021', '0081234018', 'Rangga Ramadiyanto Nurhakim', 'L', '2008-05-21', 'Jl. Gatot Subroto No. 27', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(22, '1022', '0091234021', 'Risqi Muhamad Ihwani', 'L', '2009-07-22', 'Jl. Siliwangi No. 88', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(23, '1023', '0081234023', 'Salwa Sabilatul Barkah', 'P', '2008-09-24', 'Jl. Cikanyere No. 04', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13'),
+(24, '1024', '0091234024', 'Tazkia Zahra', 'P', '2009-01-09', 'Jl. Cendrawasih No. 18', 1, '2026-11-06 02:23:13', '2026-11-06 02:23:13');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `t_tahun_ajaran`
+-- Struktur dari tabel `t_tahun_ajaran`
 --
 
 CREATE TABLE `t_tahun_ajaran` (
@@ -571,7 +584,7 @@ CREATE TABLE `t_tahun_ajaran` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `t_tahun_ajaran`
+-- Dumping data untuk tabel `t_tahun_ajaran`
 --
 
 INSERT INTO `t_tahun_ajaran` (`id`, `nama`, `tanggal_mulai`, `tanggal_selesai`, `status_aktif`, `created_at`, `updated_at`) VALUES
@@ -679,7 +692,7 @@ INSERT INTO `t_tahun_ajaran` (`id`, `nama`, `tanggal_mulai`, `tanggal_selesai`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `t_users`
+-- Struktur dari tabel `t_users`
 --
 
 CREATE TABLE `t_users` (
@@ -695,7 +708,7 @@ CREATE TABLE `t_users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `t_users`
+-- Dumping data untuk tabel `t_users`
 --
 
 INSERT INTO `t_users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `role`, `created_at`, `updated_at`) VALUES
@@ -801,12 +814,14 @@ INSERT INTO `t_users` (`id`, `name`, `email`, `email_verified_at`, `password`, `
 (100, 'Joko Nabila', 'user100@sekolah.test', '2026-07-01 01:00:00', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llCk0s3ZQmQxK9v7l3M6', '', 'petugas', '2026-07-07 01:00:00', '2026-07-07 01:00:00'),
 (101, 'mulyadi', 'mulyadi@gmail.com', '2026-11-07 04:17:07', '$2y$10$4xJJzYG6e3nktb3Rt4rUJOeNa4db1fBaiBiIvI52q0cE/2OXOpweq', '', 'guru', '2026-11-07 04:17:07', '2026-11-07 04:17:07'),
 (102, 'guru', 'guru@gmail.com', '2026-11-07 04:45:34', '$2y$10$U7wfrT/ZJwgdPWwxWEDu6ezmrgdJlsmRDJw4Hy1lecguGUGFSQQE2', '', 'guru', '2026-11-07 04:45:34', '2026-11-07 04:45:34'),
-(103, 'administrator', 'admin@gmail.com', '2026-11-07 05:06:27', '$2y$10$vWQ16sZ1bXD8BwV07wlLhux3XwoXTwQ94sns2VYzMgff.ygbJ43Hu', '', 'admin', '2026-11-07 05:06:27', '2026-11-07 05:06:27');
+(103, 'administrator', 'admin@gmail.com', '2026-11-07 05:06:27', '$2y$10$vWQ16sZ1bXD8BwV07wlLhux3XwoXTwQ94sns2VYzMgff.ygbJ43Hu', '', 'admin', '2026-11-07 05:06:27', '2026-11-07 05:06:27'),
+(104, 'guru', 'guru@gmail.com', '2026-11-09 00:07:33', '$2y$10$wTTdZIiIEOrj4l2wAY81/uPuPTSMh8vKcFfxHnbPQQQM7DC/fdosC', '', 'guru', '2026-11-09 00:07:33', '2026-11-09 00:07:33'),
+(105, 'guru', 'guru@gmail.com', '2026-11-09 03:36:08', '$2y$10$pg8rvlgdoHRDu7wnd.UtTu.VPF9tdr.Pp1gbbV8EAKtuDS2qmw9cO', '', 'guru', '2026-11-09 03:36:08', '2026-11-09 03:36:08');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `t_wali_kelas`
+-- Struktur dari tabel `t_wali_kelas`
 --
 
 CREATE TABLE `t_wali_kelas` (
@@ -822,127 +837,24 @@ CREATE TABLE `t_wali_kelas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `t_wali_kelas`
---
-
-INSERT INTO `t_wali_kelas` (`id`, `tahun_ajaran_id`, `kelas_id`, `guru_id`, `tanggal_mulai`, `tanggal_selesai`, `status_aktif`, `created_at`, `updated_at`) VALUES
-(2, 1, 2, 2, '2026-07-01', '0000-00-00', 1, '2026-07-02 01:00:00', '2026-07-02 01:00:00'),
-(3, 1, 3, 3, '2026-07-01', '0000-00-00', 1, '2026-07-03 01:00:00', '2026-07-03 01:00:00'),
-(4, 1, 4, 4, '2026-07-01', '0000-00-00', 1, '2026-07-04 01:00:00', '2026-07-04 01:00:00'),
-(5, 1, 5, 5, '2026-07-01', '0000-00-00', 1, '2026-07-05 01:00:00', '2026-07-05 01:00:00'),
-(6, 1, 6, 6, '2026-07-01', '0000-00-00', 1, '2026-07-06 01:00:00', '2026-07-06 01:00:00'),
-(7, 1, 7, 7, '2026-07-01', '0000-00-00', 1, '2026-07-07 01:00:00', '2026-07-07 01:00:00'),
-(8, 1, 8, 8, '2026-07-01', '0000-00-00', 1, '2026-07-08 01:00:00', '2026-07-08 01:00:00'),
-(9, 1, 9, 9, '2026-07-01', '0000-00-00', 1, '2026-07-09 01:00:00', '2026-07-09 01:00:00'),
-(10, 1, 10, 10, '2026-07-01', '0000-00-00', 1, '2026-07-10 01:00:00', '2026-07-10 01:00:00'),
-(11, 1, 11, 11, '2026-07-01', '0000-00-00', 1, '2026-07-11 01:00:00', '2026-07-11 01:00:00'),
-(12, 1, 12, 12, '2026-07-01', '0000-00-00', 1, '2026-07-12 01:00:00', '2026-07-12 01:00:00'),
-(13, 1, 13, 13, '2026-07-01', '0000-00-00', 1, '2026-07-13 01:00:00', '2026-07-13 01:00:00'),
-(14, 1, 14, 14, '2026-07-01', '0000-00-00', 1, '2026-07-14 01:00:00', '2026-07-14 01:00:00'),
-(15, 1, 15, 15, '2026-07-01', '0000-00-00', 1, '2026-07-15 01:00:00', '2026-07-15 01:00:00'),
-(16, 1, 16, 16, '2026-07-01', '0000-00-00', 1, '2026-07-16 01:00:00', '2026-07-16 01:00:00'),
-(17, 1, 17, 17, '2026-07-01', '0000-00-00', 1, '2026-07-17 01:00:00', '2026-07-17 01:00:00'),
-(18, 1, 18, 18, '2026-07-01', '0000-00-00', 1, '2026-07-18 01:00:00', '2026-07-18 01:00:00'),
-(19, 1, 19, 19, '2026-07-01', '0000-00-00', 1, '2026-07-19 01:00:00', '2026-07-19 01:00:00'),
-(20, 1, 20, 20, '2026-07-01', '0000-00-00', 1, '2026-07-20 01:00:00', '2026-07-20 01:00:00'),
-(21, 1, 21, 21, '2026-07-01', '0000-00-00', 1, '2026-07-21 01:00:00', '2026-07-21 01:00:00'),
-(22, 1, 22, 22, '2026-07-01', '0000-00-00', 1, '2026-07-22 01:00:00', '2026-07-22 01:00:00'),
-(23, 1, 23, 23, '2026-07-01', '0000-00-00', 1, '2026-07-23 01:00:00', '2026-07-23 01:00:00'),
-(24, 1, 24, 24, '2026-07-01', '0000-00-00', 1, '2026-07-24 01:00:00', '2026-07-24 01:00:00'),
-(25, 1, 25, 25, '2026-07-01', '0000-00-00', 1, '2026-07-25 01:00:00', '2026-07-25 01:00:00'),
-(26, 1, 26, 26, '2026-07-01', '0000-00-00', 1, '2026-07-26 01:00:00', '2026-07-26 01:00:00'),
-(27, 1, 27, 27, '2026-07-01', '0000-00-00', 1, '2026-07-27 01:00:00', '2026-07-27 01:00:00'),
-(28, 1, 28, 28, '2026-07-01', '0000-00-00', 1, '2026-07-28 01:00:00', '2026-07-28 01:00:00'),
-(29, 1, 29, 29, '2026-07-01', '0000-00-00', 1, '2026-07-29 01:00:00', '2026-07-29 01:00:00'),
-(30, 1, 30, 30, '2026-07-01', '0000-00-00', 1, '2026-07-30 01:00:00', '2026-07-30 01:00:00'),
-(31, 1, 31, 31, '2026-07-01', '0000-00-00', 1, '2026-07-31 01:00:00', '2026-07-31 01:00:00'),
-(32, 1, 32, 32, '2026-07-01', '0000-00-00', 1, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(33, 1, 33, 33, '2026-07-01', '0000-00-00', 1, '2026-07-02 01:00:00', '2026-07-02 01:00:00'),
-(34, 1, 34, 34, '2026-07-01', '0000-00-00', 1, '2026-07-03 01:00:00', '2026-07-03 01:00:00'),
-(35, 1, 35, 35, '2026-07-01', '0000-00-00', 1, '2026-07-04 01:00:00', '2026-07-04 01:00:00'),
-(36, 1, 36, 36, '2026-07-01', '0000-00-00', 1, '2026-07-05 01:00:00', '2026-07-05 01:00:00'),
-(37, 1, 37, 37, '2026-07-01', '0000-00-00', 1, '2026-07-06 01:00:00', '2026-07-06 01:00:00'),
-(38, 1, 38, 38, '2026-07-01', '0000-00-00', 1, '2026-07-07 01:00:00', '2026-07-07 01:00:00'),
-(39, 1, 39, 39, '2026-07-01', '0000-00-00', 1, '2026-07-08 01:00:00', '2026-07-08 01:00:00'),
-(40, 1, 40, 40, '2026-07-01', '0000-00-00', 1, '2026-07-09 01:00:00', '2026-07-09 01:00:00'),
-(41, 1, 41, 41, '2026-07-01', '0000-00-00', 1, '2026-07-10 01:00:00', '2026-07-10 01:00:00'),
-(42, 1, 42, 42, '2026-07-01', '0000-00-00', 1, '2026-07-11 01:00:00', '2026-07-11 01:00:00'),
-(43, 1, 43, 43, '2026-07-01', '0000-00-00', 1, '2026-07-12 01:00:00', '2026-07-12 01:00:00'),
-(44, 1, 44, 44, '2026-07-01', '0000-00-00', 1, '2026-07-13 01:00:00', '2026-07-13 01:00:00'),
-(45, 1, 45, 45, '2026-07-01', '0000-00-00', 1, '2026-07-14 01:00:00', '2026-07-14 01:00:00'),
-(46, 1, 46, 46, '2026-07-01', '0000-00-00', 1, '2026-07-15 01:00:00', '2026-07-15 01:00:00'),
-(47, 1, 47, 47, '2026-07-01', '0000-00-00', 1, '2026-07-16 01:00:00', '2026-07-16 01:00:00'),
-(48, 1, 48, 48, '2026-07-01', '0000-00-00', 1, '2026-07-17 01:00:00', '2026-07-17 01:00:00'),
-(49, 1, 49, 49, '2026-07-01', '0000-00-00', 1, '2026-07-18 01:00:00', '2026-07-18 01:00:00'),
-(50, 1, 50, 50, '2026-07-01', '0000-00-00', 1, '2026-07-19 01:00:00', '2026-07-19 01:00:00'),
-(52, 1, 52, 2, '2026-07-01', '0000-00-00', 1, '2026-07-21 01:00:00', '2026-07-21 01:00:00'),
-(53, 1, 53, 3, '2026-07-01', '0000-00-00', 1, '2026-07-22 01:00:00', '2026-07-22 01:00:00'),
-(54, 1, 54, 4, '2026-07-01', '0000-00-00', 1, '2026-07-23 01:00:00', '2026-07-23 01:00:00'),
-(55, 1, 55, 5, '2026-07-01', '0000-00-00', 1, '2026-07-24 01:00:00', '2026-07-24 01:00:00'),
-(56, 1, 56, 6, '2026-07-01', '0000-00-00', 1, '2026-07-25 01:00:00', '2026-07-25 01:00:00'),
-(57, 1, 57, 7, '2026-07-01', '0000-00-00', 1, '2026-07-26 01:00:00', '2026-07-26 01:00:00'),
-(58, 1, 58, 8, '2026-07-01', '0000-00-00', 1, '2026-07-27 01:00:00', '2026-07-27 01:00:00'),
-(59, 1, 59, 9, '2026-07-01', '0000-00-00', 1, '2026-07-28 01:00:00', '2026-07-28 01:00:00'),
-(60, 1, 60, 10, '2026-07-01', '0000-00-00', 1, '2026-07-29 01:00:00', '2026-07-29 01:00:00'),
-(61, 1, 61, 11, '2026-07-01', '0000-00-00', 1, '2026-07-30 01:00:00', '2026-07-30 01:00:00'),
-(62, 1, 62, 12, '2026-07-01', '0000-00-00', 1, '2026-07-31 01:00:00', '2026-07-31 01:00:00'),
-(63, 1, 63, 13, '2026-07-01', '0000-00-00', 1, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(64, 1, 64, 14, '2026-07-01', '0000-00-00', 1, '2026-07-02 01:00:00', '2026-07-02 01:00:00'),
-(65, 1, 65, 15, '2026-07-01', '0000-00-00', 1, '2026-07-03 01:00:00', '2026-07-03 01:00:00'),
-(66, 1, 66, 16, '2026-07-01', '0000-00-00', 1, '2026-07-04 01:00:00', '2026-07-04 01:00:00'),
-(67, 1, 67, 17, '2026-07-01', '0000-00-00', 1, '2026-07-05 01:00:00', '2026-07-05 01:00:00'),
-(68, 1, 68, 18, '2026-07-01', '0000-00-00', 1, '2026-07-06 01:00:00', '2026-07-06 01:00:00'),
-(69, 1, 69, 19, '2026-07-01', '0000-00-00', 1, '2026-07-07 01:00:00', '2026-07-07 01:00:00'),
-(70, 1, 70, 20, '2026-07-01', '0000-00-00', 1, '2026-07-08 01:00:00', '2026-07-08 01:00:00'),
-(71, 1, 71, 21, '2026-07-01', '0000-00-00', 1, '2026-07-09 01:00:00', '2026-07-09 01:00:00'),
-(72, 1, 72, 22, '2026-07-01', '0000-00-00', 1, '2026-07-10 01:00:00', '2026-07-10 01:00:00'),
-(73, 1, 73, 23, '2026-07-01', '0000-00-00', 1, '2026-07-11 01:00:00', '2026-07-11 01:00:00'),
-(74, 1, 74, 24, '2026-07-01', '0000-00-00', 1, '2026-07-12 01:00:00', '2026-07-12 01:00:00'),
-(75, 1, 75, 25, '2026-07-01', '0000-00-00', 1, '2026-07-13 01:00:00', '2026-07-13 01:00:00'),
-(76, 1, 76, 26, '2026-07-01', '0000-00-00', 1, '2026-07-14 01:00:00', '2026-07-14 01:00:00'),
-(77, 1, 77, 27, '2026-07-01', '0000-00-00', 1, '2026-07-15 01:00:00', '2026-07-15 01:00:00'),
-(78, 1, 78, 28, '2026-07-01', '0000-00-00', 1, '2026-07-16 01:00:00', '2026-07-16 01:00:00'),
-(79, 1, 79, 29, '2026-07-01', '0000-00-00', 1, '2026-07-17 01:00:00', '2026-07-17 01:00:00'),
-(80, 1, 80, 30, '2026-07-01', '0000-00-00', 1, '2026-07-18 01:00:00', '2026-07-18 01:00:00'),
-(81, 1, 81, 31, '2026-07-01', '0000-00-00', 1, '2026-07-19 01:00:00', '2026-07-19 01:00:00'),
-(82, 1, 82, 32, '2026-07-01', '0000-00-00', 1, '2026-07-20 01:00:00', '2026-07-20 01:00:00'),
-(83, 1, 83, 33, '2026-07-01', '0000-00-00', 1, '2026-07-21 01:00:00', '2026-07-21 01:00:00'),
-(84, 1, 84, 34, '2026-07-01', '0000-00-00', 1, '2026-07-22 01:00:00', '2026-07-22 01:00:00'),
-(85, 1, 85, 35, '2026-07-01', '0000-00-00', 1, '2026-07-23 01:00:00', '2026-07-23 01:00:00'),
-(86, 1, 86, 36, '2026-07-01', '0000-00-00', 1, '2026-07-24 01:00:00', '2026-07-24 01:00:00'),
-(87, 1, 87, 37, '2026-07-01', '0000-00-00', 1, '2026-07-25 01:00:00', '2026-07-25 01:00:00'),
-(88, 1, 88, 38, '2026-07-01', '0000-00-00', 1, '2026-07-26 01:00:00', '2026-07-26 01:00:00'),
-(89, 1, 89, 39, '2026-07-01', '0000-00-00', 1, '2026-07-27 01:00:00', '2026-07-27 01:00:00'),
-(90, 1, 90, 40, '2026-07-01', '0000-00-00', 1, '2026-07-28 01:00:00', '2026-07-28 01:00:00'),
-(91, 1, 91, 41, '2026-07-01', '0000-00-00', 1, '2026-07-29 01:00:00', '2026-07-29 01:00:00'),
-(92, 1, 92, 42, '2026-07-01', '0000-00-00', 1, '2026-07-30 01:00:00', '2026-07-30 01:00:00'),
-(93, 1, 93, 43, '2026-07-01', '0000-00-00', 1, '2026-07-31 01:00:00', '2026-07-31 01:00:00'),
-(94, 1, 94, 44, '2026-07-01', '0000-00-00', 1, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(95, 1, 95, 45, '2026-07-01', '0000-00-00', 1, '2026-07-02 01:00:00', '2026-07-02 01:00:00'),
-(96, 1, 96, 46, '2026-07-01', '0000-00-00', 1, '2026-07-03 01:00:00', '2026-07-03 01:00:00'),
-(97, 1, 97, 47, '2026-07-01', '0000-00-00', 1, '2026-07-04 01:00:00', '2026-07-04 01:00:00'),
-(98, 1, 98, 48, '2026-07-01', '0000-00-00', 1, '2026-07-05 01:00:00', '2026-07-05 01:00:00'),
-(99, 1, 99, 49, '2026-07-01', '0000-00-00', 1, '2026-07-06 01:00:00', '2026-07-06 01:00:00');
-
---
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `t_guru`
+-- Indeks untuk tabel `t_guru`
 --
 ALTER TABLE `t_guru`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `t_kelas`
+-- Indeks untuk tabel `t_kelas`
 --
 ALTER TABLE `t_kelas`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `t_kelas_siswa`
+-- Indeks untuk tabel `t_kelas_siswa`
 --
 ALTER TABLE `t_kelas_siswa`
   ADD PRIMARY KEY (`id`),
@@ -951,20 +863,20 @@ ALTER TABLE `t_kelas_siswa`
   ADD KEY `kelas_id` (`kelas_id`);
 
 --
--- Indexes for table `t_pelanggaran`
+-- Indeks untuk tabel `t_pelanggaran`
 --
 ALTER TABLE `t_pelanggaran`
   ADD PRIMARY KEY (`id`),
   ADD KEY `pelanggaran_kategori_id` (`pelanggaran_kategori_id`);
 
 --
--- Indexes for table `t_pelanggaran_kategori`
+-- Indeks untuk tabel `t_pelanggaran_kategori`
 --
 ALTER TABLE `t_pelanggaran_kategori`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `t_pelanggaran_siswa`
+-- Indeks untuk tabel `t_pelanggaran_siswa`
 --
 ALTER TABLE `t_pelanggaran_siswa`
   ADD PRIMARY KEY (`id`),
@@ -976,25 +888,25 @@ ALTER TABLE `t_pelanggaran_siswa`
   ADD KEY `guru_id` (`guru_id`);
 
 --
--- Indexes for table `t_siswa`
+-- Indeks untuk tabel `t_siswa`
 --
 ALTER TABLE `t_siswa`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `t_tahun_ajaran`
+-- Indeks untuk tabel `t_tahun_ajaran`
 --
 ALTER TABLE `t_tahun_ajaran`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `t_users`
+-- Indeks untuk tabel `t_users`
 --
 ALTER TABLE `t_users`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `t_wali_kelas`
+-- Indeks untuk tabel `t_wali_kelas`
 --
 ALTER TABLE `t_wali_kelas`
   ADD PRIMARY KEY (`id`),
@@ -1003,81 +915,81 @@ ALTER TABLE `t_wali_kelas`
   ADD KEY `guru_id` (`guru_id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT untuk tabel yang dibuang
 --
 
 --
--- AUTO_INCREMENT for table `t_guru`
+-- AUTO_INCREMENT untuk tabel `t_guru`
 --
 ALTER TABLE `t_guru`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
--- AUTO_INCREMENT for table `t_kelas`
+-- AUTO_INCREMENT untuk tabel `t_kelas`
 --
 ALTER TABLE `t_kelas`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
 
 --
--- AUTO_INCREMENT for table `t_kelas_siswa`
+-- AUTO_INCREMENT untuk tabel `t_kelas_siswa`
 --
 ALTER TABLE `t_kelas_siswa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 
 --
--- AUTO_INCREMENT for table `t_pelanggaran`
+-- AUTO_INCREMENT untuk tabel `t_pelanggaran`
 --
 ALTER TABLE `t_pelanggaran`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
 
 --
--- AUTO_INCREMENT for table `t_pelanggaran_kategori`
+-- AUTO_INCREMENT untuk tabel `t_pelanggaran_kategori`
 --
 ALTER TABLE `t_pelanggaran_kategori`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
 
 --
--- AUTO_INCREMENT for table `t_pelanggaran_siswa`
+-- AUTO_INCREMENT untuk tabel `t_pelanggaran_siswa`
 --
 ALTER TABLE `t_pelanggaran_siswa`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=109;
 
 --
--- AUTO_INCREMENT for table `t_siswa`
+-- AUTO_INCREMENT untuk tabel `t_siswa`
 --
 ALTER TABLE `t_siswa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
 
 --
--- AUTO_INCREMENT for table `t_tahun_ajaran`
+-- AUTO_INCREMENT untuk tabel `t_tahun_ajaran`
 --
 ALTER TABLE `t_tahun_ajaran`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
 
 --
--- AUTO_INCREMENT for table `t_users`
+-- AUTO_INCREMENT untuk tabel `t_users`
 --
 ALTER TABLE `t_users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=106;
 
 --
--- AUTO_INCREMENT for table `t_wali_kelas`
+-- AUTO_INCREMENT untuk tabel `t_wali_kelas`
 --
 ALTER TABLE `t_wali_kelas`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
 
 --
--- Constraints for dumped tables
+-- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
 --
 
 --
--- Constraints for table `t_guru`
+-- Ketidakleluasaan untuk tabel `t_guru`
 --
 ALTER TABLE `t_guru`
   ADD CONSTRAINT `t_guru_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `t_users` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `t_kelas_siswa`
+-- Ketidakleluasaan untuk tabel `t_kelas_siswa`
 --
 ALTER TABLE `t_kelas_siswa`
   ADD CONSTRAINT `t_kelas_siswa_ibfk_1` FOREIGN KEY (`tahun_ajaran_id`) REFERENCES `t_tahun_ajaran` (`id`) ON DELETE CASCADE,
@@ -1085,13 +997,13 @@ ALTER TABLE `t_kelas_siswa`
   ADD CONSTRAINT `t_kelas_siswa_ibfk_3` FOREIGN KEY (`siswa_id`) REFERENCES `t_siswa` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `t_pelanggaran`
+-- Ketidakleluasaan untuk tabel `t_pelanggaran`
 --
 ALTER TABLE `t_pelanggaran`
   ADD CONSTRAINT `t_pelanggaran_ibfk_1` FOREIGN KEY (`pelanggaran_kategori_id`) REFERENCES `t_pelanggaran_kategori` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `t_pelanggaran_siswa`
+-- Ketidakleluasaan untuk tabel `t_pelanggaran_siswa`
 --
 ALTER TABLE `t_pelanggaran_siswa`
   ADD CONSTRAINT `t_pelanggaran_siswa_ibfk_1` FOREIGN KEY (`tahun_ajaran_id`) REFERENCES `t_tahun_ajaran` (`id`),
@@ -1102,7 +1014,7 @@ ALTER TABLE `t_pelanggaran_siswa`
   ADD CONSTRAINT `t_pelanggaran_siswa_ibfk_6` FOREIGN KEY (`siswa_id`) REFERENCES `t_siswa` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `t_wali_kelas`
+-- Ketidakleluasaan untuk tabel `t_wali_kelas`
 --
 ALTER TABLE `t_wali_kelas`
   ADD CONSTRAINT `t_wali_kelas_ibfk_1` FOREIGN KEY (`guru_id`) REFERENCES `t_guru` (`id`) ON DELETE CASCADE,

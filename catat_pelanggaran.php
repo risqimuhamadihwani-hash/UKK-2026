@@ -195,56 +195,57 @@ $pelanggaranList = $koneksi->query(
     <title>Catat Pelanggaran Siswa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body>
 
 <div class="container-fluid">
     <div class="row">
-
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
-            <h4 class="text-white mb-4">JusticeGuru</h4>
-            
+
+            <h4 class="text-white fw-bold mb-4">
+                My Website
+            </h4>
             <ul class="nav nav-pills flex-column">
 
                 <li class="nav-item mb-2">
                     <a href="guru.php" class="nav-link text-white">
-                        Dashboard
+                    <h7 class="fw-bold mb-4">Dasboard</h7> 
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="Catat_Pelanggaran.php" class="nav-link active">
-                        Catat Pelanggaran
+                    <h7 class="fw-bold mb-4">Catat Pelanggaran</h7> 
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="Tindakan.php" class="nav-link text-white">
-                        Tindakan
+                    <h7 class="fw-bold mb-4">Tindakan</h7> 
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="rekap_poin.php" class="nav-link text-white">
-                        Rekap Poin
+                    <h7 class="fw-bold mb-4">Rekap Poin</h7> 
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="riwayat.php" class="nav-link text-white">
-                        Riwayat
+                    <h7 class="fw-bold mb-4">Riwayat</h7> 
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                        Laporan
+                    <h7 class="fw-bold mb-4">Laporan</h7> 
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
-                        About Me
+                    <h7 class="fw-bold mb-4">About Me</h7> 
                     </a>
                 </li>
 
@@ -252,14 +253,15 @@ $pelanggaranList = $koneksi->query(
 
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                        Logout
+                    <h7 class="fw-bold mb-4">Logout</h7> 
                     </a>
                 </li>
-
+            </ul>
         </div>
-
-        <!-- KONTEN UTAMA -->
+        
+        <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
+
             <h2>Catat Pelanggaran Siswa</h2>
             <p class="text-muted mb-4">Formulir pencatatan pelanggaran dan tindakan disiplin siswa</p>
 

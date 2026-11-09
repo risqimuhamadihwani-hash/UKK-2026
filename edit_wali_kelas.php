@@ -152,73 +152,73 @@ function e($data) {
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
             <h4 class="text-white mb-4">
-                JusticeAdmin
+                My Website
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
-                        Dashboard
+                    <h7 class="fw-bold mb-4">Dasboard</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Siswa.php" class="nav-link text-white">
-                        Kelola Siswa
+                    <h7 class="fw-bold mb-4">Kelola Siswa</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Guru.php" class="nav-link text-white">
-                        Kelola Guru
+                    <h7 class="fw-bold mb-4">Kelola Guru</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kelas.php" class="nav-link text-white">
-                        Kelola Kelas
+                    <h7 class="fw-bold mb-4">Kelola Kelas</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
-                        Kelola Tahun Ajaran
+                    <h7 class="fw-bold mb-4">Kelola Tahun Ajaran</h7> 
                     </a>
                 </li>
-                 <li class="nav-item mb-2">
+                <li class="nav-item mb-2">
                     <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
-                        Kelola Penempatan Siswa
+                    <h7 class="fw-bold mb-4">Kelola Penempatan Siswa</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Wali_Kelas.php" class="nav-link active">
-                        Kelola Wali Kelas
+                    <h7 class="fw-bold mb-4">Kelola Wali Kelas</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
-                        Kelola Kategori Pelanggaran
+                    <h7 class="fw-bold mb-4">Kelola Kategori Pelanggaran</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
-                        Kelola Jenis Pelanggaran
+                    <h7 class="fw-bold mb-4">Kelola Jenis Pelanggaran</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                        Laporan
+                    <h7 class="fw-bold mb-4">Laporan</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Cetak_Export.php" class="nav-link text-white">
-                        Cetak/Export
+                    <h7 class="fw-bold mb-4">Cetak/Export</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
-                        About Me
+                    <h7 class="fw-bold mb-4">About Me</h7> 
                     </a>
                 </li>
                 <hr class="text-secondary">
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                        Logout
+                    <h7 class="fw-bold mb-4">Logout</h7> 
                     </a>
                 </li>
             </ul>

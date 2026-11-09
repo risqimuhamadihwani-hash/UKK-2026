@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 require_once 'config/koneksi.php';
@@ -69,55 +68,53 @@ $total_selesai = $ringkasan['selesai'] ?? 0;
 
 <div class="container-fluid">
     <div class="row">
-
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
 
-            <h4 class="text-white mb-4">
-                JusticeGuru
+            <h4 class="text-white fw-bold mb-4">
+                My Website
             </h4>
-
             <ul class="nav nav-pills flex-column">
 
                 <li class="nav-item mb-2">
                     <a href="guru.php" class="nav-link active">
-                        Dashboard
+                    <h7 class="fw-bold mb-4">Dashboard</h7> 
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="Catat_Pelanggaran.php" class="nav-link text-white">
-                        Catat Pelanggaran
+                    <h7 class="fw-bold mb-4">Catat Pelanggaran</h7> 
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="Tindakan.php" class="nav-link text-white">
-                        Tindakan
+                    <h7 class="fw-bold mb-4">Tindakan</h7> 
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="rekap_poin.php" class="nav-link text-white">
-                        Rekap Poin
+                    <h7 class="fw-bold mb-4">Rekap Poin</h7> 
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="riwayat.php" class="nav-link text-white">
-                        Riwayat
+                    <h7 class="fw-bold mb-4">Riwayat</h7> 
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                        Laporan
+                    <h7 class="fw-bold mb-4">Laporan</h7> 
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
-                        About Me
+                    <h7 class="fw-bold mb-4">About Me</h7> 
                     </a>
                 </li>
 
@@ -125,21 +122,19 @@ $total_selesai = $ringkasan['selesai'] ?? 0;
 
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                        Logout
+                    <h7 class="fw-bold mb-4">Logout</h7> 
                     </a>
                 </li>
-
             </ul>
-
         </div>
-
+        
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h2>Dashboard Guru</h2>
+            <h2>Dashboard</h2>
 
-            <p>
-                Selamat datang <?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>
+            <p class="text-muted">
+                Selamat datang, <?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>. Berikut ringkasan Sistem Informasi Pelanggaran Siswa.
             </p>
 
             <!-- RINGKASAN PELANGGARAN -->
@@ -147,72 +142,60 @@ $total_selesai = $ringkasan['selesai'] ?? 0;
 
                 <!-- TOTAL PELANGGARAN -->
                 <div class="col-md-3 mb-3">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm border-0">
                         <div class="card-body">
-
-                            <h6 class="text-muted">
-                                Total Pelanggaran
-                            </h6>
-
-                            <h3>
+                            <h6 class="text-muted">Total Pelanggaran</h6>
+                            <h3 class="fw-bold mb-0 text-primary">
                                 <?= number_format($total_pelanggaran) ?>
                             </h3>
-
                         </div>
                     </div>
                 </div>
 
                 <!-- TERCATAT -->
                 <div class="col-md-3 mb-3">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm border-0">
                         <div class="card-body">
-
-                            <h6 class="text-muted">
-                                Tercatat
-                            </h6>
-
-                            <h3>
+                            <h6 class="text-muted">Tercatat</h6>
+                            <h3 class="fw-bold mb-0 text-secondary">
                                 <?= number_format($total_tercatat) ?>
                             </h3>
-
                         </div>
                     </div>
                 </div>
 
                 <!-- DIPROSES -->
                 <div class="col-md-3 mb-3">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm border-0">
                         <div class="card-body">
-
-                            <h6 class="text-muted">
-                                Diproses
-                            </h6>
-
-                            <h3>
+                            <h6 class="text-muted">Diproses</h6>
+                            <h3 class="fw-bold mb-0 text-warning">
                                 <?= number_format($total_diproses) ?>
                             </h3>
-
                         </div>
                     </div>
                 </div>
 
                 <!-- SELESAI -->
                 <div class="col-md-3 mb-3">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm border-0">
                         <div class="card-body">
-
-                            <h6 class="text-muted">
-                                Selesai
-                            </h6>
-
-                            <h3>
+                            <h6 class="text-muted">Selesai</h6>
+                            <h3 class="fw-bold mb-0 text-success">
                                 <?= number_format($total_selesai) ?>
                             </h3>
-
                         </div>
                     </div>
                 </div>
 
+            </div>
+
+            <!-- ALUR PENGGUNAAN -->
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-2">Alur penggunaan</h5>
+                    <p class="text-muted mb-0">Pilih menu di sidebar untuk mencatat pelanggaran, memproses tindakan, melihat rekap poin, riwayat, serta melihat laporan sesuai hak akses akun.</p>
+                </div>
             </div>
 
         </main>

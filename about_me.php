@@ -35,8 +35,8 @@ $isAdmin = ($role === 'admin');
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
 
-            <h4 class="text-white mb-4">
-                <?= ($role === 'admin') ? 'Sistem Pelanggaran Siswa' : 'Sistem Pelanggaran Siswa'; ?>
+            <h4 class="text-white fw-bold mb-4">
+                <?= ($role === 'admin') ? 'My Website' : 'My Website'; ?>
             </h4>
 
             <ul class="nav nav-pills flex-column">
@@ -45,103 +45,113 @@ $isAdmin = ($role === 'admin');
 
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
-                        Dashboard
+                    <h7 class="fw-bold mb-4">Dasboard</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Siswa.php" class="nav-link text-white">
-                        Kelola Siswa
+                    <h7 class="fw-bold mb-4">Kelola Siswa</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Guru.php" class="nav-link text-white">
-                        Kelola Guru
+                    <h7 class="fw-bold mb-4">Kelola Guru</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kelas.php" class="nav-link text-white">
-                        Kelola Kelas
+                    <h7 class="fw-bold mb-4">Kelola Kelas</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
-                        Kelola Tahun Ajaran
+                    <h7 class="fw-bold mb-4">Kelola Tahun Ajaran</h7> 
                     </a>
                 </li>
-                 <li class="nav-item mb-2">
+                <li class="nav-item mb-2">
                     <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
-                        Kelola Penempatan Siswa
+                    <h7 class="fw-bold mb-4">Kelola Penempatan Siswa</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">
-                        Kelola Wali Kelas
+                    <h7 class="fw-bold mb-4">Kelola Wali Kelas</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Kelola_Katrgoti_Pelanggaran.php" class="nav-link text-white">
-                        Kelola Kategori Pelanggaran
+                    <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
+                    <h7 class="fw-bold mb-4">Kelola Kategori Pelanggaran</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
-                        Kelola Jenis Pelanggaran
+                    <h7 class="fw-bold mb-4">Kelola Jenis Pelanggaran</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                        Laporan
+                    <h7 class="fw-bold mb-4">Laporan</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Cetak_Export.php" class="nav-link text-white">
-                        Cetak/Export
+                    <h7 class="fw-bold mb-4">Cetak/Export</h7> 
                     </a>
                 </li>
+ 
 
                 <?php else: ?>
 
                 <li class="nav-item mb-2">
-                    <a href="dashboard.php" class="nav-link text-white">
-                        Dashboard
+                    <a href="guru.php" class="nav-link text-white">
+                    <h7 class="fw-bold mb-4">Dasboard</h7> 
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="Catat_Pelanggaran.php" class="nav-link text-white">
-                        Catat Pelanggaran
+                    <h7 class="fw-bold mb-4">Catat Pelanggaran</h7> 
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="Tindakan.php" class="nav-link text-white">
-                        Tindakan
+                    <h7 class="fw-bold mb-4">Tindakan</h7> 
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="rekap_poin.php" class="nav-link text-white">
-                        Rekap Poin
+                    <h7 class="fw-bold mb-4">Rekap Poin</h7> 
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="riwayat.php" class="nav-link text-white">
-                        Riwayat
+                    <h7 class="fw-bold mb-4">Riwayat</h7> 
                     </a>
                 </li>
+
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                        Laporan
+                    <h7 class="fw-bold mb-4">Laporan</h7> 
                     </a>
                 </li>
 
                 <?php endif; ?>
 
                 <li class="nav-item mb-2">
-                    <a href="about_me.php" class="nav-link active">About Me</a>
+                    <a href="about_me.php" class="nav-link active">
+                    <h7 class="fw-bold mb-4">About Me</h7>
+                    </a>
                 </li>
 
                 <hr class="text-secondary">
 
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-danger">Logout</a>
+                    <a href="logout.php" class="nav-link text-danger">
+                    <h7 class="fw-bold mb-4">logout</h7>
+                    </a>
                 </li>
 
             </ul>
@@ -226,7 +236,7 @@ $isAdmin = ($role === 'admin');
                     </div>
 
                     <div class="text-center mt-4">
-                        <a href="dashboard.php" class="btn btn-primary mb-3">
+                        <a href="dashboard.php" class="btn btn-dark mb-3">
                             &larr; Kembali ke Dashboard
                         </a>
                         <p class="text-muted mb-0">

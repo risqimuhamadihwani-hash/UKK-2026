@@ -19,6 +19,28 @@ if (isset($_SESSION['id_user'])) {
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
+        <!-- Google Font: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
+
+    <style>
+        /* Menerapkan font Poppins dan membuat seluruh teks menjadi bold (semi-bold/bold) */
+        body, * {
+            font-family: 'Poppins', sans-serif !important;
+            font-weight: 600 !important; /* Mengatur ketebalan teks secara global */
+        }
+
+        /* Jika ingin beberapa bagian heading atau judul lebih tebal lagi */
+        h1, h4, .fw-bold {
+            font-weight: 700 !important;
+        }
+    </style>
+
+    
     <style>
         body {
             height: 100vh;
@@ -96,7 +118,7 @@ if (isset($_SESSION['id_user'])) {
         <!-- Sisi Kanan: Form Login -->
         <div class="col-md-6 right-side d-flex flex-column justify-content-center">
             <div class="text-center mb-4">
-                <h4 class="fw-bold text-dark">Login Administrator</h4>
+                <h3 class="fw-bold text-dark">LOGIN</h3>
                 <p class="text-muted small">Masukkan kredensial akun Anda</p>
             </div>
 

@@ -41,82 +41,84 @@ if (!$result) {
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
 <div class="container-fluid">
     <div class="row">
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
-            <h4 class="text-white mb-4">
-                Sistem Pelanggaran Siswa
+            <h4 class="text-white fw-bold mb-4 ">
+                My Website
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
-                        Dashboard
+                    <h7 class="fw-bold mb-4">Dasboard</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Siswa.php" class="nav-link text-white">
-                        Kelola Siswa
+                    <h7 class="fw-bold mb-4">Kelola Siswa</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Guru.php" class="nav-link text-white">
-                        Kelola Guru
+                    <h7 class="fw-bold mb-4">Kelola Guru</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kelas.php" class="nav-link text-white">
-                        Kelola Kelas
+                    <h7 class="fw-bold mb-4">Kelola Kelas</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Tahun_Ajaran.php" class="nav-link active">
-                        Kelola Tahun Ajaran
+                    <h7 class="fw-bold mb-4">Kelola Tahun Ajaran</h7> 
                     </a>
                 </li>
-                 <li class="nav-item mb-2">
+                <li class="nav-item mb-2">
                     <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
-                        Kelola Penempatan Siswa
+                    <h7 class="fw-bold mb-4">Kelola Penempatan Siswa</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">
-                        Kelola Wali Kelas
+                    <h7 class="fw-bold mb-4">Kelola Wali Kelas</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
-                        Kelola Kategori Pelanggaran
+                    <h7 class="fw-bold mb-4">Kelola Kategori Pelanggaran</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
-                        Kelola Jenis Pelanggaran
+                    <h7 class="fw-bold mb-4">Kelola Jenis Pelanggaran</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                        Laporan
+                    <h7 class="fw-bold mb-4">Laporan</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Cetak_Export.php" class="nav-link text-white">
-                        Cetak/Export
+                    <h7 class="fw-bold mb-4">Cetak/Export</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
-                        About Me
+                    <h7 class="fw-bold mb-4">About Me</h7> 
                     </a>
                 </li>
                 <hr class="text-secondary">
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                        Logout
+                    <h7 class="fw-bold mb-4">Logout</h7> 
                     </a>
                 </li>
             </ul>
         </div>
+
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
             <h1>Kelola Tahun Ajaran</h1>
