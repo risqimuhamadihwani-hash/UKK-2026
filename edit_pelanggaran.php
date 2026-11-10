@@ -175,77 +175,30 @@ function e($data) {
                 <div class="card-body p-4">
                     <form method="POST">
 
-                        <!-- DROPDOWN KODE PELANGGARAN -->
-                        <div class="mb-4">
-                            <label class="form-label">Kode Pelanggaran</label>
-                            <select name="kode" class="form-select" required>
-                                <option value="" disabled>-- Pilih Kode Pelanggaran --</option>
-                                <?php
-                                for ($i = 1; $i <= 100; $i++) {
-                                    $formattedCode = "PG-" . str_pad($i, 3, "0", STR_PAD_LEFT);
-                                    $selectedCode = ($data['kode'] === $formattedCode) ? 'selected' : '';
-                                    echo "<option value=\"$formattedCode\" $selectedCode>$formattedCode</option>";
-                                }
-                                ?>
-                            </select>
+                        <div class="row">
+                            <!-- INPUT KODE PELANGGARAN -->
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Kode</label>
+                                <input type="text" name="kode" class="form-control" placeholder="Contoh: PG-001" value="<?= e($data['kode']) ?>" required>
+                            </div>
+
+                            <!-- INPUT POIN -->
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Poin</label>
+                                <input type="number" name="poin" class="form-control" value="<?= e($data['poin']) ?>" required>
+                            </div>
                         </div>
 
-                        <!-- DROPDOWN NAMA PELANGGARAN -->
+                        <!-- INPUT NAMA PELANGGARAN -->
                         <div class="mb-4">
                             <label class="form-label">Nama Pelanggaran</label>
-                            <select name="nama" class="form-select" required>
-                                <option value="" disabled>-- Pilih Nama Pelanggaran --</option>
-                                <?php
-                                $masterPelanggaran = [
-                                    "Terlambat datang ke sekolah",
-                                    "Tidak memakai atribut lengkap",
-                                    "Tidak memakai seragam sesuai ketentuan",
-                                    "Meninggalkan kelas tanpa izin",
-                                    "Tidak mengerjakan tugas",
-                                    "Rambut tidak sesuai aturan",
-                                    "Membawa barang terlarang",
-                                    "Berkata tidak sopan",
-                                    "Membuang sampah sembarangan",
-                                    "Tidak mengikuti upacara"
-                                ];
-
-                                for ($i = 1; $i <= 100; $i++) {
-                                    $index = ($i - 1) % 10;
-                                    $namaPelanggaran = $masterPelanggaran[$index] . " #" . str_pad($i, 3, "0", STR_PAD_LEFT);
-                                    $selectedNama = ($data['nama'] === $namaPelanggaran) ? 'selected' : '';
-                                    echo "<option value=\"$namaPelanggaran\" $selectedNama>$namaPelanggaran</option>";
-                                }
-                                ?>
-                            </select>
+                            <input type="text" name="nama" class="form-control" placeholder="Masukkan nama pelanggaran" value="<?= e($data['nama']) ?>" required>
                         </div>
 
-                        <!-- DROPDOWN POIN (1 sampai 10) -->
-                        <div class="mb-4">
-                            <label class="form-label">Poin</label>
-                            <select name="poin" class="form-select" required>
-                                <option value="" disabled>-- Pilih Jumlah Poin --</option>
-                                <?php
-                                for ($p = 1; $p <= 10; $p++) {
-                                    $selectedPoin = ($data['poin'] == $p) ? 'selected' : '';
-                                    echo "<option value=\"$p\" $selectedPoin>$p</option>";
-                                }
-                                ?>
-                            </select>
-                        </div>
-
-                        <!-- DROPDOWN DESKRIPSI -->
+                        <!-- INPUT DESKRIPSI -->
                         <div class="mb-4">
                             <label class="form-label">Deskripsi</label>
-                            <select name="deskripsi" class="form-select" required>
-                                <option value="" disabled>-- Pilih Deskripsi Pelanggaran --</option>
-                                <?php
-                                for ($i = 1; $i <= 100; $i++) {
-                                    $descVal = "Deskripsi pelanggaran nomor $i.";
-                                    $selectedDesc = ($data['deskripsi'] === $descVal) ? 'selected' : '';
-                                    echo "<option value=\"$descVal\" $selectedDesc>$descVal</option>";
-                                }
-                                ?>
-                            </select>
+                            <textarea name="deskripsi" class="form-control" rows="3" placeholder="Masukkan deskripsi pelanggaran" required><?= e($data['deskripsi']) ?></textarea>
                         </div>
 
                         <!-- STATUS AKTIF -->

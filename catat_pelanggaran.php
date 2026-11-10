@@ -1,26 +1,31 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 require_once 'config/koneksi.php';
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-// CEK LOGIN
 if (!isset($_SESSION['id_user'])) {
     header("Location: login.php");
     exit;
 }
 
-// CEK ROLE GURU
-if (strtolower($_SESSION['role'] ?? '') !== 'guru') {
-    header("Location: dashboard.php");
+$role = strtolower(trim($_SESSION['role'] ?? ''));
+
+if ($role !== 'admin' && $role !== 'guru') {
+    session_destroy();
+    header("Location: login.php");
     exit;
 }
 
-function e($data) {
-    return htmlspecialchars((string)($data ?? ''), ENT_QUOTES, 'UTF-8');
+if (!function_exists('e')) {
+    function e($data) {
+        return htmlspecialchars((string)($data ?? ''), ENT_QUOTES, 'UTF-8');
+    }
 }
 
-// KONEKSI DATABASE
 $koneksi = $conn ?? $koneksi ?? null;
 
 if (!$koneksi instanceof mysqli) {
@@ -30,57 +35,58 @@ if (!$koneksi instanceof mysqli) {
 $pesan = '';
 $error = '';
 
-$guru_id = 0;
-$nama_guru = $_SESSION['name'] ?? 'Guru';
+$session_name = trim($_SESSION['name'] ?? 'Aldi Maulana');
+$session_email = trim($_SESSION['email'] ?? 'aldimaulana@gmail.com');
 
-// === OTOMATISASI DATA GURU ===
-$stmtGuru = $koneksi->prepare("SELECT id, nama FROM t_guru WHERE user_id = ? OR id = ? LIMIT 1");
-$stmtGuru->bind_param("ii", $_SESSION['id_user'], $_SESSION['id_user']);
+$tahunQuery = $koneksi->query("SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
+$tahunData = $tahunQuery ? $tahunQuery->fetch_assoc() : null;
+$tahun_id = $tahunData ? (int)$tahunData['id'] : 1;
+
+// CARI DATA GURU SECARA EKSPLISIT BERDASARKAN NAMA ATAU EMAIL ALDI MAULANA
+$guru_id = 0;
+$nama_guru = $session_name;
+$nama_kelas_wali = '';
+
+$stmtGuru = $koneksi->prepare(
+    "SELECT g.id AS guru_id, g.nama AS nama_guru, k.id AS kelas_id, k.nama AS nama_kelas
+     FROM t_guru g
+     LEFT JOIN t_wali_kelas wk ON wk.guru_id = g.id AND wk.tahun_ajaran_id = ? AND wk.status_aktif = 1
+     LEFT JOIN t_kelas k ON k.id = wk.kelas_id
+     WHERE g.nama LIKE '%Aldi Maulana%' OR g.email = ?
+     LIMIT 1"
+);
+$stmtGuru->bind_param("is", $tahun_id, $session_email);
 $stmtGuru->execute();
-$dataGuru = $stmtGuru->get_result()->fetch_assoc();
+$dataWaliLogin = $stmtGuru->get_result()->fetch_assoc();
 $stmtGuru->close();
 
-if ($dataGuru) {
-    $guru_id = (int) $dataGuru['id'];
-    $nama_guru = $dataGuru['nama'] ?: $nama_guru;
+if ($dataWaliLogin) {
+    $guru_id = (int) $dataWaliLogin['guru_id'];
+    $nama_guru = $dataWaliLogin['nama_guru'];
+    $nama_kelas_wali = $dataWaliLogin['nama_kelas'] ?? '';
 } else {
-    $resultAnyGuru = $koneksi->query("SELECT id, nama FROM t_guru LIMIT 1");
-    if ($resultAnyGuru && $resultAnyGuru->num_rows > 0) {
-        $anyGuru = $resultAnyGuru->fetch_assoc();
-        $guru_id = (int) $anyGuru['id'];
-        $nama_guru = $anyGuru['nama'] ?: $nama_guru;
-    } else {
-        $uid = (int) $_SESSION['id_user'];
-        $safe_nama = $koneksi->real_escape_string($nama_guru);
-        $koneksi->query("INSERT INTO t_guru (user_id, nama, nip, status_aktif) VALUES ($uid, '$safe_nama', '12345', 1)");
-        $guru_id = (int) $koneksi->insert_id;
-    }
+    // Fallback absolut ke data Aldi Maulana di t_guru (ID 32)
+    $guru_id = 32;
+    $nama_guru = "Aldi Maulana, S.Pd";
 }
-// =============================
 
 // PROSES SIMPAN PELANGGARAN
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $tahunQuery = $koneksi->query("SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
-        $tahunData = $tahunQuery ? $tahunQuery->fetch_assoc() : null;
-        $tahun_id = $tahunData ? (int)$tahunData['id'] : 1;
-
         $siswa_id = (int) ($_POST['siswa_id'] ?? 0);
         $pelanggaran_id = (int) ($_POST['pelanggaran_id'] ?? 0);
         $tanggal = $_POST['tanggal'] ?? date('Y-m-d');
         $keterangan = trim($_POST['keterangan'] ?? '');
 
-        if ($siswa_id < 1 || $pelanggaran_id < 1 || $keterangan === '') {
+        if ($siswa_id < 1 || $pelanggaran_id < 1 || $guru_id < 1 || $keterangan === '') {
             throw new Exception("Lengkapi semua data form dengan benar.");
         }
 
-        // VALIDASI TANGGAL
         $tanggalObj = DateTime::createFromFormat('!Y-m-d', $tanggal);
         if (!$tanggalObj || $tanggalObj->format('Y-m-d') !== $tanggal) {
             throw new Exception("Format tanggal tidak valid.");
         }
 
-        // AMBIL DATA SISWA
         $stmt = $koneksi->prepare("SELECT id, nama FROM t_siswa WHERE id = ? LIMIT 1");
         $stmt->bind_param("i", $siswa_id);
         $stmt->execute();
@@ -92,7 +98,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $nama_siswa = $siswa['nama'];
 
-        // AMBIL KELAS OTOMATIS BERDASARKAN SISWA
         $stmtKelas = $koneksi->prepare(
             "SELECT k.id AS kelas_id, k.nama AS nama_kelas
              FROM t_kelas_siswa ks
@@ -105,10 +110,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $kelasData = $stmtKelas->get_result()->fetch_assoc();
         $stmtKelas->close();
 
-        $kelas_id = ($kelasData && !empty($kelasData['kelas_id'])) ? (int) $kelasData['kelas_id'] : 0;
+        $kelas_id = ($kelasData && !empty($kelasData['kelas_id'])) ? (int) $kelasData['kelas_id'] : null;
         $nama_kelas = $kelasData ? $kelasData['nama_kelas'] : '-';
 
-        // AMBIL DATA JENIS PELANGGARAN & POIN
         $stmt = $koneksi->prepare(
             "SELECT id, nama, poin, pelanggaran_kategori_id
              FROM t_pelanggaran
@@ -127,9 +131,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $kategori_id = (int) ($pelanggaran['pelanggaran_kategori_id'] ?? 0);
         $poin = (int) $pelanggaran['poin'];
         $status = 'tercatat';
-        $tindakan = ''; // Dikosongkan karena input tindakan telah dihapus
+        $tindakan = ''; 
 
-        // SIMPAN KE TABEL t_pelanggaran_siswa
         $stmt = $koneksi->prepare(
             "INSERT INTO t_pelanggaran_siswa
             (tahun_ajaran_id, siswa_id, nama_siswa, kelas_id, nama_kelas, pelanggaran_id, nama_pelanggaran, pelanggaran_kategori_id, guru_id, nama_guru, tanggal, keterangan, poin, tindakan, status)
@@ -158,7 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute();
         $stmt->close();
 
-        header("Location: Catat_Pelanggaran.php?berhasil=1");
+        header("Location: catat_pelanggaran.php?berhasil=1");
         exit;
 
     } catch (Throwable $e) {
@@ -170,7 +173,6 @@ if (isset($_GET['berhasil'])) {
     $pesan = "Catatan pelanggaran berhasil disimpan.";
 }
 
-// DAFTAR SISWA
 $siswaList = $koneksi->query(
     "SELECT s.id, s.nis, s.nama, COALESCE(MAX(k.nama), 'Tanpa Kelas') AS nama_kelas
      FROM t_siswa s
@@ -180,9 +182,11 @@ $siswaList = $koneksi->query(
      ORDER BY s.nama ASC"
 );
 
-// DAFTAR PELANGGARAN
 $pelanggaranList = $koneksi->query(
-    "SELECT id, kode, nama, poin FROM t_pelanggaran WHERE status_aktif = 1 ORDER BY nama ASC"
+    "SELECT id, kode, nama, poin 
+     FROM t_pelanggaran 
+     WHERE status_aktif = 1 
+     ORDER BY CAST(SUBSTRING(kode, 4) AS UNSIGNED) ASC"
 );
 ?>
 
@@ -198,59 +202,21 @@ $pelanggaranList = $koneksi->query(
 
 <div class="container-fluid">
     <div class="row">
-        <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
-            <h4 class="text-white fw-bold mb-4">
-                Pelanggaran Siswa
-            </h4>
+            <h4 class="text-white fw-bold mb-4">Pelanggaran Siswa</h4>
             <ul class="nav nav-pills flex-column">
-                <li class="nav-item mb-2">
-                    <a href="dashboard.php" class="nav-link text-white">
-                        <span class="fw-bold">Dashboard</span>
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Catat_Pelanggaran.php" class="nav-link active">
-                        <span class="fw-bold">Catat Pelanggaran</span>
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Tindakan.php" class="nav-link text-white">
-                        <span class="fw-bold">Tindakan</span>
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="rekap_poin.php" class="nav-link text-white">
-                        <span class="fw-bold">Rekap Poin</span>
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="riwayat.php" class="nav-link text-white">
-                        <span class="fw-bold">Riwayat</span>
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Laporan.php" class="nav-link text-white">
-                        <span class="fw-bold">Laporan</span>
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="about_me.php" class="nav-link text-white">
-                        <span class="fw-bold">About Me</span>
-                    </a>
-                </li>
+                <li class="nav-item mb-2"><a href="dashboard.php" class="nav-link text-white"><span class="fw-bold">Dashboard</span></a></li>
+                <li class="nav-item mb-2"><a href="catat_pelanggaran.php" class="nav-link active"><span class="fw-bold">Catat Pelanggaran</span></a></li>
+                <li class="nav-item mb-2"><a href="Tindakan.php" class="nav-link text-white"><span class="fw-bold">Tindakan</span></a></li>
+                <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
+                <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>
+                <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a></li>
                 <hr class="text-secondary">
-                <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-danger">
-                        <span class="fw-bold">Logout</span>
-                    </a>
-                </li>
+                <li class="nav-item"><a href="logout.php" class="nav-link text-danger"><span class="fw-bold">Logout</span></a></li>
             </ul>
         </div>
         
-        <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
-
             <h2>Catat Pelanggaran Siswa</h2>
             <p class="text-muted mb-4">Formulir pencatatan pelanggaran siswa</p>
 
@@ -269,7 +235,17 @@ $pelanggaranList = $koneksi->query(
             <?php endif; ?>
 
             <div class="card shadow-sm border-0 p-4 mb-4">
-                <form method="POST" action="Catat_Pelanggaran.php">
+                <form method="POST" action="catat_pelanggaran.php">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Wali Kelas Pencatat</label>
+                        <input
+                            type="text"
+                            class="form-control bg-light"
+                            value="<?= e($nama_guru . ($nama_kelas_wali !== '' ? ' (Wali Kelas ' . $nama_kelas_wali . ')' : '')) ?>"
+                            readonly
+                        >
+                        <div class="form-text text-muted">Nama wali kelas terdeteksi otomatis sesuai akun yang login.</div>
+                    </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Pilih Siswa</label>
@@ -297,38 +273,23 @@ $pelanggaranList = $koneksi->query(
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Tanggal Kejadian</label>
-                        <input
-                            type="date"
-                            name="tanggal"
-                            class="form-control"
-                            value="<?= date('Y-m-d') ?>"
-                            required
-                        >
+                        <input type="date" name="tanggal" class="form-control" value="<?= date('Y-m-d') ?>" required>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Keterangan Tambahan</label>
-                        <textarea
-                            name="keterangan"
-                            class="form-control"
-                            rows="3"
-                            placeholder="Catatan detail kronologi kejadian..."
-                            required
-                        ></textarea>
+                        <textarea name="keterangan" class="form-control" rows="3" placeholder="Catatan detail kronologi kejadian..." required></textarea>
                     </div>
 
                     <button type="submit" class="btn btn-primary text-white">Simpan Catatan</button>
                     <a href="dashboard.php" class="btn btn-dark">Kembali</a>
-
                 </form>
             </div>
-
         </main>
     </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

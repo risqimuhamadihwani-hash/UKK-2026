@@ -1,4 +1,8 @@
 <?php
+// Tampilkan error jika ada untuk debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 require_once 'config/koneksi.php';
 
@@ -23,22 +27,23 @@ function e($data) {
 $pesan = '';
 $error = '';
 
-// PROSES SIMPAN TINDAKAN
+// PROSES SIMPAN TINDAKAN & STATUS
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['simpan_tindakan'])) {
 
     $id = (int) ($_POST['id'] ?? 0);
     $tindakan = trim($_POST['tindakan'] ?? '');
+    $status = trim($_POST['status'] ?? '');
 
-    if ($id <= 0 || $tindakan === '') {
-        $error = "Data tindakan tidak valid.";
+    if ($id <= 0 || $tindakan === '' || !in_array($status, ['tercatat', 'diproses', 'selesai'], true)) {
+        $error = "Data tindakan atau status tidak valid.";
     } else {
         $stmt = mysqli_prepare($koneksi, "
             UPDATE t_pelanggaran_siswa
-            SET tindakan = ?, updated_at = NOW()
+            SET tindakan = ?, status = ?, updated_at = NOW()
             WHERE id = ?
         ");
 
-        mysqli_stmt_bind_param($stmt, "si", $tindakan, $id);
+        mysqli_stmt_bind_param($stmt, "ssi", $tindakan, $status, $id);
 
         if (mysqli_stmt_execute($stmt)) {
             header("Location: Tindakan.php?pesan=berhasil");
@@ -153,9 +158,6 @@ $result = mysqli_stmt_get_result($stmt);
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a>
                 </li>
-                <li class="nav-item mb-2">
-                    <a href="about_me.php" class="nav-link text-white"><span class="fw-bold">About Me</span></a>
-                </li>
                 <hr class="text-secondary">
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger"><span class="fw-bold">Logout</span></a>
@@ -237,21 +239,11 @@ $result = mysqli_stmt_get_result($stmt);
                                                 </td>
 
                                                 <td>
-                                                    <?php
-                                                    $warna = 'secondary';
-                                                    $teks_status = ucfirst($row['status']);
-                                                    if (strtolower($row['status']) === 'selesai') {
-                                                        $warna = 'success';
-                                                    } elseif (strtolower($row['status']) === 'diproses') {
-                                                        $warna = 'warning text-dark';
-                                                    } elseif (strtolower($row['status']) === 'tercatat') {
-                                                        $warna = 'primary';
-                                                        $teks_status = 'Perlu Tindakan';
-                                                    }
-                                                    ?>
-                                                    <span class="badge bg-<?= $warna ?>">
-                                                        <?= e($teks_status) ?>
-                                                    </span>
+                                                    <select name="status" class="form-select form-select-sm" required>
+                                                        <option value="tercatat" <?= strtolower($row['status']) === 'tercatat' ? 'selected' : '' ?>>Tercatat / Perlu Tindakan</option>
+                                                        <option value="diproses" <?= strtolower($row['status']) === 'diproses' ? 'selected' : '' ?>>Diproses</option>
+                                                        <option value="selesai" <?= strtolower($row['status']) === 'selesai' ? 'selected' : '' ?>>Selesai</option>
+                                                    </select>
                                                 </td>
 
                                                 <td>
@@ -259,7 +251,7 @@ $result = mysqli_stmt_get_result($stmt);
                                                     <button
                                                         type="submit"
                                                         name="simpan_tindakan"
-                                                        class="btn btn-success btn-sm text-nowrap"
+                                                        class="btn btn-primary btn-sm text-nowrap"
                                                     >
                                                         Simpan
                                                     </button>
@@ -309,6 +301,7 @@ $(document).ready(function () {
             lengthMenu: "Tampilkan _MENU_ data",
             info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
             infoEmpty: "Tidak ada data yang ditampilkan",
+            infoFiltered: "(disaring dari _MAX_ total data)",
             zeroRecords: "Data tindakan tidak ditemukan",
             emptyTable: "Belum ada data tindakan pelanggaran",
             paginate: {

@@ -165,79 +165,33 @@ if (isset($_POST['simpan'])) {
                 <div class="card-body p-4">
                     <form method="POST" action="tambah_pelanggaran.php">
                         
-                        <!-- DROPDOWN KODE PELANGGARAN -->
-                        <div class="mb-4">
-                            <label class="form-label">Kode Pelanggaran</label>
-                            <select name="kode" class="form-select" required>
-                                <option value="" disabled selected>-- Pilih Kode Pelanggaran --</option>
-                                <?php
-                                for ($i = 1; $i <= 100; $i++) {
-                                    $formattedCode = "PG-" . str_pad($i, 3, "0", STR_PAD_LEFT);
-                                    $sel = ($kode === $formattedCode) ? 'selected' : '';
-                                    echo "<option value=\"$formattedCode\" $sel>$formattedCode</option>";
-                                }
-                                ?>
-                            </select>
+                        <div class="row">
+                            <!-- INPUT KODE PELANGGARAN -->
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Kode</label>
+                                <input type="text" name="kode" class="form-control" placeholder="Contoh: PG-001" value="<?= htmlspecialchars($kode, ENT_QUOTES, 'UTF-8') ?>" required>
+                            </div>
+
+                            <!-- INPUT POIN -->
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Poin</label>
+                                <input type="number" name="poin" class="form-control" value="<?= htmlspecialchars($poin, ENT_QUOTES, 'UTF-8') ?>" required>
+                            </div>
                         </div>
 
-                        <!-- DROPDOWN NAMA PELANGGARAN -->
+                        <!-- INPUT NAMA PELANGGARAN -->
                         <div class="mb-4">
                             <label class="form-label">Nama Pelanggaran</label>
-                            <select name="nama" class="form-select" required>
-                                <option value="" disabled selected>-- Pilih Nama Pelanggaran --</option>
-                                <?php
-                                $masterPelanggaran = [
-                                    "Terlambat datang ke sekolah",
-                                    "Tidak memakai atribut lengkap",
-                                    "Tidak memakai seragam sesuai ketentuan",
-                                    "Meninggalkan kelas tanpa izin",
-                                    "Tidak mengerjakan tugas",
-                                    "Rambut tidak sesuai aturan",
-                                    "Membawa barang terlarang",
-                                    "Berkata tidak sopan",
-                                    "Membuang sampah sembarangan",
-                                    "Tidak mengikuti upacara"
-                                ];
-
-                                for ($i = 1; $i <= 100; $i++) {
-                                    $index = ($i - 1) % 10;
-                                    $namaPelanggaran = $masterPelanggaran[$index] . " #" . str_pad($i, 3, "0", STR_PAD_LEFT);
-                                    $selNama = ($nama === $namaPelanggaran) ? 'selected' : '';
-                                    echo "<option value=\"$namaPelanggaran\" $selNama>$namaPelanggaran</option>";
-                                }
-                                ?>
-                            </select>
+                            <input type="text" name="nama" class="form-control" placeholder="Masukkan nama pelanggaran" value="<?= htmlspecialchars($nama, ENT_QUOTES, 'UTF-8') ?>" required>
                         </div>
 
-                        <!-- DROPDOWN POIN (1 sampai 10) -->
-                        <div class="mb-4">
-                            <label class="form-label">Poin</label>
-                            <select name="poin" class="form-select" required>
-                                <option value="" disabled selected>-- Pilih Jumlah Poin --</option>
-                                <?php
-                                for ($p = 1; $p <= 10; $p++) {
-                                    $selPoin = ($poin == $p) ? 'selected' : '';
-                                    echo "<option value=\"$p\" $selPoin>$p</option>";
-                                }
-                                ?>
-                            </select>
-                        </div>
-
-                        <!-- DROPDOWN DESKRIPSI -->
+                        <!-- INPUT DESKRIPSI -->
                         <div class="mb-4">
                             <label class="form-label">Deskripsi</label>
-                            <select name="deskripsi" class="form-select" required>
-                                <option value="" disabled selected>-- Pilih Deskripsi Pelanggaran --</option>
-                                <?php
-                                for ($i = 1; $i <= 100; $i++) {
-                                    $descVal = "Deskripsi pelanggaran nomor $i.";
-                                    $selDesc = ($deskripsi === $descVal) ? 'selected' : '';
-                                    echo "<option value=\"$descVal\" $selDesc>$descVal</option>";
-                                }
-                                ?>
-                            </select>
+                            <textarea name="deskripsi" class="form-control" rows="3" placeholder="Masukkan deskripsi pelanggaran" required><?= htmlspecialchars($deskripsi, ENT_QUOTES, 'UTF-8') ?></textarea>
                         </div>
 
+                        <!-- STATUS AKTIF -->
                         <div class="mb-4">
                             <label class="form-label">Status Aktif</label>
                             <select name="status_aktif" class="form-select" required>

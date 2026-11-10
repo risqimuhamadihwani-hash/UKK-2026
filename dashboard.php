@@ -105,14 +105,14 @@ if ($role === 'guru') {
                 </li>
 
                 <?php if ($role === 'guru'): ?>
-                    <!-- MENU KHUSUS GURU -->
+                    <!-- MENU KHUSUS GURU / WALI KELAS (DENGAN LAPORAN, TANPA ABOUT ME) -->
                     <li class="nav-item mb-2"><a href="Catat_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catat Pelanggaran</span></a></li>
                     <li class="nav-item mb-2"><a href="Tindakan.php" class="nav-link text-white"><span class="fw-bold">Tindakan</span></a></li>
                     <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
                     <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>
                     <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a></li>
                 <?php else: ?>
-                    <!-- MENU KHUSUS ADMIN -->
+                    <!-- MENU KHUSUS ADMIN (DENGAN ABOUT ME & LAPORAN) -->
                     <li class="nav-item mb-2"><a href="Kelola_Siswa.php" class="nav-link text-white"><span class="fw-bold">Kelola Siswa</span></a></li>
                     <li class="nav-item mb-2"><a href="Kelola_Guru.php" class="nav-link text-white"><span class="fw-bold">Kelola Guru</span></a></li>
                     <li class="nav-item mb-2"><a href="Kelola_Kelas.php" class="nav-link text-white"><span class="fw-bold">Kelola Kelas</span></a></li>
@@ -122,10 +122,9 @@ if ($role === 'guru') {
                     <li class="nav-item mb-2"><a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Kelola Kategori Pelanggaran</span></a></li>
                     <li class="nav-item mb-2"><a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Kelola Jenis Pelanggaran</span></a></li>
                     <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a></li>
-                    <li class="nav-item mb-2"><a href="Cetak_Export.php" class="nav-link text-white"><span class="fw-bold">Cetak/Export</span></a></li>
+                    <li class="nav-item mb-2"><a href="about_me.php" class="nav-link text-white"><span class="fw-bold">About Me</span></a></li>
                 <?php endif; ?>
 
-                <li class="nav-item mb-2"><a href="about_me.php" class="nav-link text-white"><span class="fw-bold">About Me</span></a></li>
                 <hr class="text-secondary">
                 <li class="nav-item"><a href="logout.php" class="nav-link text-danger"><span class="fw-bold">Logout</span></a></li>
             </ul>
@@ -186,7 +185,7 @@ if ($role === 'guru') {
                     <h5 class="fw-bold mb-2">Alur Penggunaan</h5>
                     <p class="text-muted mb-0">
                         <?php if ($role === 'guru'): ?>
-                            Pilih menu di sidebar untuk mencatat pelanggaran, memproses tindakan, melihat rekap poin, riwayat, serta melihat laporan sesuai hak akses akun.
+                            Pilih menu di sidebar untuk mencatat pelanggaran, memproses tindakan, melihat rekap poin, riwayat, dan laporan pelanggaran kelas yang diwalikelaskan.
                         <?php else: ?>
                             Pilih menu di sidebar untuk mengelola data, mencatat pelanggaran, melihat riwayat, serta mencetak laporan sesuai hak akses akun.
                         <?php endif; ?>

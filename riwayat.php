@@ -179,12 +179,6 @@ $result_status = mysqli_query($koneksi, $sql_status);
                     </a>
                 </li>
 
-                <li class="nav-item mb-2">
-                    <a href="about_me.php" class="nav-link text-white">
-                        <span class="fw-bold">About Me</span>
-                    </a>
-                </li>
-
                 <hr class="text-secondary">
 
                 <li class="nav-item">

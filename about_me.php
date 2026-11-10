@@ -203,7 +203,7 @@ $isAdmin = ($role === 'admin');
                         </tr>
                         <tr>
                             <th>Cita-cita</th>
-                            <td>Streamer Minecraft</td>
+                            <td>YTMCI</td>
                         </tr>
                         <tr>
                             <th>Asal Sekolah</th>
@@ -222,10 +222,12 @@ $isAdmin = ($role === 'admin');
                     <hr>
 
                     <h5 class="mb-3">Bio / Tentang Saya</h5>
-
+                    
                     <div class="p-3 bg-light border rounded mb-4">
                         <p class="mb-0 text-muted">
-                            Saya seorang siswa yang sedang melaksanakan Uji Kompetensi Keahlian (UKK).
+                        Halo! Saya Risqi Muhamad Ihwani, siswa kelas XII RPL 1 di SMK Muhammadiyah Tasikmalaya. 
+                        Saya mengambil  jurusan Rekayasa Perangkat Lunak dan sedang belajar tentang Membuat server di dalam
+                        game minecraft serta pembuatan website.
                         </p>
                     </div>
 

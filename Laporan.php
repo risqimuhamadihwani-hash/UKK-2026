@@ -1,9 +1,22 @@
 <?php
+// Tampilkan error jika ada untuk debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 require_once 'config/koneksi.php';
 
 // CEK LOGIN
 if (!isset($_SESSION['id_user'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$role = strtolower(trim($_SESSION['role'] ?? ''));
+
+// VALIDASI ROLE
+if ($role !== 'admin' && $role !== 'guru') {
+    session_destroy();
     header("Location: login.php");
     exit;
 }
@@ -16,22 +29,73 @@ $cari = trim($_GET['cari'] ?? '');
 $status = $_GET['status'] ?? '';
 $export = $_GET['export'] ?? '';
 
+// Ambil ID Guru jika role adalah guru
+$guru_id = 0;
+if ($role === 'guru') {
+    $stmtGuru = $koneksi->prepare("SELECT id FROM t_guru WHERE user_id = ? OR id = ? LIMIT 1");
+    $stmtGuru->bind_param("ii", $_SESSION['id_user'], $_SESSION['id_user']);
+    $stmtGuru->execute();
+    $dataGuru = $stmtGuru->get_result()->fetch_assoc();
+    $stmtGuru->close();
+    if ($dataGuru) {
+        $guru_id = (int)$dataGuru['id'];
+    }
+
+    // Ambil Tahun Ajaran Aktif
+    $tahunQuery = $koneksi->query("SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
+    $tahunData = $tahunQuery ? $tahunQuery->fetch_assoc() : null;
+    $tahun_id = $tahunData ? (int)$tahunData['id'] : 1;
+
+    // Ambil Kelas Wali Kelas
+    $stmtWali = $koneksi->prepare(
+        "SELECT kelas_id FROM t_wali_kelas 
+         WHERE guru_id = ? AND tahun_ajaran_id = ? AND status_aktif = 1 
+         LIMIT 1"
+    );
+    $stmtWali->bind_param("ii", $guru_id, $tahun_id);
+    $stmtWali->execute();
+    $waliData = $stmtWali->get_result()->fetch_assoc();
+    $stmtWali->close();
+
+    $kelas_id_wali = $waliData ? (int)$waliData['kelas_id'] : 0;
+}
+
 $where = [];
 $params = [];
 $types = '';
+
+// Jika guru, batasi hanya menampilkan pelanggaran untuk siswa di kelas yang diwalikelaskan
+if ($role === 'guru') {
+    // Ambil daftar ID siswa yang berada di kelas wali tersebut
+    $siswaWaliIds = [0]; // default array kosong agar tidak error in
+    if (isset($kelas_id_wali) && $kelas_id_wali > 0) {
+        $stmtSiswaWali = $koneksi->prepare(
+            "SELECT siswa_id FROM t_kelas_siswa WHERE kelas_id = ? AND tahun_ajaran_id = ? AND status_aktif = 1"
+        );
+        $stmtSiswaWali->bind_param("ii", $kelas_id_wali, $tahun_id);
+        $stmtSiswaWali->execute();
+        $resSW = $stmtSiswaWali->get_result();
+        while ($rSW = $resSW->fetch_assoc()) {
+            $siswaWaliIds[] = (int)$rSW['siswa_id'];
+        }
+        $stmtSiswaWali->close();
+    }
+    
+    $inClause = implode(',', $siswaWaliIds);
+    $where[] = "siswa_id IN ($inClause)";
+}
 
 if ($cari !== '') {
     $where[] = "(
         nama_siswa LIKE ?
         OR nama_kelas LIKE ?
         OR nama_pelanggaran LIKE ?
-        OR nama_guru LIKE ?
         OR status LIKE ?
     )";
 
     $keyword = "%$cari%";
 
-    for ($i = 0; $i < 5; $i++) {
+    for ($i = 0; $i < 4; $i++) {
         $params[] = $keyword;
         $types .= 's';
     }
@@ -85,7 +149,7 @@ while ($row = $result->fetch_assoc()) {
 
 $stmt->close();
 
-/* EXPORT CSV */
+/* EXPORT EXCEL (CSV) */
 if ($export === 'csv') {
     header('Content-Type: text/csv; charset=UTF-8');
     header('Content-Disposition: attachment; filename="laporan_pelanggaran.csv"');
@@ -154,8 +218,7 @@ if ($status !== '') {
 
 <div class="container-fluid">
     <div class="row">
-        <!-- SIDEBAR ADMIN -->
-        <?php if (isset($_SESSION['role']) && strtolower($_SESSION['role']) === 'admin'): ?>
+        <!-- SIDEBAR DINAMIS BERDASARKAN ROLE -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
             <h4 class="text-white fw-bold mb-4">
                 Pelanggaran Siswa
@@ -163,120 +226,39 @@ if ($status !== '') {
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">Dashboard</span> 
+                        <span class="fw-bold">Dashboard</span> 
                     </a>
                 </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Siswa.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">Kelola Siswa</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Guru.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">Kelola Guru</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Kelas.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">Kelola Kelas</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">Kelola Tahun Ajaran</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">Kelola Penempatan Siswa</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">Kelola Wali Kelas</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">Kelola Kategori Pelanggaran</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">Kelola Jenis Pelanggaran</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Laporan.php" class="nav-link active">
-                        <span class="fw-bold mb-4">Laporan</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="about_me.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">About Me</span> 
-                    </a>
-                </li>
-                <hr class="text-secondary">
-                <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-danger">
-                        <span class="fw-bold mb-4">Logout</span> 
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <?php endif; ?>
 
-        <!-- SIDEBAR GURU -->
-        <?php if (isset($_SESSION['role']) && strtolower($_SESSION['role']) === 'guru'): ?>
-        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
-            <h4 class="text-white fw-bold mb-4">
-                Pelanggaran Siswa
-            </h4>
-            <ul class="nav nav-pills flex-column">
-                <li class="nav-item mb-2">
-                    <a href="dashboard.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">Dashboard</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Catat_Pelanggaran.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">Catat Pelanggaran</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Tindakan.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">Tindakan</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="rekap_poin.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">Rekap Poin</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="riwayat.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">Riwayat</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Laporan.php" class="nav-link active">
-                        <span class="fw-bold mb-4">Laporan</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="about_me.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">About Me</span> 
-                    </a>
-                </li>
+                <?php if ($role === 'admin'): ?>
+                    <!-- MENU ADMIN -->
+                    <li class="nav-item mb-2"><a href="Kelola_Siswa.php" class="nav-link text-white"><span class="fw-bold">Kelola Siswa</span></a></li>
+                    <li class="nav-item mb-2"><a href="Kelola_Guru.php" class="nav-link text-white"><span class="fw-bold">Kelola Guru</span></a></li>
+                    <li class="nav-item mb-2"><a href="Kelola_Kelas.php" class="nav-link text-white"><span class="fw-bold">Kelola Kelas</span></a></li>
+                    <li class="nav-item mb-2"><a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white"><span class="fw-bold">Kelola Tahun Ajaran</span></a></li>
+                    <li class="nav-item mb-2"><a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white"><span class="fw-bold">Kelola Penempatan Siswa</span></a></li>
+                    <li class="nav-item mb-2"><a href="Kelola_Wali_Kelas.php" class="nav-link text-white"><span class="fw-bold">Kelola Wali Kelas</span></a></li>
+                    <li class="nav-item mb-2"><a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Kelola Kategori Pelanggaran</span></a></li>
+                    <li class="nav-item mb-2"><a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Kelola Jenis Pelanggaran</span></a></li>
+                    <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link active"><span class="fw-bold">Laporan</span></a></li>
+                    <li class="nav-item mb-2"><a href="about_me.php" class="nav-link text-white"><span class="fw-bold">About Me</span></a></li>
+                <?php else: ?>
+                    <!-- MENU GURU / WALI KELAS (TANPA ABOUT ME) -->
+                    <li class="nav-item mb-2"><a href="Catat_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catat Pelanggaran</span></a></li>
+                    <li class="nav-item mb-2"><a href="Tindakan.php" class="nav-link text-white"><span class="fw-bold">Tindakan</span></a></li>
+                    <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
+                    <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>
+                    <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link active"><span class="fw-bold">Laporan</span></a></li>
+                <?php endif; ?>
+
                 <hr class="text-secondary">
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                        <span class="fw-bold mb-4">Logout</span> 
+                        <span class="fw-bold">Logout</span> 
                     </a>
                 </li>
             </ul>
         </div>
-        <?php endif; ?>
 
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
@@ -315,7 +297,7 @@ if ($status !== '') {
                             <label class="form-label">Cari Data:</label>
                             <input type="text" name="cari" class="form-control"
                                    value="<?= e($cari) ?>"
-                                   placeholder="Nama siswa, kelas, pelanggaran, guru">
+                                   placeholder="Nama siswa, kelas, pelanggaran">
                         </div>
 
                         <div class="col-md-4">
@@ -335,8 +317,8 @@ if ($status !== '') {
                             <button type="submit" class="btn btn-primary">Cari / Filter</button>
                             <a href="Laporan.php" class="btn btn-secondary">Reset</a>
                             
-                            <button type="button" onclick="window.print()" class="btn btn-success ms-2">Cetak Laporan</button>
-                            <a href="?<?= e(http_build_query(array_merge($_GET, ['export' => 'csv']))) ?>" class="btn btn-info text-white">Export CSV</a>
+                            <button type="button" onclick="window.print()" class="btn btn-primary ms-2">Cetak Laporan</button>
+                            <a href="?<?= e(http_build_query(array_merge($_GET, ['export' => 'csv']))) ?>" class="btn btn-success text-white">Export Excel</a>
                         </div>
                     </form>
                 </div>
