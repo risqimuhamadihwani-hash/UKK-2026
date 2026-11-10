@@ -36,7 +36,7 @@ $isAdmin = ($role === 'admin');
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
 
             <h4 class="text-white fw-bold mb-4">
-                <?= ($role === 'admin') ? 'My Website' : 'My Website'; ?>
+                My Website
             </h4>
 
             <ul class="nav nav-pills flex-column">
@@ -45,96 +45,96 @@ $isAdmin = ($role === 'admin');
 
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Dasboard</h7> 
+                        <span class="fw-bold mb-4">Dashboard</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Siswa.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Siswa</h7> 
+                        <span class="fw-bold mb-4">Kelola Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Guru.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Guru</h7> 
+                        <span class="fw-bold mb-4">Kelola Guru</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kelas.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kelas</h7> 
+                        <span class="fw-bold mb-4">Kelola Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Tahun Ajaran</h7> 
+                        <span class="fw-bold mb-4">Kelola Tahun Ajaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Penempatan Siswa</h7> 
+                        <span class="fw-bold mb-4">Kelola Penempatan Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Wali Kelas</h7> 
+                        <span class="fw-bold mb-4">Kelola Wali Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kategori Pelanggaran</h7> 
+                        <span class="fw-bold mb-4">Kelola Kategori Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Jenis Pelanggaran</h7> 
+                        <span class="fw-bold mb-4">Kelola Jenis Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Laporan</h7> 
+                        <span class="fw-bold mb-4">Laporan</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Cetak_Export.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Cetak/Export</h7> 
+                        <span class="fw-bold mb-4">Cetak/Export</span> 
                     </a>
                 </li>
- 
 
                 <?php else: ?>
 
+                <!-- PERBAIKAN UTAMA: Mengarah ke dashboard.php bukan guru.php -->
                 <li class="nav-item mb-2">
-                    <a href="guru.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Dasboard</h7> 
+                    <a href="dashboard.php" class="nav-link text-white">
+                        <span class="fw-bold mb-4">Dashboard</span> 
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="Catat_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Catat Pelanggaran</h7> 
+                        <span class="fw-bold mb-4">Catat Pelanggaran</span> 
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="Tindakan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Tindakan</h7> 
+                        <span class="fw-bold mb-4">Tindakan</span> 
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="rekap_poin.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Rekap Poin</h7> 
+                        <span class="fw-bold mb-4">Rekap Poin</span> 
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="riwayat.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Riwayat</h7> 
+                        <span class="fw-bold mb-4">Riwayat</span> 
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Laporan</h7> 
+                        <span class="fw-bold mb-4">Laporan</span> 
                     </a>
                 </li>
 
@@ -142,7 +142,7 @@ $isAdmin = ($role === 'admin');
 
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link active">
-                    <h7 class="fw-bold mb-4">About Me</h7>
+                        <span class="fw-bold mb-4">About Me</span>
                     </a>
                 </li>
 
@@ -150,7 +150,7 @@ $isAdmin = ($role === 'admin');
 
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                    <h7 class="fw-bold mb-4">logout</h7>
+                        <span class="fw-bold mb-4">Logout</span>
                     </a>
                 </li>
 
@@ -174,7 +174,6 @@ $isAdmin = ($role === 'admin');
 
                         <div class="overflow-hidden rounded-circle d-inline-flex justify-content-center align-items-center bg-primary"
                              style="width: 110px; height: 110px;">
-                            <!-- Anda bisa mengganti teks inisial/div ini dengan tag <img src="path/foto.jpg" class="w-100 h-100 object-fit-cover"> jika ada fotonya -->
                             <span class="text-white fw-bold" style="font-size: 40px;">R</span>
                         </div>
 
@@ -231,7 +230,7 @@ $isAdmin = ($role === 'admin');
 
                     <div class="p-3 bg-light border rounded mb-4">
                         <p class="mb-0 text-muted">
-                            Saya .
+                            Saya seorang siswa yang sedang melaksanakan Uji Kompetensi Keahlian (UKK).
                         </p>
                     </div>
 
@@ -255,5 +254,6 @@ $isAdmin = ($role === 'admin');
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

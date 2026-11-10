@@ -2,6 +2,7 @@
 session_start();
 require_once 'config/koneksi.php';
 
+// CEK LOGIN
 if (!isset($_SESSION['id_user'])) {
     header("Location: login.php");
     exit;
@@ -164,152 +165,145 @@ if ($status !== '') {
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
 </head>
 <body>
-<?php if ($_SESSION['role'] == 'admin'): ?>
+
 <div class="container-fluid">
     <div class="row">
-        <!-- SIDEBAR -->
+        <!-- SIDEBAR ADMIN -->
+        <?php if (isset($_SESSION['role']) && strtolower($_SESSION['role']) === 'admin'): ?>
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
-            <h4 class="text-white fw-bold mb-4 ">
-                My Website
+            <h4 class="text-white fw-bold mb-4">
+                Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Dasboard</span> 
+                        <span class="fw-bold mb-4">Dashboard</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Siswa.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Kelola Siswa</span> 
+                        <span class="fw-bold mb-4">Kelola Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Guru.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Kelola Guru</span> 
+                        <span class="fw-bold mb-4">Kelola Guru</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kelas.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Kelola Kelas</span> 
+                        <span class="fw-bold mb-4">Kelola Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Kelola Tahun Ajaran</span> 
+                        <span class="fw-bold mb-4">Kelola Tahun Ajaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Kelola Penempatan Siswa</span> 
+                        <span class="fw-bold mb-4">Kelola Penempatan Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Kelola Wali Kelas</span> 
+                        <span class="fw-bold mb-4">Kelola Wali Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Kelola Kategori Pelanggaran</span> 
+                        <span class="fw-bold mb-4">Kelola Kategori Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Kelola Jenis Pelanggaran</span> 
+                        <span class="fw-bold mb-4">Kelola Jenis Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link active">
-                    <span class="fw-bold mb-4">Laporan</span> 
+                        <span class="fw-bold mb-4">Laporan</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Cetak_Export.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Cetak/Export</span> 
+                        <span class="fw-bold mb-4">Cetak/Export</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">About Me</span> 
+                        <span class="fw-bold mb-4">About Me</span> 
                     </a>
                 </li>
                 <hr class="text-secondary">
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                    <span class="fw-bold mb-4">Logout</span> 
+                        <span class="fw-bold mb-4">Logout</span> 
                     </a>
                 </li>
             </ul>
         </div>
         <?php endif; ?>
-        <?php if ($_SESSION['role'] == 'guru'): ?>
 
-<div class="container-fluid">
-    <div class="row">
-        <!-- SIDEBAR -->
+        <!-- SIDEBAR GURU -->
+        <?php if (isset($_SESSION['role']) && strtolower($_SESSION['role']) === 'guru'): ?>
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
-
             <h4 class="text-white fw-bold mb-4">
-                My Website
+                Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
-
                 <li class="nav-item mb-2">
-                    <a href="guru.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Dasboard</h7> 
+                    <a href="dashboard.php" class="nav-link text-white">
+                        <span class="fw-bold mb-4">Dashboard</span> 
                     </a>
                 </li>
-
                 <li class="nav-item mb-2">
                     <a href="Catat_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Catat Pelanggaran</h7> 
+                        <span class="fw-bold mb-4">Catat Pelanggaran</span> 
                     </a>
                 </li>
-
                 <li class="nav-item mb-2">
                     <a href="Tindakan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Tindakan</h7> 
+                        <span class="fw-bold mb-4">Tindakan</span> 
                     </a>
                 </li>
-
                 <li class="nav-item mb-2">
                     <a href="rekap_poin.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Rekap Poin</h7> 
+                        <span class="fw-bold mb-4">Rekap Poin</span> 
                     </a>
                 </li>
-
                 <li class="nav-item mb-2">
                     <a href="riwayat.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Riwayat</h7> 
+                        <span class="fw-bold mb-4">Riwayat</span> 
                     </a>
                 </li>
-
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link active">
-                    <h7 class="fw-bold mb-4">Laporan</h7> 
+                        <span class="fw-bold mb-4">Laporan</span> 
                     </a>
                 </li>
-
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">About Me</h7> 
+                        <span class="fw-bold mb-4">About Me</span> 
                     </a>
                 </li>
-
                 <hr class="text-secondary">
-
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                    <h7 class="fw-bold mb-4">Logout</h7> 
+                        <span class="fw-bold mb-4">Logout</span> 
                     </a>
                 </li>
+            </ul>
         </div>
         <?php endif; ?>
+
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h1 class="mb-1">Laporan Pelanggaran Siswa</h1>
-            <p class="text-muted mb-4">Rekap data pelanggaran siswa.</p>
+            <div class="mb-4">
+                <h3>Laporan Pelanggaran Siswa</h3>
+                <p class="text-muted mb-4">Rekap data pelanggaran siswa.</p>
+            </div>
 
             <!-- RINGKASAN LAPORAN -->
             <div class="row mb-4">
@@ -317,7 +311,7 @@ if ($status !== '') {
                     <div class="card shadow-sm border-0">
                         <div class="card-body">
                             <h6 class="text-muted">Total Laporan</h6>
-                            <h3 class="fw-bold mb-0"><?= count($data) ?></h3>
+                            <h3 class="text-primary fw-bold mb-0"><?= count($data) ?></h3>
                         </div>
                     </div>
                 </div>
@@ -325,7 +319,7 @@ if ($status !== '') {
                     <div class="card shadow-sm border-0">
                         <div class="card-body">
                             <h6 class="text-muted">Total Poin Pelanggaran</h6>
-                            <h3 class="fw-bold mb-0"><?= $total_poin ?></h3>
+                            <h3 class="text-danger fw-bold mb-0"><?= $total_poin ?></h3>
                         </div>
                     </div>
                 </div>
@@ -334,6 +328,7 @@ if ($status !== '') {
             <!-- FORM FILTER / PENCARIAN -->
             <div class="card shadow-sm mb-4 border-0">
                 <div class="card-body">
+                    <h5 class="mb-3">Filter Laporan</h5>
                     <form method="GET" action="Laporan.php" class="row g-3">
                         <div class="col-md-12">
                             <label class="form-label">Cari Data:</label>
@@ -381,6 +376,7 @@ if ($status !== '') {
             <!-- TABEL DATA LAPORAN -->
             <div class="card shadow-sm border-0">
                 <div class="card-body">
+                    <h5 class="mb-3">Data Laporan Pelanggaran</h5>
                     <div class="table-responsive">
                         <table id="tabelLaporan" class="table table-hover table-striped table-bordered align-middle w-100">
                             <thead class="table-dark">
@@ -411,7 +407,11 @@ if ($status !== '') {
                                                     ? e(date('d-m-Y', strtotime($row['tanggal'])))
                                                     : '-' ?>
                                             </td>
-                                            <td><?= (int)$row['poin'] ?></td>
+                                            <td>
+                                                <span class="badge bg-primary">
+                                                    <?= (int)$row['poin'] ?> Poin
+                                                </span>
+                                            </td>
                                             <td><?= e($row['tindakan']) ?></td>
                                             <td><?= e($row['keterangan']) ?></td>
                                             <td>
@@ -453,7 +453,6 @@ $(document).ready(function () {
         searching: true,
         paging: true,
         info: true,
-        // Konfigurasi DOM diubah agar bagian pagination berada di sebelah kanan secara rapi
         dom: '<"row mb-3"<"col-md-6"l><"col-md-6"f>>rt<"row mt-3 align-items-center"<"col-md-6"i><"col-md-6 d-flex justify-content-end"p>>',
         language: {
             search: "Cari:",

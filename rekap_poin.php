@@ -1,9 +1,7 @@
-
 <?php
 session_start();
 require_once 'config/koneksi.php';
 
-// CEK LOGIN
 if (!isset($_SESSION['id_user'])) {
     header("Location: login.php");
     exit;
@@ -86,7 +84,6 @@ $ringkasan = mysqli_fetch_assoc($query_total);
 $total_siswa = $ringkasan['jumlah_siswa'];
 $total_pelanggaran = $ringkasan['jumlah_pelanggaran'];
 $total_poin = $ringkasan['total_poin'];
-
 ?>
 
 <!DOCTYPE html>
@@ -94,9 +91,7 @@ $total_poin = $ringkasan['total_poin'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Rekap Poin Siswa</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -108,49 +103,49 @@ $total_poin = $ringkasan['total_poin'];
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
 
             <h4 class="text-white fw-bold mb-4">
-                My Website
+                Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
 
                 <li class="nav-item mb-2">
-                    <a href="guru.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Dasboard</h7> 
+                    <a href="dashboard.php" class="nav-link text-white">
+                        <span class="fw-bold">Dashboard</span>
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="Catat_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Catat Pelanggaran</h7> 
+                        <span class="fw-bold">Catat Pelanggaran</span>
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="Tindakan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Tindakan</h7> 
+                        <span class="fw-bold">Tindakan</span>
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="rekap_poin.php" class="nav-link active">
-                    <h7 class="fw-bold mb-4">Rekap Poin</h7> 
+                        <span class="fw-bold">Rekap Poin</span>
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="riwayat.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Riwayat</h7> 
+                        <span class="fw-bold">Riwayat</span>
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Laporan</h7> 
+                        <span class="fw-bold">Laporan</span>
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">About Me</h7> 
+                        <span class="fw-bold">About Me</span>
                     </a>
                 </li>
 
@@ -158,7 +153,7 @@ $total_poin = $ringkasan['total_poin'];
 
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                    <h7 class="fw-bold mb-4">Logout</h7> 
+                        <span class="fw-bold">Logout</span>
                     </a>
                 </li>
             </ul>
@@ -169,50 +164,45 @@ $total_poin = $ringkasan['total_poin'];
 
             <div class="mb-4">
                 <h3>Rekap Poin Siswa</h3>
-
                 <p class="text-muted">
                     Rekapitulasi jumlah pelanggaran dan total poin setiap siswa.
                 </p>
             </div>
 
-            <!-- RINGKASAN -->
+            <!-- RINGKASAN (Gaya disamakan dengan card ringkasan lainnya) -->
             <div class="row mb-4">
-
                 <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm border-0">
                         <div class="card-body">
                             <h6 class="text-muted">Total Siswa</h6>
-                            <h3><?= e($total_siswa) ?></h3>
+                            <h3 class="text-primary fw-bold"><?= e($total_siswa) ?></h3>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm border-0">
                         <div class="card-body">
                             <h6 class="text-muted">Total Pelanggaran</h6>
-                            <h3><?= e($total_pelanggaran) ?></h3>
+                            <h3 class="text-warning fw-bold"><?= e($total_pelanggaran) ?></h3>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm border-0">
                         <div class="card-body">
                             <h6 class="text-muted">Total Seluruh Poin</h6>
-                            <h3><?= e($total_poin) ?></h3>
+                            <h3 class="text-danger fw-bold"><?= e($total_poin) ?></h3>
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <!-- PENCARIAN -->
-            <div class="card shadow-sm mb-4">
+            <div class="card shadow-sm mb-4 border-0">
                 <div class="card-body">
-
                     <form method="GET" class="row g-2">
-
                         <div class="col-md-9">
                             <input
                                 type="text"
@@ -232,23 +222,17 @@ $total_poin = $ringkasan['total_poin'];
                                 Reset
                             </a>
                         </div>
-
                     </form>
-
                 </div>
             </div>
 
             <!-- TABEL REKAP -->
-            <div class="card shadow-sm">
-
+            <div class="card shadow-sm border-0">
                 <div class="card-body">
-
                     <h5 class="mb-3">Data Rekap Poin Siswa</h5>
 
                     <div class="table-responsive">
-
                         <table class="table table-bordered table-striped align-middle">
-
                             <thead class="table-dark">
                                 <tr>
                                     <th>No</th>
@@ -261,51 +245,32 @@ $total_poin = $ringkasan['total_poin'];
                             </thead>
 
                             <tbody>
-
                             <?php if (mysqli_num_rows($result) > 0): ?>
-
                                 <?php $no = 1; ?>
-
                                 <?php while ($row = mysqli_fetch_assoc($result)): ?>
-
                                     <tr>
                                         <td><?= $no++ ?></td>
-
                                         <td><?= e($row['siswa_id']) ?></td>
-
                                         <td><?= e($row['nama_siswa']) ?></td>
-
                                         <td><?= e($row['nama_kelas']) ?></td>
-
-                                        <td>
-                                            <?= e($row['jumlah_pelanggaran']) ?>
-                                        </td>
-
+                                        <td><?= e($row['jumlah_pelanggaran']) ?></td>
                                         <td>
                                             <span class="badge bg-primary">
                                                 <?= e($row['total_poin']) ?> Poin
                                             </span>
                                         </td>
                                     </tr>
-
                                 <?php endwhile; ?>
-
                             <?php else: ?>
-
                                 <tr>
                                     <td colspan="6" class="text-center">
                                         Data rekap poin tidak ditemukan.
                                     </td>
                                 </tr>
-
                             <?php endif; ?>
-
                             </tbody>
-
                         </table>
-
                     </div>
-
                 </div>
             </div>
 
@@ -313,6 +278,6 @@ $total_poin = $ringkasan['total_poin'];
     </div>
 </div>
 
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

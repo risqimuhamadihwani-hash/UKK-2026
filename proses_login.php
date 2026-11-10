@@ -34,19 +34,17 @@ if (mysqli_num_rows($query) == 1) {
         $_SESSION['id_user'] = $user['id'];
         $_SESSION['name'] = $user['name'];
         $_SESSION['email'] = $user['email'];
-        $_SESSION['role'] = $user['role'];
+        // Ubah role ke huruf kecil agar seragam
+        $_SESSION['role'] = strtolower(trim($user['role']));
 
-        
-        if ($_SESSION['role'] === 'guru') {
-        header("Location: guru.php");
-        exit;
+        // KEDUA ROLE SEKARANG DIARAHKAN KE DASHBOARD.PHP YANG SAMA
+        if ($_SESSION['role'] === 'guru' || $_SESSION['role'] === 'admin') {
+            header("Location: dashboard.php");
+            exit;
+        } else {
+            // Jika ada role lain yang tidak dikenal
+            echo "Role akun tidak valid.";
         }
-
-        if ($_SESSION['role'] === 'admin') {
-        header("Location: dashboard.php");
-        exit;
-        }
-
 
     } else {
         echo "Password salah.";

@@ -2,6 +2,9 @@
 session_start();
 require_once 'config/koneksi.php';
 
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+// CEK LOGIN
 if (!isset($_SESSION['id_user'])) {
     header("Location: login.php");
     exit;
@@ -41,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['simpan_tindakan'])) {
         mysqli_stmt_bind_param($stmt, "ssi", $tindakan, $status, $id);
 
         if (mysqli_stmt_execute($stmt)) {
-            header("Location: tindakan.php?pesan=berhasil");
+            header("Location: Tindakan.php?pesan=berhasil");
             exit;
         } else {
             $error = "Gagal menyimpan tindakan.";
@@ -55,22 +58,24 @@ if (isset($_GET['pesan']) && $_GET['pesan'] === 'berhasil') {
     $pesan = "Tindakan berhasil diperbarui.";
 }
 
-// PENCARIAN (Bisa tetap digunakan bersama DataTables)
+// PENCARIAN & JOIN KE TABEL KELAS DAN PELANGGARAN
 $cari = trim($_GET['cari'] ?? '');
 $status_filter = trim($_GET['status'] ?? '');
 
 $sql = "
     SELECT
-        id,
-        nama_siswa,
-        nama_kelas,
-        nama_pelanggaran,
-        nama_guru,
-        tanggal,
-        poin,
-        tindakan,
-        status
-    FROM t_pelanggaran_siswa
+        p.id,
+        p.nama_siswa,
+        COALESCE(k.nama, p.nama_kelas, '-') AS nama_kelas,
+        COALESCE(tp.nama, p.nama_pelanggaran, '-') AS nama_pelanggaran,
+        p.nama_guru,
+        p.tanggal,
+        p.poin,
+        p.tindakan,
+        p.status
+    FROM t_pelanggaran_siswa p
+    LEFT JOIN t_kelas k ON k.id = p.kelas_id
+    LEFT JOIN t_pelanggaran tp ON tp.id = p.pelanggaran_id
     WHERE 1=1
 ";
 
@@ -79,29 +84,27 @@ $types = '';
 
 if ($cari !== '') {
     $sql .= " AND (
-        nama_siswa LIKE ?
-        OR nama_kelas LIKE ?
-        OR nama_pelanggaran LIKE ?
-        OR nama_guru LIKE ?
+        p.nama_siswa LIKE ?
+        OR k.nama LIKE ?
+        OR tp.nama LIKE ?
+        OR p.nama_guru LIKE ?
     )";
 
     $keyword = "%$cari%";
-
     $params[] = $keyword;
     $params[] = $keyword;
     $params[] = $keyword;
     $params[] = $keyword;
-
     $types .= "ssss";
 }
 
 if (in_array($status_filter, ['tercatat', 'diproses', 'selesai'], true)) {
-    $sql .= " AND status = ?";
+    $sql .= " AND p.status = ?";
     $params[] = $status_filter;
     $types .= "s";
 }
 
-$sql .= " ORDER BY id DESC";
+$sql .= " ORDER BY p.id DESC";
 
 $stmt = mysqli_prepare($koneksi, $sql);
 
@@ -112,26 +115,11 @@ if (!empty($params)) {
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
-// HITUNG DATA
-$total = mysqli_fetch_assoc(mysqli_query(
-    $koneksi,
-    "SELECT COUNT(*) AS jumlah FROM t_pelanggaran_siswa"
-))['jumlah'];
-
-$tercatat = mysqli_fetch_assoc(mysqli_query(
-    $koneksi,
-    "SELECT COUNT(*) AS jumlah FROM t_pelanggaran_siswa WHERE status='tercatat'"
-))['jumlah'];
-
-$diproses = mysqli_fetch_assoc(mysqli_query(
-    $koneksi,
-    "SELECT COUNT(*) AS jumlah FROM t_pelanggaran_siswa WHERE status='diproses'"
-))['jumlah'];
-
-$selesai = mysqli_fetch_assoc(mysqli_query(
-    $koneksi,
-    "SELECT COUNT(*) AS jumlah FROM t_pelanggaran_siswa WHERE status='selesai'"
-))['jumlah'];
+// HITUNG DATA RINGKASAN
+$total = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM t_pelanggaran_siswa"))['jumlah'];
+$tercatat = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM t_pelanggaran_siswa WHERE status='tercatat'"))['jumlah'];
+$diproses = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM t_pelanggaran_siswa WHERE status='diproses'"))['jumlah'];
+$selesai = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM t_pelanggaran_siswa WHERE status='selesai'"))['jumlah'];
 ?>
 
 <!DOCTYPE html>
@@ -139,7 +127,7 @@ $selesai = mysqli_fetch_assoc(mysqli_query(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Tindakan</title>
+    <title>Kelola Tindakan - Sistem Informasi Pelanggaran Siswa</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- DataTables Bootstrap 5 CSS -->
@@ -152,235 +140,183 @@ $selesai = mysqli_fetch_assoc(mysqli_query(
     <div class="row">
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
-
             <h4 class="text-white fw-bold mb-4">
-                My Website
+                Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
-
                 <li class="nav-item mb-2">
-                    <a href="guru.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Dasboard</h7> 
-                    </a>
+                    <a href="dashboard.php" class="nav-link text-white"><span class="fw-bold">Dashboard</span></a>
                 </li>
-
                 <li class="nav-item mb-2">
-                    <a href="Catat_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Catat Pelanggaran</h7> 
-                    </a>
+                    <a href="Catat_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catat Pelanggaran</span></a>
                 </li>
-
                 <li class="nav-item mb-2">
-                    <a href="Tindakan.php" class="nav-link active">
-                    <h7 class="fw-bold mb-4">Tindakan</h7> 
-                    </a>
+                    <a href="Tindakan.php" class="nav-link active"><span class="fw-bold">Tindakan</span></a>
                 </li>
-
                 <li class="nav-item mb-2">
-                    <a href="rekap_poin.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Rekap Poin</h7> 
-                    </a>
+                    <a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a>
                 </li>
-
                 <li class="nav-item mb-2">
-                    <a href="riwayat.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Riwayat</h7> 
-                    </a>
+                    <a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a>
                 </li>
-
                 <li class="nav-item mb-2">
-                    <a href="Laporan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Laporan</h7> 
-                    </a>
+                    <a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a>
                 </li>
-
                 <li class="nav-item mb-2">
-                    <a href="about_me.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">About Me</h7> 
-                    </a>
+                    <a href="about_me.php" class="nav-link text-white"><span class="fw-bold">About Me</span></a>
                 </li>
-
                 <hr class="text-secondary">
-
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-danger">
-                    <h7 class="fw-bold mb-4">Logout</h7> 
-                    </a>
+                    <a href="logout.php" class="nav-link text-danger"><span class="fw-bold">Logout</span></a>
                 </li>
             </ul>
         </div>
         
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
-<div class="container-fluid p-0">
+            <div class="container-fluid p-0">
 
-    <div class="mb-4">
-        <h3>Kelola Tindakan</h3>
-        <p class="text-muted">
-            Kelola tindakan dan status penanganan pelanggaran siswa.
-        </p>
-    </div>
-
-    <?php if ($pesan): ?>
-        <div class="alert alert-success">
-            <?= e($pesan) ?>
-        </div>
-    <?php endif; ?>
-
-    <?php if ($error): ?>
-        <div class="alert alert-danger">
-            <?= e($error) ?>
-        </div>
-    <?php endif; ?>
-
-    <!-- RINGKASAN -->
-    <div class="row mb-4">
-
-        <div class="col-md-3 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h6 class="text-muted">Total Pelanggaran</h6>
-                    <h3><?= e($total) ?></h3>
+                <div class="mb-4">
+                    <h3>Kelola Tindakan</h3>
+                    <p class="text-muted">Kelola tindakan dan status penanganan pelanggaran siswa.</p>
                 </div>
-            </div>
-        </div>
 
-        <div class="col-md-3 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h6 class="text-muted">Tercatat</h6>
-                    <h3><?= e($tercatat) ?></h3>
+                <?php if ($pesan): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <?= e($pesan) ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($error): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?= e($error) ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
+                <!-- RINGKASAN -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body">
+                                <h6 class="text-muted">Total Pelanggaran</h6>
+                                <h3 class="text-primary fw-bold mb-0"><?= e($total) ?></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body">
+                                <h6 class="text-muted">Perlu Tindakan</h6>
+                                <h3 class="text-secondary fw-bold mb-0"><?= e($tercatat) ?></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body">
+                                <h6 class="text-muted">Diproses</h6>
+                                <h3 class="text-warning fw-bold mb-0"><?= e($diproses) ?></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body">
+                                <h6 class="text-muted">Selesai</h6>
+                                <h3 class="text-success fw-bold mb-0"><?= e($selesai) ?></h3>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="col-md-3 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h6 class="text-muted">Diproses</h6>
-                    <h3><?= e($diproses) ?></h3>
+                <!-- TABEL TINDAKAN -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="mb-3">Data Tindakan Pelanggaran</h5>
+                        <div class="table-responsive">
+                            <table id="tabelTindakan" class="table table-bordered table-striped align-middle w-100">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Siswa</th>
+                                        <th>Kelas</th>
+                                        <th>Pelanggaran</th>
+                                        <th>Guru</th>
+                                        <th>Tanggal</th>
+                                        <th>Poin</th>
+                                        <th>Tindakan</th>
+                                        <th>Status Tindakan</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php if (mysqli_num_rows($result) > 0): ?>
+                                    <?php $no = 1; ?>
+                                    <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                                        <tr>
+                                            <td><?= $no++ ?></td>
+                                            <td><?= e($row['nama_siswa']) ?></td>
+                                            <td><?= e($row['nama_kelas']) ?></td>
+                                            <td><?= e($row['nama_pelanggaran']) ?></td>
+                                            <td><?= e($row['nama_guru']) ?></td>
+                                            <td>
+                                                <?= (!empty($row['tanggal']) && $row['tanggal'] !== '0000-00-00') ? date('d-m-Y', strtotime($row['tanggal'])) : '-' ?>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary">
+                                                    <?= (int)$row['poin'] ?> Poin
+                                                </span>
+                                            </td>
+
+                                            <form method="POST">
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        name="tindakan"
+                                                        class="form-control form-control-sm"
+                                                        value="<?= e($row['tindakan']) ?>"
+                                                        placeholder="Masukkan tindakan..."
+                                                        required
+                                                    >
+                                                </td>
+
+                                                <td>
+                                                    <select name="status" class="form-select form-select-sm" required>
+                                                        <option value="tercatat" <?= $row['status'] === 'tercatat' ? 'selected' : '' ?>>
+                                                            Perlu Tindakan
+                                                        </option>
+                                                        <option value="diproses" <?= $row['status'] === 'diproses' ? 'selected' : '' ?>>
+                                                            Diproses
+                                                        </option>
+                                                        <option value="selesai" <?= $row['status'] === 'selesai' ? 'selected' : '' ?>>
+                                                            Selesai
+                                                        </option>
+                                                    </select>
+                                                </td>
+
+                                                <td>
+                                                    <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
+                                                    <button
+                                                        type="submit"
+                                                        name="simpan_tindakan"
+                                                        class="btn btn-success btn-sm text-nowrap"
+                                                    >
+                                                        Simpan
+                                                    </button>
+                                                </td>
+                                            </form>
+                                        </tr>
+                                    <?php endwhile; ?>
+                                <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h6 class="text-muted">Selesai</h6>
-                    <h3><?= e($selesai) ?></h3>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- TABEL TINDAKAN -->
-    <div class="card shadow-sm">
-        <div class="card-body">
-
-            <h5 class="mb-3">Data Tindakan Pelanggaran</h5>
-
-            <div class="table-responsive">
-
-                <!-- Tambahkan ID 'tabelTindakan' agar terbaca oleh DataTables -->
-                <table id="tabelTindakan" class="table table-bordered table-striped align-middle">
-
-                    <thead class="table-dark">
-                        <tr>
-                            <th>No</th>
-                            <th>Siswa</th>
-                            <th>Kelas</th>
-                            <th>Pelanggaran</th>
-                            <th>Guru</th>
-                            <th>Tanggal</th>
-                            <th>Poin</th>
-                            <th>Tindakan</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                    <?php if (mysqli_num_rows($result) > 0): ?>
-
-                        <?php $no = 1; ?>
-
-                        <?php while ($row = mysqli_fetch_assoc($result)): ?>
-
-                            <tr>
-                                <td><?= $no++ ?></td>
-
-                                <td><?= e($row['nama_siswa']) ?></td>
-
-                                <td><?= e($row['nama_kelas']) ?></td>
-
-                                <td><?= e($row['nama_pelanggaran']) ?></td>
-
-                                <td><?= e($row['nama_guru']) ?></td>
-
-                                <td>
-                                    <?= $row['tanggal'] ? date('d-m-Y', strtotime($row['tanggal'])) : '-' ?>
-                                </td>
-
-                                <td><?= e($row['poin']) ?></td>
-
-                                <!-- Form dibungkus per baris untuk input tindakan & status -->
-                                <form method="POST">
-                                    <td>
-                                        <input
-                                            type="text"
-                                            name="tindakan"
-                                            class="form-control form-control-sm"
-                                            value="<?= e($row['tindakan']) ?>"
-                                            required
-                                        >
-                                    </td>
-
-                                    <td>
-                                        <select name="status" class="form-select form-select-sm" required>
-                                            <option value="tercatat" <?= $row['status'] === 'tercatat' ? 'selected' : '' ?>>
-                                                Tercatat
-                                            </option>
-
-                                            <option value="diproses" <?= $row['status'] === 'diproses' ? 'selected' : '' ?>>
-                                                Diproses
-                                            </option>
-
-                                            <option value="selesai" <?= $row['status'] === 'selesai' ? 'selected' : '' ?>>
-                                                Selesai
-                                            </option>
-                                        </select>
-                                    </td>
-
-                                    <td>
-                                        <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
-
-                                        <button
-                                            type="submit"
-                                            name="simpan_tindakan"
-                                            class="btn btn-success btn-sm"
-                                        >
-                                            Simpan
-                                        </button>
-                                    </td>
-                                </form>
-                            </tr>
-
-                        <?php endwhile; ?>
-
-                    <?php endif; ?>
-
-                    </tbody>
-
-                </table>
 
             </div>
-
-        </div>
-    </div>
-
-</div>
         </main>
     </div>
 </div>
@@ -402,7 +338,7 @@ $(document).ready(function () {
         searching: true,
         paging: true,
         info: true,
-        // Menonaktifkan sorting dan pencarian pada kolom interaktif terakhir (kolom aksi ke-9 / index 9)
+        dom: '<"row mb-3"<"col-md-6"l><"col-md-6"f>>rt<"row mt-3 align-items-center"<"col-md-6"i><"col-md-6 d-flex justify-content-end"p>>',
         columnDefs: [
             {
                 targets: 9,

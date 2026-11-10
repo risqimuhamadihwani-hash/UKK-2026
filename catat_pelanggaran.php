@@ -33,7 +33,7 @@ $error = '';
 $guru_id = 0;
 $nama_guru = $_SESSION['name'] ?? 'Guru';
 
-// === OTOMATISASI DATA GURU (MENCEGAH FOREIGN KEY ERROR) ===
+// === OTOMATISASI DATA GURU ===
 $stmtGuru = $koneksi->prepare("SELECT id, nama FROM t_guru WHERE user_id = ? OR id = ? LIMIT 1");
 $stmtGuru->bind_param("ii", $_SESSION['id_user'], $_SESSION['id_user']);
 $stmtGuru->execute();
@@ -56,24 +56,24 @@ if ($dataGuru) {
         $guru_id = (int) $koneksi->insert_id;
     }
 }
-// =========================================================
+// =============================
 
 // PROSES SIMPAN PELANGGARAN
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
     try {
         $tahunQuery = $koneksi->query("SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
         $tahunData = $tahunQuery ? $tahunQuery->fetch_assoc() : null;
         $tahun_id = $tahunData ? (int)$tahunData['id'] : 1;
 
         $siswa_id = (int) ($_POST['siswa_id'] ?? 0);
+        $kelas_id = (int) ($_POST['kelas_id'] ?? 0);
         $pelanggaran_id = (int) ($_POST['pelanggaran_id'] ?? 0);
         $tanggal = $_POST['tanggal'] ?? date('Y-m-d');
         $keterangan = trim($_POST['keterangan'] ?? '');
         $tindakan = trim($_POST['tindakan'] ?? '');
 
         if ($siswa_id < 1 || $pelanggaran_id < 1 || $keterangan === '' || $tindakan === '') {
-            throw new Exception("Lengkapi semua data terlebih dahulu.");
+            throw new Exception("Lengkapi semua data form dengan benar.");
         }
 
         // VALIDASI TANGGAL
@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception("Format tanggal tidak valid.");
         }
 
-        // CEK SISWA
+        // AMBIL DATA SISWA
         $stmt = $koneksi->prepare("SELECT id, nama FROM t_siswa WHERE id = ? LIMIT 1");
         $stmt->bind_param("i", $siswa_id);
         $stmt->execute();
@@ -92,28 +92,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$siswa) {
             throw new Exception("Data siswa tidak ditemukan.");
         }
+        $nama_siswa = $siswa['nama'];
 
-        // CEK KELAS SISWA
-        $stmtKelas = $koneksi->prepare(
-            "SELECT k.id AS kelas_id, k.nama AS nama_kelas
-             FROM t_kelas_siswa ks
-             JOIN t_kelas k ON k.id = ks.kelas_id
-             WHERE ks.siswa_id = ? AND ks.tahun_ajaran_id = ? AND ks.status_aktif = 1
-             LIMIT 1"
-        );
-        $stmtKelas->bind_param("ii", $siswa_id, $tahun_id);
-        $stmtKelas->execute();
-        $kelasData = $stmtKelas->get_result()->fetch_assoc();
-        $stmtKelas->close();
+        // AMBIL DATA KELAS
+        if ($kelas_id > 0) {
+            $stmtK = $koneksi->prepare("SELECT nama FROM t_kelas WHERE id = ? LIMIT 1");
+            $stmtK->bind_param("i", $kelas_id);
+            $stmtK->execute();
+            $resK = $stmtK->get_result()->fetch_assoc();
+            $stmtK->close();
+            $nama_kelas = $resK ? $resK['nama'] : '-';
+        } else {
+            // Ambil otomatis kelas aktif siswa jika tidak dipilih manual
+            $stmtKelas = $koneksi->prepare(
+                "SELECT k.id AS kelas_id, k.nama AS nama_kelas
+                 FROM t_kelas_siswa ks
+                 JOIN t_kelas k ON k.id = ks.kelas_id
+                 WHERE ks.siswa_id = ? AND ks.tahun_ajaran_id = ? AND ks.status_aktif = 1
+                 LIMIT 1"
+            );
+            $stmtKelas->bind_param("ii", $siswa_id, $tahun_id);
+            $stmtKelas->execute();
+            $kelasData = $stmtKelas->get_result()->fetch_assoc();
+            $stmtKelas->close();
 
-        $kelas_id = ($kelasData && !empty($kelasData['kelas_id'])) ? (int) $kelasData['kelas_id'] : null;
-        $nama_kelas = $kelasData ? $kelasData['nama_kelas'] : '-';
+            $kelas_id = ($kelasData && !empty($kelasData['kelas_id'])) ? (int) $kelasData['kelas_id'] : 0;
+            $nama_kelas = $kelasData ? $kelasData['nama_kelas'] : '-';
+        }
 
-        // CEK JENIS PELANGGARAN
+        // AMBIL DATA JENIS PELANGGARAN & POIN
         $stmt = $koneksi->prepare(
             "SELECT id, nama, poin, pelanggaran_kategori_id
-            FROM t_pelanggaran
-            WHERE id = ? AND status_aktif = 1 LIMIT 1"
+             FROM t_pelanggaran
+             WHERE id = ? AND status_aktif = 1 LIMIT 1"
         );
         $stmt->bind_param("i", $pelanggaran_id);
         $stmt->execute();
@@ -124,13 +135,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception("Jenis pelanggaran tidak ditemukan atau tidak aktif.");
         }
 
-        $nama_siswa = $siswa['nama'];
         $nama_pelanggaran = $pelanggaran['nama'];
         $kategori_id = (int) ($pelanggaran['pelanggaran_kategori_id'] ?? 0);
         $poin = (int) $pelanggaran['poin'];
         $status = 'tercatat';
 
-        // SIMPAN KE DATABASE
+        // SIMPAN KE TABEL t_pelanggaran_siswa
         $stmt = $koneksi->prepare(
             "INSERT INTO t_pelanggaran_siswa
             (tahun_ajaran_id, siswa_id, nama_siswa, kelas_id, nama_kelas, pelanggaran_id, nama_pelanggaran, pelanggaran_kategori_id, guru_id, nama_guru, tanggal, keterangan, poin, tindakan, status)
@@ -174,12 +184,15 @@ if (isset($_GET['berhasil'])) {
 // DAFTAR SISWA
 $siswaList = $koneksi->query(
     "SELECT s.id, s.nis, s.nama, COALESCE(MAX(k.nama), 'Tanpa Kelas') AS nama_kelas
-    FROM t_siswa s
-    LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = s.id AND ks.status_aktif = 1
-    LEFT JOIN t_kelas k ON k.id = ks.kelas_id
-    GROUP BY s.id, s.nis, s.nama
-    ORDER BY s.id ASC"
+     FROM t_siswa s
+     LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = s.id AND ks.status_aktif = 1
+     LEFT JOIN t_kelas k ON k.id = ks.kelas_id
+     GROUP BY s.id, s.nis, s.nama
+     ORDER BY s.nama ASC"
 );
+
+// DAFTAR KELAS
+$kelasList = $koneksi->query("SELECT id, nama FROM t_kelas ORDER BY nama ASC");
 
 // DAFTAR PELANGGARAN
 $pelanggaranList = $koneksi->query(
@@ -193,7 +206,7 @@ $pelanggaranList = $koneksi->query(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catat Pelanggaran Siswa</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 
@@ -201,59 +214,49 @@ $pelanggaranList = $koneksi->query(
     <div class="row">
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
-
             <h4 class="text-white fw-bold mb-4">
-                My Website
+                Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
-
                 <li class="nav-item mb-2">
-                    <a href="guru.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Dasboard</h7> 
+                    <a href="dashboard.php" class="nav-link text-white">
+                        <span class="fw-bold">Dashboard</span>
                     </a>
                 </li>
-
                 <li class="nav-item mb-2">
                     <a href="Catat_Pelanggaran.php" class="nav-link active">
-                    <h7 class="fw-bold mb-4">Catat Pelanggaran</h7> 
+                        <span class="fw-bold">Catat Pelanggaran</span>
                     </a>
                 </li>
-
                 <li class="nav-item mb-2">
                     <a href="Tindakan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Tindakan</h7> 
+                        <span class="fw-bold">Tindakan</span>
                     </a>
                 </li>
-
                 <li class="nav-item mb-2">
                     <a href="rekap_poin.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Rekap Poin</h7> 
+                        <span class="fw-bold">Rekap Poin</span>
                     </a>
                 </li>
-
                 <li class="nav-item mb-2">
                     <a href="riwayat.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Riwayat</h7> 
+                        <span class="fw-bold">Riwayat</span>
                     </a>
                 </li>
-
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Laporan</h7> 
+                        <span class="fw-bold">Laporan</span>
                     </a>
                 </li>
-
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">About Me</h7> 
+                        <span class="fw-bold">About Me</span>
                     </a>
                 </li>
-
                 <hr class="text-secondary">
-
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                    <h7 class="fw-bold mb-4">Logout</h7> 
+                        <span class="fw-bold">Logout</span>
                     </a>
                 </li>
             </ul>
@@ -265,7 +268,6 @@ $pelanggaranList = $koneksi->query(
             <h2>Catat Pelanggaran Siswa</h2>
             <p class="text-muted mb-4">Formulir pencatatan pelanggaran dan tindakan disiplin siswa</p>
 
-            <!-- ALERT BERHASIL -->
             <?php if ($pesan !== ''): ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <?= e($pesan) ?>
@@ -273,7 +275,6 @@ $pelanggaranList = $koneksi->query(
                 </div>
             <?php endif; ?>
 
-            <!-- ALERT ERROR -->
             <?php if ($error !== ''): ?>
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <?= e($error) ?>
@@ -281,7 +282,6 @@ $pelanggaranList = $koneksi->query(
                 </div>
             <?php endif; ?>
 
-            <!-- FORM CARD -->
             <div class="card shadow-sm border-0 p-4 mb-4">
                 <form method="POST" action="Catat_Pelanggaran.php">
 
@@ -292,6 +292,18 @@ $pelanggaranList = $koneksi->query(
                             <?php while ($s = $siswaList->fetch_assoc()): ?>
                                 <option value="<?= (int) $s['id'] ?>">
                                     <?= e($s['nis'] . ' - ' . $s['nama'] . ' (' . $s['nama_kelas'] . ')') ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Pilih Kelas</label>
+                        <select name="kelas_id" class="form-select" required>
+                            <option value="">-- Pilih Kelas --</option>
+                            <?php while ($k = $kelasList->fetch_assoc()): ?>
+                                <option value="<?= (int) $k['id'] ?>">
+                                    <?= e($k['nama']) ?>
                                 </option>
                             <?php endwhile; ?>
                         </select>
@@ -343,19 +355,17 @@ $pelanggaranList = $koneksi->query(
                     </div>
 
                     <button type="submit" class="btn btn-primary text-white">Simpan Catatan</button>
-                    <a href="guru.php" class="btn btn-secondary px-4">Kembali</a>
+                    <a href="dashboard.php" class="btn btn-dark">Kembali</a>
 
                 </form>
             </div>
 
         </main>
-
     </div>
 </div>
 
-<!-- JAVASCRIPT -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

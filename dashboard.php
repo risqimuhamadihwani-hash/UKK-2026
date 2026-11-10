@@ -1,54 +1,85 @@
 <?php
+// Tampilkan error jika ada untuk debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 
+// Cek koneksi database
+if (file_exists('config/koneksi.php')) {
+    require_once 'config/koneksi.php';
+}
+
+if (!isset($koneksi) || $koneksi->connect_error) {
+    $koneksi = new mysqli("localhost", "root", "", "db_ukk_2026");
+    if ($koneksi->connect_error) {
+        die("Koneksi database gagal: " . $koneksi->connect_error);
+    }
+}
+
+// 1. CEK APAKAH USER SUDAH LOGIN
 if (!isset($_SESSION['id_user'])) {
     header("Location: login.php");
     exit;
 }
 
-$name = $_SESSION['name'] ?? 'administrator';
-$role = strtolower($_SESSION['role'] ?? '');
+$name = $_SESSION['name'] ?? 'User';
+$role = strtolower(trim($_SESSION['role'] ?? ''));
 
-if ($role === 'guru') {
-    header("Location: guru.php");
-    exit;
-}
-
-if ($role !== 'admin') {
+// 2. VALIDASI ROLE
+if ($role !== 'admin' && $role !== 'guru') {
     session_destroy();
     header("Location: login.php");
     exit;
 }
 
-// Koneksi database
-$koneksi = new mysqli("localhost", "root", "", "db_ukk_2026");
+// 3. AMBIL DATA STATISTIK BERDASARKAN ROLE
+$total_pelanggaran = 0;
+$total_tercatat = 0;
+$total_diproses = 0;
+$total_selesai = 0;
 
-if ($koneksi->connect_error) {
-    die("Koneksi database gagal: " . $koneksi->connect_error);
-}
+$jml_siswa = 0;
+$jml_guru = 0;
+$jml_kelas = 0;
+$jml_pelanggaran_admin = 0;
 
-// Menghitung jumlah data dengan aman
-function hitungData($koneksi, $tabel) {
-    // Sesuaikan nama tabel 't_pelanggaran' dengan nama tabel pelanggaran di database Anda jika berbeda
-    $daftarTabel = ['t_siswa', 't_guru', 't_kelas', 't_pelanggaran'];
-
-    if (!in_array($tabel, $daftarTabel, true)) {
+if ($role === 'guru') {
+    // Ringkasan untuk Guru dari tabel t_pelanggaran_siswa
+    $query_ringkasan = mysqli_query($koneksi, "
+        SELECT
+            COUNT(*) AS total_pelanggaran,
+            SUM(CASE WHEN LOWER(status) = 'tercatat' THEN 1 ELSE 0 END) AS tercatat,
+            SUM(CASE WHEN LOWER(status) = 'diproses' THEN 1 ELSE 0 END) AS diproses,
+            SUM(CASE WHEN LOWER(status) = 'selesai' THEN 1 ELSE 0 END) AS selesai
+        FROM t_pelanggaran_siswa
+    ");
+    if ($query_ringkasan) {
+        $ringkasan = mysqli_fetch_assoc($query_ringkasan);
+        $total_pelanggaran = $ringkasan['total_pelanggaran'] ?? 0;
+        $total_tercatat = $ringkasan['tercatat'] ?? 0;
+        $total_diproses = $ringkasan['diproses'] ?? 0;
+        $total_selesai = $ringkasan['selesai'] ?? 0;
+    }
+} else {
+    // Ringkasan untuk Admin
+    function hitungData($koneksi, $tabel) {
+        $daftarTabel = ['t_siswa', 't_guru', 't_kelas', 't_pelanggaran'];
+        if (!in_array($tabel, $daftarTabel, true)) {
+            return 0;
+        }
+        $hasil = $koneksi->query("SELECT COUNT(*) AS jumlah FROM `$tabel`");
+        if ($hasil) {
+            return (int) $hasil->fetch_assoc()['jumlah'];
+        }
         return 0;
     }
 
-    $hasil = $koneksi->query("SELECT COUNT(*) AS jumlah FROM `$tabel`");
-
-    if ($hasil) {
-        return (int) $hasil->fetch_assoc()['jumlah'];
-    }
-
-    return 0;
+    $jml_siswa = hitungData($koneksi, 't_siswa');
+    $jml_guru  = hitungData($koneksi, 't_guru');
+    $jml_kelas = hitungData($koneksi, 't_kelas');
+    $jml_pelanggaran_admin = hitungData($koneksi, 't_pelanggaran');
 }
-
-$jml_siswa = hitungData($koneksi, 't_siswa');
-$jml_guru  = hitungData($koneksi, 't_guru');
-$jml_kelas = hitungData($koneksi, 't_kelas');
-$jml_pelanggaran = hitungData($koneksi, 't_pelanggaran'); // Ganti 't_pelanggaran' jika nama tabelnya beda
 ?>
 
 <!DOCTYPE html>
@@ -56,158 +87,112 @@ $jml_pelanggaran = hitungData($koneksi, 't_pelanggaran'); // Ganti 't_pelanggara
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-
+    <title>Dashboard <?= ucfirst($role) ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-
 </head>
 <body>
 
 <div class="container-fluid">
     <div class="row">
-        <!-- SIDEBAR -->
+        <!-- SIDEBAR DINAMIS -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
-            <h4 class="text-white fw-bold mb-4 ">
-                My Website
-            </h4>
+            <h4 class="text-white fw-bold mb-4">Pelanggaran Siswa</h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link active">
-                    <h7 class="fw-bold mb-4">Dasboard</h7> 
+                        <span class="fw-bold">Dashboard</span>
                     </a>
                 </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Siswa.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Siswa</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Guru.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Guru</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Kelas.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kelas</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Tahun Ajaran</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Penempatan Siswa</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Wali Kelas</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kategori Pelanggaran</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Jenis Pelanggaran</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Laporan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Laporan</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Cetak_Export.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Cetak/Export</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="about_me.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">About Me</h7> 
-                    </a>
-                </li>
+
+                <?php if ($role === 'guru'): ?>
+                    <!-- MENU KHUSUS GURU -->
+                    <li class="nav-item mb-2"><a href="Catat_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catat Pelanggaran</span></a></li>
+                    <li class="nav-item mb-2"><a href="Tindakan.php" class="nav-link text-white"><span class="fw-bold">Tindakan</span></a></li>
+                    <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
+                    <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>
+                    <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a></li>
+                <?php else: ?>
+                    <!-- MENU KHUSUS ADMIN -->
+                    <li class="nav-item mb-2"><a href="Kelola_Siswa.php" class="nav-link text-white"><span class="fw-bold">Kelola Siswa</span></a></li>
+                    <li class="nav-item mb-2"><a href="Kelola_Guru.php" class="nav-link text-white"><span class="fw-bold">Kelola Guru</span></a></li>
+                    <li class="nav-item mb-2"><a href="Kelola_Kelas.php" class="nav-link text-white"><span class="fw-bold">Kelola Kelas</span></a></li>
+                    <li class="nav-item mb-2"><a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white"><span class="fw-bold">Kelola Tahun Ajaran</span></a></li>
+                    <li class="nav-item mb-2"><a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white"><span class="fw-bold">Kelola Penempatan Siswa</span></a></li>
+                    <li class="nav-item mb-2"><a href="Kelola_Wali_Kelas.php" class="nav-link text-white"><span class="fw-bold">Kelola Wali Kelas</span></a></li>
+                    <li class="nav-item mb-2"><a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Kelola Kategori Pelanggaran</span></a></li>
+                    <li class="nav-item mb-2"><a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Kelola Jenis Pelanggaran</span></a></li>
+                    <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a></li>
+                    <li class="nav-item mb-2"><a href="Cetak_Export.php" class="nav-link text-white"><span class="fw-bold">Cetak/Export</span></a></li>
+                <?php endif; ?>
+
+                <li class="nav-item mb-2"><a href="about_me.php" class="nav-link text-white"><span class="fw-bold">About Me</span></a></li>
                 <hr class="text-secondary">
-                <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-danger">
-                    <h7 class="fw-bold mb-4">Logout</h7> 
-                    </a>
-                </li>
+                <li class="nav-item"><a href="logout.php" class="nav-link text-danger"><span class="fw-bold">Logout</span></a></li>
             </ul>
         </div>
-
-        <!-- KONTEN -->
+        
+        <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 p-4">
-            <h2 class="fw-bold">Dashboard</h2>
+            <h2 class="fw-bold">Dashboard <?= ucfirst($role) ?></h2>
             <p class="text-muted mb-4">
                 Selamat datang, <?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>. Berikut ringkasan Sistem Informasi Pelanggaran Siswa.
             </p>
 
-            <!-- STATISTIK (4 KARTU) -->
-            <div class="row mb-4">
-                <!-- DATA SISWA -->
-                <div class="col-md-3 mb-3">
-                    <div class="card card-stat shadow-sm p-2">
-                        <div class="card-body">
-                            <h6 class="card-title text-muted fw-normal">Data Siswa</h6>
-                            <h2 class="display-6 fw-bold text-primary mb-0">
-                                <?= $jml_siswa ?>
-                            </h2>
-                        </div>
-                    </div>
+            <?php if ($role === 'guru'): ?>
+                <!-- STATISTIK GURU -->
+                <div class="row mt-4 mb-4">
+                    <div class="col-md-3 mb-3"><div class="card shadow-sm border-0"><div class="card-body">
+                        <h6 class="text-muted">Total Pelanggaran</h6>
+                        <h3 class="fw-bold mb-0 text-primary"><?= number_format($total_pelanggaran) ?></h3>
+                    </div></div></div>
+                    <div class="col-md-3 mb-3"><div class="card shadow-sm border-0"><div class="card-body">
+                        <h6 class="text-muted">Tercatat</h6>
+                        <h3 class="fw-bold mb-0 text-secondary"><?= number_format($total_tercatat) ?></h3>
+                    </div></div></div>
+                    <div class="col-md-3 mb-3"><div class="card shadow-sm border-0"><div class="card-body">
+                        <h6 class="text-muted">Diproses</h6>
+                        <h3 class="fw-bold mb-0 text-warning"><?= number_format($total_diproses) ?></h3>
+                    </div></div></div>
+                    <div class="col-md-3 mb-3"><div class="card shadow-sm border-0"><div class="card-body">
+                        <h6 class="text-muted">Selesai</h6>
+                        <h3 class="fw-bold mb-0 text-success"><?= number_format($total_selesai) ?></h3>
+                    </div></div></div>
                 </div>
-
-                <!-- DATA GURU -->
-                <div class="col-md-3 mb-3">
-                    <div class="card card-stat shadow-sm p-2">
-                        <div class="card-body">
-                            <h6 class="card-title text-muted fw-normal">Data Guru</h6>
-                            <h2 class="display-6 fw-bold text-success mb-0">
-                                <?= $jml_guru ?>
-                            </h2>
-                        </div>
-                    </div>
+            <?php else: ?>
+                <!-- STATISTIK ADMIN -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3"><div class="card shadow-sm border-0 p-2"><div class="card-body">
+                        <h6 class="card-title text-muted fw-normal">Data Siswa</h6>
+                        <h2 class="display-6 fw-bold text-primary mb-0"><?= $jml_siswa ?></h2>
+                    </div></div></div>
+                    <div class="col-md-3 mb-3"><div class="card shadow-sm border-0 p-2"><div class="card-body">
+                        <h6 class="card-title text-muted fw-normal">Data Guru</h6>
+                        <h2 class="display-6 fw-bold text-success mb-0"><?= $jml_guru ?></h2>
+                    </div></div></div>
+                    <div class="col-md-3 mb-3"><div class="card shadow-sm border-0 p-2"><div class="card-body">
+                        <h6 class="card-title text-muted fw-normal">Data Kelas</h6>
+                        <h2 class="display-6 fw-bold text-warning mb-0"><?= $jml_kelas ?></h2>
+                    </div></div></div>
+                    <div class="col-md-3 mb-3"><div class="card shadow-sm border-0 p-2"><div class="card-body">
+                        <h6 class="card-title text-muted fw-normal">Catatan Pelanggaran</h6>
+                        <h2 class="display-6 fw-bold text-danger mb-0"><?= $jml_pelanggaran_admin ?></h2>
+                    </div></div></div>
                 </div>
-
-                <!-- DATA KELAS -->
-                <div class="col-md-3 mb-3">
-                    <div class="card card-stat shadow-sm p-2">
-                        <div class="card-body">
-                            <h6 class="card-title text-muted fw-normal">Data Kelas</h6>
-                            <h2 class="display-6 fw-bold text-warning mb-0">
-                                <?= $jml_kelas ?>
-                            </h2>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- CATATAN PELANGGARAN -->
-                <div class="col-md-3 mb-3">
-                    <div class="card card-stat shadow-sm p-2">
-                        <div class="card-body">
-                            <h6 class="card-title text-muted fw-normal">Catatan Pelanggaran</h6>
-                            <h2 class="display-6 fw-bold text-danger mb-0">
-                                <?= $jml_pelanggaran ?>
-                            </h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <?php endif; ?>
 
             <!-- ALUR PENGGUNAAN -->
-            <div class="card card-stat shadow-sm">
+            <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
-                    <h5 class="fw-bold mb-2">Alur penggunaan</h5>
+                    <h5 class="fw-bold mb-2">Alur Penggunaan</h5>
                     <p class="text-muted mb-0">
-                        Pilih menu di sidebar untuk mengelola data, mencatat pelanggaran, melihat riwayat, serta mencetak laporan sesuai hak akses akun.
+                        <?php if ($role === 'guru'): ?>
+                            Pilih menu di sidebar untuk mencatat pelanggaran, memproses tindakan, melihat rekap poin, riwayat, serta melihat laporan sesuai hak akses akun.
+                        <?php else: ?>
+                            Pilih menu di sidebar untuk mengelola data, mencatat pelanggaran, melihat riwayat, serta mencetak laporan sesuai hak akses akun.
+                        <?php endif; ?>
                     </p>
                 </div>
             </div>
-
         </main>
     </div>
 </div>

@@ -27,7 +27,7 @@ if (!$result) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title><p class="font-weight-bold">Kelola Siswa</p></title>
+    <title>Kelola Siswa <?= ucfirst($role) ?></p></title>
    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -42,12 +42,12 @@ if (!$result) {
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
             <h4 class="text-white fw-bold mb-4 ">
-                My Website
+            Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Dasboard</h7> 
+                    <h7 class="fw-bold mb-4">Dashboard</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">

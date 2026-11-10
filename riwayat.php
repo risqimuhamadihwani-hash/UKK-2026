@@ -11,7 +11,7 @@ if (!isset($_SESSION['id_user'])) {
 // CEK ROLE
 $role = strtolower(str_replace([' ', '_'], '', $_SESSION['role'] ?? ''));
 
-if (!in_array($role, ['guru', 'walikelas'])) {
+if (!in_array($role, ['guru', 'walikelas', 'admin'])) {
     header("Location: dashboard.php");
     exit;
 }
@@ -56,7 +56,6 @@ $types = '';
 
 // FILTER KHUSUS WALI KELAS
 if ($role === 'walikelas') {
-
     $where .= "
         AND ps.kelas_id IN (
             SELECT wk.kelas_id
@@ -74,7 +73,6 @@ if ($role === 'walikelas') {
 
 // PENCARIAN
 if ($cari !== '') {
-
     $where .= "
         AND (
             ps.nama_siswa LIKE ?
@@ -176,18 +174,14 @@ $total_poin = $ringkasan['total_poin'];
 // AMBIL DAFTAR STATUS DARI DATABASE
 $sql_status = "SELECT DISTINCT status FROM t_pelanggaran_siswa ORDER BY status ASC";
 $result_status = mysqli_query($koneksi, $sql_status);
-
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Riwayat Pelanggaran</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -199,49 +193,49 @@ $result_status = mysqli_query($koneksi, $sql_status);
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
 
             <h4 class="text-white fw-bold mb-4">
-                My Website
+                Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
 
                 <li class="nav-item mb-2">
-                    <a href="guru.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Dasboard</h7> 
+                    <a href="dashboard.php" class="nav-link text-white">
+                        <span class="fw-bold">Dashboard</span>
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="Catat_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Catat Pelanggaran</h7> 
+                        <span class="fw-bold">Catat Pelanggaran</span>
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="Tindakan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Tindakan</h7> 
+                        <span class="fw-bold">Tindakan</span>
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="rekap_poin.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Rekap Poin</h7> 
+                        <span class="fw-bold">Rekap Poin</span>
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="riwayat.php" class="nav-link active">
-                    <h7 class="fw-bold mb-4">Riwayat</h7> 
+                        <span class="fw-bold">Riwayat</span>
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Laporan</h7> 
+                        <span class="fw-bold">Laporan</span>
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">About Me</h7> 
+                        <span class="fw-bold">About Me</span>
                     </a>
                 </li>
 
@@ -249,7 +243,7 @@ $result_status = mysqli_query($koneksi, $sql_status);
 
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                    <h7 class="fw-bold mb-4">Logout</h7> 
+                        <span class="fw-bold">Logout</span>
                     </a>
                 </li>
             </ul>
@@ -258,77 +252,49 @@ $result_status = mysqli_query($koneksi, $sql_status);
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
             <div class="mb-4">
-
                 <h3>Riwayat Pelanggaran</h3>
-
                 <p class="text-muted">
                     Menampilkan seluruh riwayat pencatatan pelanggaran siswa.
                 </p>
-
             </div>
 
             <!-- RINGKASAN -->
             <div class="row mb-4">
-
                 <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm border-0">
                         <div class="card-body">
-
-                            <h6 class="text-muted">
-                                Jumlah Pelanggaran
-                            </h6>
-
-                            <h3><?= e($jumlah_pelanggaran) ?></h3>
-
+                            <h6 class="text-muted">Jumlah Pelanggaran</h6>
+                            <h3 class="text-primary fw-bold"><?= e($jumlah_pelanggaran) ?></h3>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm border-0">
                         <div class="card-body">
-
-                            <h6 class="text-muted">
-                                Jumlah Siswa
-                            </h6>
-
-                            <h3><?= e($jumlah_siswa) ?></h3>
-
+                            <h6 class="text-muted">Jumlah Siswa</h6>
+                            <h3 class="text-warning fw-bold"><?= e($jumlah_siswa) ?></h3>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm border-0">
                         <div class="card-body">
-
-                            <h6 class="text-muted">
-                                Total Poin
-                            </h6>
-
-                            <h3><?= e($total_poin) ?></h3>
-
+                            <h6 class="text-muted">Total Poin</h6>
+                            <h3 class="text-danger fw-bold"><?= e($total_poin) ?></h3>
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <!-- FILTER -->
-            <div class="card shadow-sm mb-4">
-
+            <div class="card shadow-sm mb-4 border-0">
                 <div class="card-body">
-
                     <h5 class="mb-3">Filter Riwayat</h5>
-
                     <form method="GET" class="row g-3">
-
                         <div class="col-md-4">
-
-                            <label class="form-label">
-                                Pencarian
-                            </label>
-
+                            <label class="form-label">Pencarian</label>
                             <input
                                 type="text"
                                 name="cari"
@@ -336,97 +302,63 @@ $result_status = mysqli_query($koneksi, $sql_status);
                                 placeholder="Cari nama siswa, kelas, pelanggaran..."
                                 value="<?= e($cari) ?>"
                             >
-
                         </div>
 
                         <div class="col-md-3">
-
-                            <label class="form-label">
-                                Tanggal Mulai
-                            </label>
-
+                            <label class="form-label">Tanggal Mulai</label>
                             <input
                                 type="date"
                                 name="tanggal_mulai"
                                 class="form-control"
                                 value="<?= e($tanggal_mulai) ?>"
                             >
-
                         </div>
 
                         <div class="col-md-3">
-
-                            <label class="form-label">
-                                Tanggal Selesai
-                            </label>
-
+                            <label class="form-label">Tanggal Selesai</label>
                             <input
                                 type="date"
                                 name="tanggal_selesai"
                                 class="form-control"
                                 value="<?= e($tanggal_selesai) ?>"
                             >
-
                         </div>
 
                         <div class="col-md-2">
-
-                            <label class="form-label">
-                                Status
-                            </label>
-
+                            <label class="form-label">Status</label>
                             <select name="status" class="form-select">
-
                                 <option value="">Semua</option>
-
                                 <?php while ($st = mysqli_fetch_assoc($result_status)): ?>
-
                                     <option
                                         value="<?= e($st['status']) ?>"
                                         <?= $status === $st['status'] ? 'selected' : '' ?>
                                     >
                                         <?= e(ucfirst($st['status'])) ?>
                                     </option>
-
                                 <?php endwhile; ?>
-
                             </select>
-
                         </div>
 
                         <div class="col-12">
-
                             <button type="submit" class="btn btn-primary">
                                 Cari
                             </button>
-
                             <a href="riwayat.php" class="btn btn-secondary">
                                 Reset
                             </a>
-
                         </div>
-
                     </form>
-
                 </div>
-
             </div>
 
             <!-- TABEL RIWAYAT -->
-            <div class="card shadow-sm">
-
+            <div class="card shadow-sm border-0">
                 <div class="card-body">
-
-                    <h5 class="mb-3">
-                        Data Riwayat Pelanggaran
-                    </h5>
+                    <h5 class="mb-3">Data Riwayat Pelanggaran</h5>
 
                     <div class="table-responsive">
-
                         <table class="table table-bordered table-striped align-middle">
-
                             <thead class="table-dark">
-
                                 <tr>
                                     <th>No</th>
                                     <th>Tanggal</th>
@@ -439,59 +371,29 @@ $result_status = mysqli_query($koneksi, $sql_status);
                                     <th>Tindakan</th>
                                     <th>Status</th>
                                 </tr>
-
                             </thead>
 
                             <tbody>
-
                             <?php if (mysqli_num_rows($result) > 0): ?>
-
                                 <?php $no = 1; ?>
-
                                 <?php while ($row = mysqli_fetch_assoc($result)): ?>
-
                                     <tr>
-
                                         <td><?= $no++ ?></td>
-
-                                        <td>
-                                            <?= e($row['tanggal']) ?>
-                                        </td>
-
-                                        <td>
-                                            <?= e($row['nama_siswa']) ?>
-                                        </td>
-
-                                        <td>
-                                            <?= e($row['nama_kelas']) ?>
-                                        </td>
-
-                                        <td>
-                                            <?= e($row['nama_pelanggaran']) ?>
-                                        </td>
-
+                                        <td><?= e($row['tanggal']) ?></td>
+                                        <td><?= e($row['nama_siswa']) ?></td>
+                                        <td><?= e($row['nama_kelas']) ?></td>
+                                        <td><?= e($row['nama_pelanggaran']) ?></td>
                                         <td>
                                             <span class="badge bg-primary">
                                                 <?= e($row['poin']) ?> Poin
                                             </span>
                                         </td>
-
-                                        <td>
-                                            <?= e($row['nama_guru']) ?>
-                                        </td>
-
-                                        <td>
-                                            <?= e($row['keterangan']) ?>
-                                        </td>
-
-                                        <td>
-                                            <?= e($row['tindakan']) ?>
-                                        </td>
-
+                                        <td><?= e($row['nama_guru']) ?></td>
+                                        <td><?= e($row['keterangan']) ?></td>
+                                        <td><?= e($row['tindakan']) ?></td>
                                         <td>
                                             <?php
                                             $warna = 'secondary';
-
                                             if (strtolower($row['status']) === 'selesai') {
                                                 $warna = 'success';
                                             } elseif (strtolower($row['status']) === 'diproses') {
@@ -500,40 +402,29 @@ $result_status = mysqli_query($koneksi, $sql_status);
                                                 $warna = 'primary';
                                             }
                                             ?>
-
                                             <span class="badge bg-<?= $warna ?>">
                                                 <?= e(ucfirst($row['status'])) ?>
                                             </span>
                                         </td>
-
                                     </tr>
-
                                 <?php endwhile; ?>
-
                             <?php else: ?>
-
                                 <tr>
                                     <td colspan="10" class="text-center">
                                         Data riwayat pelanggaran tidak ditemukan.
                                     </td>
                                 </tr>
-
                             <?php endif; ?>
-
                             </tbody>
-
                         </table>
-
                     </div>
-
                 </div>
-
             </div>
 
         </main>
-
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -88,73 +88,73 @@ if ($export === 'csv') {
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
             <h4 class="text-white fw-bold mb-4 ">
-                My Website
+            Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Dasboard</h7> 
+                    <span class="fw-bold mb-4">Dashboard</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Siswa.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Siswa</h7> 
+                    <span class="fw-bold mb-4">Kelola Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Guru.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Guru</h7> 
+                    <span class="fw-bold mb-4">Kelola Guru</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kelas.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kelas</h7> 
+                    <span class="fw-bold mb-4">Kelola Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Tahun Ajaran</h7> 
+                    <span class="fw-bold mb-4">Kelola Tahun Ajaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Penempatan Siswa</h7> 
+                    <span class="fw-bold mb-4">Kelola Penempatan Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Wali Kelas</h7> 
+                    <span class="fw-bold mb-4">Kelola Wali Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kategori Pelanggaran</h7> 
+                    <span class="fw-bold mb-4">Kelola Kategori Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Jenis Pelanggaran</h7> 
+                    <span class="fw-bold mb-4">Kelola Jenis Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Laporan</h7> 
+                    <span class="fw-bold mb-4">Laporan</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Cetak_Export.php" class="nav-link active">
-                    <h7 class="fw-bold mb-4">Cetak/Export</h7> 
+                    <span class="fw-bold mb-4">Cetak/Export</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">About Me</h7> 
+                    <span class="fw-bold mb-4">About Me</span> 
                     </a>
                 </li>
                 <hr class="text-secondary">
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                    <h7 class="fw-bold mb-4">Logout</h7> 
+                    <span class="fw-bold mb-4">Logout</span> 
                     </a>
                 </li>
             </ul>
@@ -173,7 +173,7 @@ if ($export === 'csv') {
                     <div class="card shadow-sm border-0">
                         <div class="card-body">
                             <h6 class="text-secondary">Total Laporan</h6>
-                            <h3 class="fw-bold mb-0"><?= count($data) ?></h3>
+                            <h3 class="text-primary fw-bold mb-0"><?= count($data) ?></h3>
                         </div>
                     </div>
                 </div>
@@ -182,7 +182,7 @@ if ($export === 'csv') {
                     <div class="card shadow-sm border-0">
                         <div class="card-body">
                             <h6 class="text-secondary">Total Poin Pelanggaran</h6>
-                            <h3 class="fw-bold mb-0"><?= $totalPoin ?></h3>
+                            <h3 class="text-danger fw-bold mb-0"><?= $totalPoin ?></h3>
                         </div>
                     </div>
                 </div>
@@ -221,7 +221,7 @@ if ($export === 'csv') {
                         </div>
 
                         <button type="submit" class="btn btn-primary">Filter</button>
-                        <a href="Cetak_Export.php" class="btn btn-secondary btn-sm ms-2">Reset Filter</a>
+                        <a href="Cetak_Export.php" class="btn btn-secondary">Reset Filter</a>
                     </form>
                 </div>
             </div>
@@ -284,7 +284,11 @@ if ($export === 'csv') {
                                             <td><?= htmlspecialchars($row['nama_pelanggaran']) ?></td>
                                             <td><?= htmlspecialchars($row['nama_guru']) ?></td>
                                             <td><?= !empty($row['tanggal']) ? htmlspecialchars(date('d-m-Y', strtotime($row['tanggal']))) : '-' ?></td>
-                                            <td><span class="fw-bold text-danger"><?= (int)$row['poin'] ?></span></td>
+                                            <td>
+                                                <span class="badge bg-primary">
+                                                    <?= (int)$row['poin'] ?> Poin
+                                                </span>
+                                            </td>
                                             <td><?= htmlspecialchars($row['tindakan']) ?></td>
                                             <td><?= htmlspecialchars($row['keterangan']) ?></td>
                                             <td>
@@ -326,7 +330,7 @@ $(document).ready(function () {
         searching: true,
         paging: true,
         info: true,
-        dom: '<"row mb-3"<"col-md-6"l><"col-md-6"f>>rt<"row mt-3"<"col-md-6"i><"col-md-6"p>>',
+        dom: '<"row mb-3"<"col-md-6"l><"col-md-6"f>>rt<"row mt-3 align-items-center"<"col-md-6"i><"col-md-6 d-flex justify-content-end"p>>',
         language: {
             search: 'Cari:',
             searchPlaceholder: 'Cari data pelanggaran...',

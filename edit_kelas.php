@@ -124,12 +124,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['simpan'])) {
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
             <h4 class="text-white fw-bold mb-4">
-                My Website
+            Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Dasboard</h7> 
+                    <h7 class="fw-bold mb-4">Dashboard</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
