@@ -28,20 +28,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['simpan_tindakan'])) {
 
     $id = (int) ($_POST['id'] ?? 0);
     $tindakan = trim($_POST['tindakan'] ?? '');
-    $status = trim($_POST['status'] ?? '');
 
-    $status_valid = ['tercatat', 'diproses', 'selesai'];
-
-    if ($id <= 0 || $tindakan === '' || !in_array($status, $status_valid, true)) {
+    if ($id <= 0 || $tindakan === '') {
         $error = "Data tindakan tidak valid.";
     } else {
         $stmt = mysqli_prepare($koneksi, "
             UPDATE t_pelanggaran_siswa
-            SET tindakan = ?, status = ?, updated_at = NOW()
+            SET tindakan = ?, updated_at = NOW()
             WHERE id = ?
         ");
 
-        mysqli_stmt_bind_param($stmt, "ssi", $tindakan, $status, $id);
+        mysqli_stmt_bind_param($stmt, "si", $tindakan, $id);
 
         if (mysqli_stmt_execute($stmt)) {
             header("Location: Tindakan.php?pesan=berhasil");
@@ -114,12 +111,6 @@ if (!empty($params)) {
 
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
-
-// HITUNG DATA RINGKASAN
-$total = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM t_pelanggaran_siswa"))['jumlah'];
-$tercatat = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM t_pelanggaran_siswa WHERE status='tercatat'"))['jumlah'];
-$diproses = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM t_pelanggaran_siswa WHERE status='diproses'"))['jumlah'];
-$selesai = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM t_pelanggaran_siswa WHERE status='selesai'"))['jumlah'];
 ?>
 
 <!DOCTYPE html>
@@ -178,7 +169,7 @@ $selesai = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah 
 
                 <div class="mb-4">
                     <h3>Kelola Tindakan</h3>
-                    <p class="text-muted">Kelola tindakan dan status penanganan pelanggaran siswa.</p>
+                    <p class="text-muted">Kelola tindakan penanganan pelanggaran siswa.</p>
                 </div>
 
                 <?php if ($pesan): ?>
@@ -194,42 +185,6 @@ $selesai = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah 
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 <?php endif; ?>
-
-                <!-- RINGKASAN -->
-                <div class="row mb-4">
-                    <div class="col-md-3 mb-3">
-                        <div class="card shadow-sm border-0">
-                            <div class="card-body">
-                                <h6 class="text-muted">Total Pelanggaran</h6>
-                                <h3 class="text-primary fw-bold mb-0"><?= e($total) ?></h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card shadow-sm border-0">
-                            <div class="card-body">
-                                <h6 class="text-muted">Perlu Tindakan</h6>
-                                <h3 class="text-secondary fw-bold mb-0"><?= e($tercatat) ?></h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card shadow-sm border-0">
-                            <div class="card-body">
-                                <h6 class="text-muted">Diproses</h6>
-                                <h3 class="text-warning fw-bold mb-0"><?= e($diproses) ?></h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card shadow-sm border-0">
-                            <div class="card-body">
-                                <h6 class="text-muted">Selesai</h6>
-                                <h3 class="text-success fw-bold mb-0"><?= e($selesai) ?></h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- TABEL TINDAKAN -->
                 <div class="card shadow-sm border-0">
@@ -272,28 +227,31 @@ $selesai = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah 
 
                                             <form method="POST">
                                                 <td>
-                                                    <input
-                                                        type="text"
+                                                    <textarea
                                                         name="tindakan"
                                                         class="form-control form-control-sm"
-                                                        value="<?= e($row['tindakan']) ?>"
+                                                        rows="2"
                                                         placeholder="Masukkan tindakan..."
                                                         required
-                                                    >
+                                                    ><?= e($row['tindakan']) ?></textarea>
                                                 </td>
 
                                                 <td>
-                                                    <select name="status" class="form-select form-select-sm" required>
-                                                        <option value="tercatat" <?= $row['status'] === 'tercatat' ? 'selected' : '' ?>>
-                                                            Perlu Tindakan
-                                                        </option>
-                                                        <option value="diproses" <?= $row['status'] === 'diproses' ? 'selected' : '' ?>>
-                                                            Diproses
-                                                        </option>
-                                                        <option value="selesai" <?= $row['status'] === 'selesai' ? 'selected' : '' ?>>
-                                                            Selesai
-                                                        </option>
-                                                    </select>
+                                                    <?php
+                                                    $warna = 'secondary';
+                                                    $teks_status = ucfirst($row['status']);
+                                                    if (strtolower($row['status']) === 'selesai') {
+                                                        $warna = 'success';
+                                                    } elseif (strtolower($row['status']) === 'diproses') {
+                                                        $warna = 'warning text-dark';
+                                                    } elseif (strtolower($row['status']) === 'tercatat') {
+                                                        $warna = 'primary';
+                                                        $teks_status = 'Perlu Tindakan';
+                                                    }
+                                                    ?>
+                                                    <span class="badge bg-<?= $warna ?>">
+                                                        <?= e($teks_status) ?>
+                                                    </span>
                                                 </td>
 
                                                 <td>

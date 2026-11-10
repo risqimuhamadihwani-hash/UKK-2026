@@ -13,8 +13,6 @@ function e($data) {
 }
 
 $cari = trim($_GET['cari'] ?? '');
-$tanggal_mulai = $_GET['tanggal_mulai'] ?? '';
-$tanggal_selesai = $_GET['tanggal_selesai'] ?? '';
 $status = $_GET['status'] ?? '';
 $export = $_GET['export'] ?? '';
 
@@ -37,18 +35,6 @@ if ($cari !== '') {
         $params[] = $keyword;
         $types .= 's';
     }
-}
-
-if ($tanggal_mulai !== '') {
-    $where[] = "tanggal >= ?";
-    $params[] = $tanggal_mulai;
-    $types .= 's';
-}
-
-if ($tanggal_selesai !== '') {
-    $where[] = "tanggal <= ?";
-    $params[] = $tanggal_selesai;
-    $types .= 's';
 }
 
 if ($status !== '') {
@@ -226,11 +212,6 @@ if ($status !== '') {
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Cetak_Export.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">Cetak/Export</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
                         <span class="fw-bold mb-4">About Me</span> 
                     </a>
@@ -330,23 +311,11 @@ if ($status !== '') {
                 <div class="card-body">
                     <h5 class="mb-3">Filter Laporan</h5>
                     <form method="GET" action="Laporan.php" class="row g-3">
-                        <div class="col-md-12">
+                        <div class="col-md-8">
                             <label class="form-label">Cari Data:</label>
                             <input type="text" name="cari" class="form-control"
                                    value="<?= e($cari) ?>"
                                    placeholder="Nama siswa, kelas, pelanggaran, guru">
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Tanggal Mulai:</label>
-                            <input type="date" name="tanggal_mulai" class="form-control"
-                                   value="<?= e($tanggal_mulai) ?>">
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Tanggal Selesai:</label>
-                            <input type="date" name="tanggal_selesai" class="form-control"
-                                   value="<?= e($tanggal_selesai) ?>">
                         </div>
 
                         <div class="col-md-4">

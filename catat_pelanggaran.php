@@ -66,13 +66,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $tahun_id = $tahunData ? (int)$tahunData['id'] : 1;
 
         $siswa_id = (int) ($_POST['siswa_id'] ?? 0);
-        $kelas_id = (int) ($_POST['kelas_id'] ?? 0);
         $pelanggaran_id = (int) ($_POST['pelanggaran_id'] ?? 0);
         $tanggal = $_POST['tanggal'] ?? date('Y-m-d');
         $keterangan = trim($_POST['keterangan'] ?? '');
-        $tindakan = trim($_POST['tindakan'] ?? '');
 
-        if ($siswa_id < 1 || $pelanggaran_id < 1 || $keterangan === '' || $tindakan === '') {
+        if ($siswa_id < 1 || $pelanggaran_id < 1 || $keterangan === '') {
             throw new Exception("Lengkapi semua data form dengan benar.");
         }
 
@@ -94,31 +92,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $nama_siswa = $siswa['nama'];
 
-        // AMBIL DATA KELAS
-        if ($kelas_id > 0) {
-            $stmtK = $koneksi->prepare("SELECT nama FROM t_kelas WHERE id = ? LIMIT 1");
-            $stmtK->bind_param("i", $kelas_id);
-            $stmtK->execute();
-            $resK = $stmtK->get_result()->fetch_assoc();
-            $stmtK->close();
-            $nama_kelas = $resK ? $resK['nama'] : '-';
-        } else {
-            // Ambil otomatis kelas aktif siswa jika tidak dipilih manual
-            $stmtKelas = $koneksi->prepare(
-                "SELECT k.id AS kelas_id, k.nama AS nama_kelas
-                 FROM t_kelas_siswa ks
-                 JOIN t_kelas k ON k.id = ks.kelas_id
-                 WHERE ks.siswa_id = ? AND ks.tahun_ajaran_id = ? AND ks.status_aktif = 1
-                 LIMIT 1"
-            );
-            $stmtKelas->bind_param("ii", $siswa_id, $tahun_id);
-            $stmtKelas->execute();
-            $kelasData = $stmtKelas->get_result()->fetch_assoc();
-            $stmtKelas->close();
+        // AMBIL KELAS OTOMATIS BERDASARKAN SISWA
+        $stmtKelas = $koneksi->prepare(
+            "SELECT k.id AS kelas_id, k.nama AS nama_kelas
+             FROM t_kelas_siswa ks
+             JOIN t_kelas k ON k.id = ks.kelas_id
+             WHERE ks.siswa_id = ? AND ks.tahun_ajaran_id = ? AND ks.status_aktif = 1
+             LIMIT 1"
+        );
+        $stmtKelas->bind_param("ii", $siswa_id, $tahun_id);
+        $stmtKelas->execute();
+        $kelasData = $stmtKelas->get_result()->fetch_assoc();
+        $stmtKelas->close();
 
-            $kelas_id = ($kelasData && !empty($kelasData['kelas_id'])) ? (int) $kelasData['kelas_id'] : 0;
-            $nama_kelas = $kelasData ? $kelasData['nama_kelas'] : '-';
-        }
+        $kelas_id = ($kelasData && !empty($kelasData['kelas_id'])) ? (int) $kelasData['kelas_id'] : 0;
+        $nama_kelas = $kelasData ? $kelasData['nama_kelas'] : '-';
 
         // AMBIL DATA JENIS PELANGGARAN & POIN
         $stmt = $koneksi->prepare(
@@ -139,6 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $kategori_id = (int) ($pelanggaran['pelanggaran_kategori_id'] ?? 0);
         $poin = (int) $pelanggaran['poin'];
         $status = 'tercatat';
+        $tindakan = ''; // Dikosongkan karena input tindakan telah dihapus
 
         // SIMPAN KE TABEL t_pelanggaran_siswa
         $stmt = $koneksi->prepare(
@@ -190,9 +179,6 @@ $siswaList = $koneksi->query(
      GROUP BY s.id, s.nis, s.nama
      ORDER BY s.nama ASC"
 );
-
-// DAFTAR KELAS
-$kelasList = $koneksi->query("SELECT id, nama FROM t_kelas ORDER BY nama ASC");
 
 // DAFTAR PELANGGARAN
 $pelanggaranList = $koneksi->query(
@@ -266,7 +252,7 @@ $pelanggaranList = $koneksi->query(
         <main class="col-md-9 col-lg-10 p-4">
 
             <h2>Catat Pelanggaran Siswa</h2>
-            <p class="text-muted mb-4">Formulir pencatatan pelanggaran dan tindakan disiplin siswa</p>
+            <p class="text-muted mb-4">Formulir pencatatan pelanggaran siswa</p>
 
             <?php if ($pesan !== ''): ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -298,18 +284,6 @@ $pelanggaranList = $koneksi->query(
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Pilih Kelas</label>
-                        <select name="kelas_id" class="form-select" required>
-                            <option value="">-- Pilih Kelas --</option>
-                            <?php while ($k = $kelasList->fetch_assoc()): ?>
-                                <option value="<?= (int) $k['id'] ?>">
-                                    <?= e($k['nama']) ?>
-                                </option>
-                            <?php endwhile; ?>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
                         <label class="form-label fw-bold">Jenis Pelanggaran</label>
                         <select name="pelanggaran_id" class="form-select" required>
                             <option value="">-- Pilih Jenis Pelanggaran --</option>
@@ -319,17 +293,6 @@ $pelanggaranList = $koneksi->query(
                                 </option>
                             <?php endwhile; ?>
                         </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Tindakan / Sanksi</label>
-                        <textarea
-                            name="tindakan"
-                            class="form-control"
-                            rows="2"
-                            placeholder="Contoh: Teguran lisan / Panggilan Orang Tua / Skorsing 3 Hari"
-                            required
-                        ></textarea>
                     </div>
 
                     <div class="mb-3">

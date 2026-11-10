@@ -40,39 +40,55 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update"])) {
     } elseif (!in_array($status_aktif, ["0", "1"], true)) {
         $error = "Status aktif tidak valid.";
     } else {
+        // ATURAN NO 5: Cek jika status yang diubah menjadi '1' (Aktif)
+        if ($status_aktif === "1") {
+            // Cek apakah sudah ada tahun ajaran lain (selain ID ini) yang berstatus aktif
+            $stmt_cek = $koneksi->prepare("SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 AND id != ?");
+            $stmt_cek->bind_param("i", $id);
+            $stmt_cek->execute();
+            $stmt_cek->store_result();
 
-        $stmt = $koneksi->prepare("
-            UPDATE t_tahun_ajaran
-            SET nama = ?, tanggal_mulai = ?, tanggal_selesai = ?, status_aktif = ?
-            WHERE id = ?
-        ");
-
-        if (!$stmt) {
-            die("Query gagal: " . $koneksi->error);
+            if ($stmt_cek->num_rows > 0) {
+                $error = "Gagal: Sudah ada tahun ajaran lain yang berstatus Aktif. Tidak boleh ada status aktif lebih dari 1.";
+            }
+            $stmt_cek->close();
         }
 
-        $statusInt = (int)$status_aktif;
+        // Jika tidak ada error, lanjutkan proses update
+        if ($error === "") {
+            $stmt = $koneksi->prepare("
+                UPDATE t_tahun_ajaran
+                SET nama = ?, tanggal_mulai = ?, tanggal_selesai = ?, status_aktif = ?
+                WHERE id = ?
+            ");
 
-        $stmt->bind_param(
-            "sssii",
-            $nama,
-            $tanggal_mulai,
-            $tanggal_selesai,
-            $statusInt,
-            $id
-        );
+            if (!$stmt) {
+                die("Query gagal: " . $koneksi->error);
+            }
 
-        if ($stmt->execute()) {
+            $statusInt = (int)$status_aktif;
+
+            $stmt->bind_param(
+                "sssii",
+                $nama,
+                $tanggal_mulai,
+                $tanggal_selesai,
+                $statusInt,
+                $id
+            );
+
+            if ($stmt->execute()) {
+                $stmt->close();
+                $koneksi->close();
+
+                header("Location: Kelola_Tahun_Ajaran.php?pesan=diubah");
+                exit;
+            } else {
+                $error = "Gagal mengubah data tahun ajaran: " . $stmt->error;
+            }
+
             $stmt->close();
-            $koneksi->close();
-
-            header("Location: Kelola_Tahun_Ajaran.php?pesan=diubah");
-            exit;
-        } else {
-            $error = "Gagal mengubah data tahun ajaran: " . $stmt->error;
         }
-
-        $stmt->close();
     }
 }
 
@@ -89,7 +105,6 @@ function e($nilai) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Tahun Ajaran</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-
 </head>
 
 <body>
@@ -150,11 +165,6 @@ function e($nilai) {
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
                     <h7 class="fw-bold mb-4">Laporan</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Cetak_Export.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Cetak/Export</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">

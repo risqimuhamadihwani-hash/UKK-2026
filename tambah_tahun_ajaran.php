@@ -31,34 +31,45 @@ if (isset($_POST['simpan'])) {
     } elseif ($tanggal_selesai < $tanggal_mulai) {
         $pesan = "Tanggal selesai tidak boleh sebelum tanggal mulai.";
     } else {
-        $stmt = mysqli_prepare($koneksi, "
-            INSERT INTO t_tahun_ajaran
-            (nama, tanggal_mulai, tanggal_selesai, status_aktif)
-            VALUES (?, ?, ?, ?)
-        ");
-
-        if (!$stmt) {
-            die("Query gagal: " . mysqli_error($koneksi));
+        // ATURAN NO 5: Cek jika status yang dipilih '1' (Aktif)
+        if ($status_aktif === '1') {
+            $cek_aktif = mysqli_query($koneksi, "SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1");
+            if (mysqli_num_rows($cek_aktif) > 0) {
+                $pesan = "Gagal: Sudah ada tahun ajaran yang berstatus Aktif. Tidak boleh ada status aktif lebih dari 1.";
+            }
         }
 
-        mysqli_stmt_bind_param(
-            $stmt,
-            "sssi",
-            $nama,
-            $tanggal_mulai,
-            $tanggal_selesai,
-            $status_aktif
-        );
+        // Jika tidak ada error (pesan masih kosong), lanjutkan simpan
+        if ($pesan === '') {
+            $stmt = mysqli_prepare($koneksi, "
+                INSERT INTO t_tahun_ajaran
+                (nama, tanggal_mulai, tanggal_selesai, status_aktif)
+                VALUES (?, ?, ?, ?)
+            ");
 
-        if (mysqli_stmt_execute($stmt)) {
+            if (!$stmt) {
+                die("Query gagal: " . mysqli_error($koneksi));
+            }
+
+            mysqli_stmt_bind_param(
+                $stmt,
+                "sssi",
+                $nama,
+                $tanggal_mulai,
+                $tanggal_selesai,
+                $status_aktif
+            );
+
+            if (mysqli_stmt_execute($stmt)) {
+                mysqli_stmt_close($stmt);
+                header("Location: Kelola_Tahun_Ajaran.php");
+                exit;
+            } else {
+                $pesan = "Gagal menyimpan data: " . mysqli_stmt_error($stmt);
+            }
+
             mysqli_stmt_close($stmt);
-            header("Location: Kelola_Tahun_Ajaran.php");
-            exit;
-        } else {
-            $pesan = "Gagal menyimpan data: " . mysqli_stmt_error($stmt);
         }
-
-        mysqli_stmt_close($stmt);
     }
 }
 ?>
@@ -71,7 +82,6 @@ if (isset($_POST['simpan'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Tahun Ajaran</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-
 </head>
 
 <body>
@@ -136,11 +146,6 @@ if (isset($_POST['simpan'])) {
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
                     <h7 class="fw-bold mb-4">Laporan</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Cetak_Export.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Cetak/Export</h7> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">

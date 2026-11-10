@@ -10,11 +10,16 @@ if (!isset($_SESSION['id_user'])) {
 
 $pesan = "";
 
+// Ambil data tahun ajaran aktif secara otomatis
+$tahun_aktif_query = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
+$tahun_aktif = mysqli_fetch_assoc($tahun_aktif_query);
+$tahun_ajaran_aktif_id = $tahun_aktif ? (int)$tahun_aktif['id'] : 0;
+
 // PROSES SIMPAN
 if (isset($_POST['simpan'])) {
 
     $siswa_id = (int) $_POST['siswa_id'];
-    $tahun_ajaran_id = (int) $_POST['tahun_ajaran_id'];
+    $tahun_ajaran_id = $tahun_ajaran_aktif_id;
     $kelas_id = (int) $_POST['kelas_id'];
     $tanggal_mulai = $_POST['tanggal_mulai'];
     $tanggal_selesai = $_POST['tanggal_selesai'];
@@ -29,7 +34,7 @@ if (isset($_POST['simpan'])) {
         $tanggal_selesai < $tanggal_mulai
     ) {
 
-        $pesan = "Data tidak valid. Periksa kembali form.";
+        $pesan = "Data tidak valid atau tidak ada tahun ajaran aktif. Periksa kembali form.";
 
     } else {
 
@@ -97,19 +102,12 @@ if (isset($_POST['simpan'])) {
     }
 }
 
-// DATA SISWA (Hanya ambil 1 data unik berdasarkan nama atau NIS)
+// DATA SISWA: Hanya menampilkan siswa yang BELUM pernah ditempatkan sama sekali
 $siswa = mysqli_query($koneksi,
-    "SELECT MIN(id) as id, nis, nama
+    "SELECT id, nis, nama
      FROM t_siswa
-     GROUP BY nama
+     WHERE id NOT IN (SELECT siswa_id FROM t_kelas_siswa)
      ORDER BY nama ASC"
-);
-
-// DATA TAHUN AJARAN
-$tahun = mysqli_query($koneksi,
-    "SELECT id, nama
-     FROM t_tahun_ajaran
-     ORDER BY id DESC"
 );
 
 // DATA KELAS
@@ -130,7 +128,6 @@ $kelas = mysqli_query($koneksi,
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Penempatan Siswa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-
 </head>
 
 <body>
@@ -141,79 +138,7 @@ $kelas = mysqli_query($koneksi,
 <div class="container-fluid">
     <div class="row">
         <!-- SIDEBAR -->
-        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
-            <h4 class="text-white fw-bold mb-4">
-            Pelanggaran Siswa
-            </h4>
-            <ul class="nav nav-pills flex-column">
-                <li class="nav-item mb-2">
-                    <a href="dashboard.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Dashboard</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Siswa.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Siswa</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Guru.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Guru</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Kelas.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kelas</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Tahun Ajaran</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Penempatan_Siswa.php" class="nav-link active">
-                    <h7 class="fw-bold mb-4">Kelola Penempatan Siswa</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Wali Kelas</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kategori Pelanggaran</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Jenis Pelanggaran</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Laporan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Laporan</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Cetak_Export.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Cetak/Export</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="about_me.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">About Me</h7> 
-                    </a>
-                </li>
-                <hr class="text-secondary">
-                <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-danger">
-                    <h7 class="fw-bold mb-4">Logout</h7> 
-                    </a>
-                </li>
-            </ul>
-        </div>
+        <?php include 'sidebar.php'; ?>
 
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
@@ -233,7 +158,7 @@ $kelas = mysqli_query($koneksi,
                     <form method="POST" action="tambah_penempatan_Siswa.php">
 
                         <div class="mb-3">
-                            <label class="form-label">Siswa</label>
+                            <label class="form-label">Siswa (Belum Ditempatkan)</label>
                             <select name="siswa_id" class="form-select" required>
                                 <option value="">-- Pilih Siswa --</option>
                                 <?php while ($s = mysqli_fetch_assoc($siswa)): ?>
@@ -246,14 +171,12 @@ $kelas = mysqli_query($koneksi,
 
                         <div class="mb-3">
                             <label class="form-label">Tahun Ajaran</label>
-                            <select name="tahun_ajaran_id" class="form-select" required>
-                                <option value="">-- Pilih Tahun Ajaran --</option>
-                                <?php while ($t = mysqli_fetch_assoc($tahun)): ?>
-                                    <option value="<?= $t['id'] ?>">
-                                        <?= htmlspecialchars($t['nama']) ?>
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
+                            <?php if ($tahun_aktif): ?>
+                                <input type="hidden" name="tahun_ajaran_id" value="<?= $tahun_ajaran_aktif_id ?>">
+                                <input type="text" class="form-control bg-light" value="<?= htmlspecialchars($tahun_aktif['nama']) ?>" readonly>
+                            <?php else: ?>
+                                <input type="text" class="form-control bg-light text-danger" value="Tidak ada tahun ajaran yang aktif saat ini!" readonly>
+                            <?php endif; ?>
                         </div>
 
                         <div class="mb-3">
@@ -306,6 +229,7 @@ $kelas = mysqli_query($koneksi,
                                 name="simpan"
                                 class="btn btn-primary px-3 py-1 text-white"
                                 style="background-color: #0d6efd;"
+                                <?= !$tahun_aktif ? 'disabled' : '' ?>
                             >
                                 Tambah
                             </button>
@@ -324,7 +248,6 @@ $kelas = mysqli_query($koneksi,
 
     </div>
 </div>
-
 
 </body>
 </html>

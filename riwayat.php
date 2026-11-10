@@ -2,7 +2,6 @@
 session_start();
 require_once 'config/koneksi.php';
 
-// CEK LOGIN
 if (!isset($_SESSION['id_user'])) {
     header("Location: login.php");
     exit;
@@ -36,18 +35,7 @@ function bindParams($stmt, $types, &$params) {
 
 // FILTER PENCARIAN
 $cari = trim($_GET['cari'] ?? '');
-$tanggal_mulai = $_GET['tanggal_mulai'] ?? '';
-$tanggal_selesai = $_GET['tanggal_selesai'] ?? '';
 $status = trim($_GET['status'] ?? '');
-
-// VALIDASI TANGGAL
-if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $tanggal_mulai) && $tanggal_mulai !== '') {
-    $tanggal_mulai = '';
-}
-
-if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $tanggal_selesai) && $tanggal_selesai !== '') {
-    $tanggal_selesai = '';
-}
 
 // QUERY FILTER
 $where = " WHERE 1=1 ";
@@ -92,20 +80,6 @@ if ($cari !== '') {
     }
 }
 
-// FILTER TANGGAL MULAI
-if ($tanggal_mulai !== '') {
-    $where .= " AND ps.tanggal >= ? ";
-    $params[] = $tanggal_mulai;
-    $types .= 's';
-}
-
-// FILTER TANGGAL SELESAI
-if ($tanggal_selesai !== '') {
-    $where .= " AND ps.tanggal <= ? ";
-    $params[] = $tanggal_selesai;
-    $types .= 's';
-}
-
 // FILTER STATUS
 if ($status !== '') {
     $where .= " AND ps.status = ? ";
@@ -142,34 +116,6 @@ bindParams($stmt, $types, $params);
 
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
-
-// QUERY RINGKASAN
-$sql_total = "
-    SELECT
-        COUNT(*) AS jumlah_pelanggaran,
-        COUNT(DISTINCT ps.siswa_id) AS jumlah_siswa,
-        COALESCE(SUM(ps.poin), 0) AS total_poin
-    FROM t_pelanggaran_siswa ps
-    $where
-";
-
-$stmt_total = mysqli_prepare($koneksi, $sql_total);
-
-if (!$stmt_total) {
-    die("Query ringkasan gagal: " . e(mysqli_error($koneksi)));
-}
-
-bindParams($stmt_total, $types, $params);
-
-mysqli_stmt_execute($stmt_total);
-$result_total = mysqli_stmt_get_result($stmt_total);
-
-$ringkasan = mysqli_fetch_assoc($result_total);
-
-// DATA RINGKASAN
-$jumlah_pelanggaran = $ringkasan['jumlah_pelanggaran'];
-$jumlah_siswa = $ringkasan['jumlah_siswa'];
-$total_poin = $ringkasan['total_poin'];
 
 // AMBIL DAFTAR STATUS DARI DATABASE
 $sql_status = "SELECT DISTINCT status FROM t_pelanggaran_siswa ORDER BY status ASC";
@@ -258,42 +204,12 @@ $result_status = mysqli_query($koneksi, $sql_status);
                 </p>
             </div>
 
-            <!-- RINGKASAN -->
-            <div class="row mb-4">
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                            <h6 class="text-muted">Jumlah Pelanggaran</h6>
-                            <h3 class="text-primary fw-bold"><?= e($jumlah_pelanggaran) ?></h3>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                            <h6 class="text-muted">Jumlah Siswa</h6>
-                            <h3 class="text-warning fw-bold"><?= e($jumlah_siswa) ?></h3>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                            <h6 class="text-muted">Total Poin</h6>
-                            <h3 class="text-danger fw-bold"><?= e($total_poin) ?></h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- FILTER -->
             <div class="card shadow-sm mb-4 border-0">
                 <div class="card-body">
                     <h5 class="mb-3">Filter Riwayat</h5>
                     <form method="GET" class="row g-3">
-                        <div class="col-md-4">
+                        <div class="col-md-8">
                             <label class="form-label">Pencarian</label>
                             <input
                                 type="text"
@@ -304,27 +220,7 @@ $result_status = mysqli_query($koneksi, $sql_status);
                             >
                         </div>
 
-                        <div class="col-md-3">
-                            <label class="form-label">Tanggal Mulai</label>
-                            <input
-                                type="date"
-                                name="tanggal_mulai"
-                                class="form-control"
-                                value="<?= e($tanggal_mulai) ?>"
-                            >
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Tanggal Selesai</label>
-                            <input
-                                type="date"
-                                name="tanggal_selesai"
-                                class="form-control"
-                                value="<?= e($tanggal_selesai) ?>"
-                            >
-                        </div>
-
-                        <div class="col-md-2">
+                        <div class="col-md-4">
                             <label class="form-label">Status</label>
                             <select name="status" class="form-select">
                                 <option value="">Semua</option>

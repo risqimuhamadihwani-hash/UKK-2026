@@ -99,11 +99,6 @@ $data = mysqli_query(
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Cetak_Export.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Cetak/Export</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
                     <h7 class="fw-bold mb-4">About Me</h7> 
                     </a>

@@ -25,17 +25,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
     $nama = trim($_POST["nama"] ?? "");
     $email = trim($_POST["email"] ?? "");
     $password = $_POST["password"] ?? "";
+    $konfirmasi_password = $_POST["konfirmasi_password"] ?? "";
     $status = $_POST["status_aktif"] ?? "1";
 
-    // Validasi input kosong dan panjang NIP
-    if ($nip === "" || $nama === "" || $email === "" || $password === "") {
-        $error = "NIP, Nama Guru, Email, dan Password wajib diisi.";
-    } elseif (strlen($nip) > 18) {
-        $error = "NIP tidak boleh lebih dari 18 karakter.";
+    // Validasi input kosong, format NIP, password, dan konfirmasi password
+    if ($nip === "" || $nama === "" || $email === "" || $password === "" || $konfirmasi_password === "") {
+        $error = "Semua kolom wajib diisi, termasuk konfirmasi password.";
+    } elseif (!ctype_digit($nip) || strlen($nip) > 18) {
+        $error = "NIP hanya boleh berisi angka dan maksimal 18 karakter.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Format email tidak valid.";
     } elseif (strlen($password) < 6) {
         $error = "Password minimal harus 6 karakter.";
+    } elseif ($password !== $konfirmasi_password) {
+        $error = "Konfirmasi password tidak cocok dengan password.";
     } elseif (!in_array($status, ["0", "1"], true)) {
         $error = "Status guru tidak valid.";
     } else {
@@ -210,11 +213,6 @@ function e($nilai) {
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Cetak_Export.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Cetak/Export</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
                     <h7 class="fw-bold mb-4">About Me</h7> 
                     </a>
@@ -245,7 +243,7 @@ function e($nilai) {
 
                     <form method="POST">
                         <div class="mb-3">
-                            <label class="form-label">NIP</label>
+                            <label class="form-label">NIP (Maksimal 18 Digit Angka)</label>
                             <input
                                 type="text"
                                 name="nip"
@@ -253,6 +251,8 @@ function e($nilai) {
                                 placeholder="Masukkan NIP (maks. 18 digit)"
                                 value="<?= e($nip) ?>"
                                 maxlength="18"
+                                inputmode="numeric"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                 required
                             >
                         </div>
@@ -288,6 +288,17 @@ function e($nilai) {
                                 name="password"
                                 class="form-control"
                                 placeholder="Masukkan Password Minimal 6 Karakter"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Konfirmasi Password</label>
+                            <input
+                                type="password"
+                                name="konfirmasi_password"
+                                class="form-control"
+                                placeholder="Ulangi Password yang Sama"
                                 required
                             >
                         </div>

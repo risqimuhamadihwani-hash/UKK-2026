@@ -34,7 +34,7 @@ if (!$result) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <link rel="stylesheet" 
-             href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
+           href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
 </head>
 
 <body>
@@ -98,11 +98,6 @@ if (!$result) {
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Cetak_Export.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Cetak/Export</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
                     <h7 class="fw-bold mb-4">About Me</h7> 
                     </a>
@@ -161,13 +156,18 @@ if (!$result) {
                         $no = 1;
 
                         while ($guru = $result->fetch_assoc()):
+                            // Membersihkan kata 'NIP' dari NIP
+                            $bersihNip = str_ireplace('NIP', '', $guru['nip'] ?? '');
+
+                            // Memaksa email menjadi huruf kecil (lowercase) untuk menghilangkan huruf kapital di depan/seluruhnya
+                            $bersihEmail = strtolower(trim($guru['email'] ?? ''));
                         ?>
 
                             <tr>
                                 <td><?= $no++ ?></td>
 
                                 <td>
-                                    <?= htmlspecialchars($guru['nip'] ?? '', ENT_QUOTES, 'UTF-8') ?>
+                                    <?= htmlspecialchars($bersihNip, ENT_QUOTES, 'UTF-8') ?>
                                 </td>
 
                                 <td>
@@ -175,7 +175,7 @@ if (!$result) {
                                 </td>
 
                                 <td>
-                                    <?= htmlspecialchars($guru['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>
+                                    <?= htmlspecialchars($bersihEmail, ENT_QUOTES, 'UTF-8') ?>
                                 </td>
 
                                 <td>
@@ -206,8 +206,9 @@ if (!$result) {
 
                 </table>
 
-            </main>
-        </div>
+            </div>
+
+        </main>
     </div>
 </div>
 

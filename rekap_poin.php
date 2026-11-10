@@ -2,6 +2,9 @@
 session_start();
 require_once 'config/koneksi.php';
 
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+// CEK LOGIN
 if (!isset($_SESSION['id_user'])) {
     header("Location: login.php");
     exit;
@@ -19,15 +22,17 @@ function e($data) {
 
 $cari = trim($_GET['cari'] ?? '');
 
-// QUERY REKAP POIN
+// QUERY REKAP POIN DENGAN JOIN KELAS YANG AKURAT
 $sql = "
     SELECT
-        siswa_id,
-        nama_siswa,
-        nama_kelas,
+        p.siswa_id,
+        p.nama_siswa,
+        COALESCE(k.nama, p.nama_kelas, 'Tanpa Kelas') AS nama_kelas,
         COUNT(*) AS jumlah_pelanggaran,
-        SUM(poin) AS total_poin
-    FROM t_pelanggaran_siswa
+        SUM(p.poin) AS total_poin
+    FROM t_pelanggaran_siswa p
+    LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = p.siswa_id AND ks.status_aktif = 1
+    LEFT JOIN t_kelas k ON k.id = ks.kelas_id
     WHERE 1=1
 ";
 
@@ -36,21 +41,23 @@ $types = '';
 
 if ($cari !== '') {
     $sql .= " AND (
-        nama_siswa LIKE ?
-        OR nama_kelas LIKE ?
+        p.nama_siswa LIKE ?
+        OR k.nama LIKE ?
+        OR p.nama_kelas LIKE ?
     )";
 
     $keyword = "%$cari%";
 
     $params[] = $keyword;
     $params[] = $keyword;
+    $params[] = $keyword;
 
-    $types .= "ss";
+    $types .= "sss";
 }
 
 $sql .= "
-    GROUP BY siswa_id, nama_siswa, nama_kelas
-    ORDER BY total_poin DESC, nama_siswa ASC
+    GROUP BY p.siswa_id, p.nama_siswa, nama_kelas
+    ORDER BY total_poin DESC, p.nama_siswa ASC
 ";
 
 $stmt = mysqli_prepare($koneksi, $sql);
@@ -65,25 +72,6 @@ if (!empty($params)) {
 
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
-
-// HITUNG RINGKASAN
-$query_total = mysqli_query($koneksi, "
-    SELECT
-        COUNT(DISTINCT siswa_id) AS jumlah_siswa,
-        COUNT(*) AS jumlah_pelanggaran,
-        COALESCE(SUM(poin), 0) AS total_poin
-    FROM t_pelanggaran_siswa
-");
-
-if (!$query_total) {
-    die("Gagal menghitung rekap poin: " . e(mysqli_error($koneksi)));
-}
-
-$ringkasan = mysqli_fetch_assoc($query_total);
-
-$total_siswa = $ringkasan['jumlah_siswa'];
-$total_pelanggaran = $ringkasan['jumlah_pelanggaran'];
-$total_poin = $ringkasan['total_poin'];
 ?>
 
 <!DOCTYPE html>
@@ -167,36 +155,6 @@ $total_poin = $ringkasan['total_poin'];
                 <p class="text-muted">
                     Rekapitulasi jumlah pelanggaran dan total poin setiap siswa.
                 </p>
-            </div>
-
-            <!-- RINGKASAN (Gaya disamakan dengan card ringkasan lainnya) -->
-            <div class="row mb-4">
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                            <h6 class="text-muted">Total Siswa</h6>
-                            <h3 class="text-primary fw-bold"><?= e($total_siswa) ?></h3>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                            <h6 class="text-muted">Total Pelanggaran</h6>
-                            <h3 class="text-warning fw-bold"><?= e($total_pelanggaran) ?></h3>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                            <h6 class="text-muted">Total Seluruh Poin</h6>
-                            <h3 class="text-danger fw-bold"><?= e($total_poin) ?></h3>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- PENCARIAN -->

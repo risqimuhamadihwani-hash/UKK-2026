@@ -99,12 +99,14 @@ if (isset($_POST['simpan'])) {
     }
 }
 
-// DATA TAHUN AJARAN
+// DATA TAHUN AJARAN (Hanya mengambil yang aktif, sesuaikan kolom status jika di database bernama 'status' atau 'status_aktif')
 $tahun = mysqli_query($koneksi,
     "SELECT id, nama
      FROM t_tahun_ajaran
-     ORDER BY id DESC"
+     WHERE status_aktif = 1 
+     LIMIT 1"
 );
+$tahun_aktif = mysqli_fetch_assoc($tahun);
 
 // DATA KELAS
 $kelas = mysqli_query($koneksi,
@@ -120,7 +122,7 @@ $guru = mysqli_query($koneksi,
      ORDER BY nama ASC"
 );
 
-if (!$tahun || !$kelas || !$guru) {
+if (!$kelas || !$guru) {
     die("Gagal mengambil data: " . mysqli_error($koneksi));
 }
 
@@ -134,7 +136,6 @@ if (!$tahun || !$kelas || !$guru) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Wali Kelas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-
 </head>
 
 <body>
@@ -201,11 +202,6 @@ if (!$tahun || !$kelas || !$guru) {
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Cetak_Export.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Cetak/Export</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
                     <h7 class="fw-bold mb-4">About Me</h7> 
                     </a>
@@ -237,15 +233,13 @@ if (!$tahun || !$kelas || !$guru) {
                     <form method="POST" action="tambah_wali_kelas.php">
 
                         <div class="mb-3">
-                            <label class="form-label">Tahun Ajaran</label>
-                            <select name="tahun_ajaran_id" class="form-select" required>
-                                <option value="">-- Pilih Tahun Ajaran --</option>
-                                <?php while ($t = mysqli_fetch_assoc($tahun)): ?>
-                                    <option value="<?= $t['id'] ?>">
-                                        <?= htmlspecialchars($t['nama']) ?>
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
+                            <label class="form-label">Tahun Ajaran Aktif</label>
+                            <?php if ($tahun_aktif): ?>
+                                <input type="hidden" name="tahun_ajaran_id" value="<?= $tahun_aktif['id'] ?>">
+                                <input type="text" class="form-control bg-light" value="<?= htmlspecialchars($tahun_aktif['nama']) ?>" readonly>
+                            <?php else: ?>
+                                <input type="text" class="form-control bg-light text-danger" value="Tidak ada tahun ajaran yang aktif saat ini!" readonly>
+                            <?php endif; ?>
                         </div>
 
                         <div class="mb-3">
@@ -306,6 +300,7 @@ if (!$tahun || !$kelas || !$guru) {
                                 name="simpan"
                                 class="btn btn-primary px-3 py-1 text-white"
                                 style="background-color: #0d6efd;"
+                                <?= !$tahun_aktif ? 'disabled' : '' ?>
                             >
                                 Tambah
                             </button>
@@ -324,7 +319,6 @@ if (!$tahun || !$kelas || !$guru) {
 
     </div>
 </div>
-
 
 </body>
 </html>

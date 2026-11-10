@@ -37,8 +37,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update"])) {
 
     if ($nip === "" || $nama === "") {
         $error = "NIP dan Nama Guru wajib diisi.";
-    } elseif (strlen($nip) > 18) {
-        $error = "NIP tidak boleh lebih dari 18 karakter.";
+    } elseif (!ctype_digit($nip) || strlen($nip) > 18) {
+        $error = "NIP hanya boleh berisi angka dan maksimal 18 karakter.";
     } elseif (!in_array($status, ["0", "1"], true)) {
         $error = "Status guru tidak valid.";
     } elseif ($email !== "" && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -174,11 +174,6 @@ function e($nilai) {
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Cetak_Export.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Cetak/Export</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
                     <h7 class="fw-bold mb-4">About Me</h7> 
                     </a>
@@ -208,7 +203,7 @@ function e($nilai) {
 
                     <form method="POST">
                         <div class="mb-3">
-                            <label class="form-label">NIP</label>
+                            <label class="form-label">NIP (Maksimal 18 Digit Angka)</label>
                             <input
                                 type="text"
                                 name="nip"
@@ -216,6 +211,8 @@ function e($nilai) {
                                 placeholder="Masukkan NIP (maks. 18 digit)"
                                 value="<?= e($nip) ?>"
                                 maxlength="18"
+                                inputmode="numeric"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                 required
                             >
                         </div>

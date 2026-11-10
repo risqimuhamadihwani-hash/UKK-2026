@@ -22,7 +22,7 @@ $isAdmin = ($role === 'admin');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Me - JusticeAdmin</title>
+    <title>About Me - Pelanggaran Siswa</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -36,7 +36,7 @@ $isAdmin = ($role === 'admin');
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
 
             <h4 class="text-white fw-bold mb-4">
-                My Website
+                Pelanggaran Siswa
             </h4>
 
             <ul class="nav nav-pills flex-column">
@@ -91,11 +91,6 @@ $isAdmin = ($role === 'admin');
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
                         <span class="fw-bold mb-4">Laporan</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Cetak_Export.php" class="nav-link text-white">
-                        <span class="fw-bold mb-4">Cetak/Export</span> 
                     </a>
                 </li>
 

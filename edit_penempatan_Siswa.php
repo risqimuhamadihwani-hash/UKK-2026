@@ -2,6 +2,7 @@
 session_start();
 include 'config/koneksi.php';
 
+// CEK LOGIN
 if (!isset($_SESSION['id_user'])) {
     header("Location: login.php");
     exit;
@@ -87,12 +88,19 @@ if (isset($_POST['update'])) {
     }
 }
 
+// DATA SISWA: Menampilkan siswa yang belum ditempatkan, ATAU siswa yang sedang diedit ini sendiri
 $siswa = mysqli_query($koneksi,
-    "SELECT id, nis, nama FROM t_siswa ORDER BY nama ASC");
+    "SELECT id, nis, nama FROM t_siswa 
+     WHERE id NOT IN (SELECT siswa_id FROM t_kelas_siswa WHERE id != $id)
+     ORDER BY nama ASC");
 
+// DATA TAHUN AJARAN: Hanya mengambil yang berstatus aktif = 1
 $tahun = mysqli_query($koneksi,
-    "SELECT id, nama FROM t_tahun_ajaran ORDER BY id DESC");
+    "SELECT id, nama, status_aktif FROM t_tahun_ajaran 
+     WHERE status_aktif = 1 
+     ORDER BY id DESC");
 
+// DATA KELAS
 $kelas = mysqli_query($koneksi,
     "SELECT id, nama, tingkat, jurusan FROM t_kelas
      WHERE status_aktif = 1 OR id = " . (int)$d['kelas_id'] . "
@@ -110,7 +118,6 @@ function e($data) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Penempatan Siswa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-
 </head>
 
 <body>
@@ -173,11 +180,6 @@ function e($data) {
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Cetak_Export.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Cetak/Export</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
                     <h7 class="fw-bold mb-4">About Me</h7> 
                     </a>
@@ -208,8 +210,9 @@ function e($data) {
                     <form method="POST">
 
                         <div class="mb-3">
-                            <label class="form-label">Siswa</label>
+                            <label class="form-label">Siswa (Belum Ditempatkan)</label>
                             <select name="siswa_id" class="form-select" required>
+                                <option value="">-- Pilih Siswa --</option>
                                 <?php while ($s = mysqli_fetch_assoc($siswa)): ?>
                                     <option value="<?= $s['id'] ?>"
                                         <?= $d['siswa_id'] == $s['id'] ? 'selected' : '' ?>>
@@ -220,8 +223,9 @@ function e($data) {
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Tahun Ajaran</label>
+                            <label class="form-label">Tahun Ajaran (Aktif)</label>
                             <select name="tahun_ajaran_id" class="form-select" required>
+                                <option value="">-- Pilih Tahun Ajaran Aktif --</option>
                                 <?php while ($t = mysqli_fetch_assoc($tahun)): ?>
                                     <option value="<?= $t['id'] ?>"
                                         <?= $d['tahun_ajaran_id'] == $t['id'] ? 'selected' : '' ?>>
@@ -234,6 +238,7 @@ function e($data) {
                         <div class="mb-3">
                             <label class="form-label">Kelas</label>
                             <select name="kelas_id" class="form-select" required>
+                                <option value="">-- Pilih Kelas --</option>
                                 <?php while ($k = mysqli_fetch_assoc($kelas)): ?>
                                     <option value="<?= $k['id'] ?>"
                                         <?= $d['kelas_id'] == $k['id'] ? 'selected' : '' ?>>

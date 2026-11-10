@@ -29,12 +29,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
     $alamat = trim($_POST["alamat"] ?? "");
     $status_aktif = $_POST["status_aktif"] ?? "";
 
+    // Validasi Tahun Lahir Minimal 2000
+    $tahun_lahir = !empty($tanggal_lahir) ? (int)date('Y', strtotime($tanggal_lahir)) : 0;
+
     if ($nis === "" || $nama === "" || $jenis_kelamin === "") {
         $pesan = "NIS, nama, dan jenis kelamin wajib diisi.";
-    } elseif (!ctype_digit($nis) || strlen($nis) > 9) {
-        $pesan = "NIS hanya boleh angka dan maksimal 9 digit.";
+    } elseif (!ctype_digit($nis) || strlen($nis) > 15) {
+        $pesan = "NIS hanya boleh angka dan maksimal 15 digit.";
     } elseif ($nisn !== "" && (!ctype_digit($nisn) || strlen($nisn) > 10)) {
         $pesan = "NISN hanya boleh angka dan maksimal 10 digit.";
+    } elseif ($tanggal_lahir !== "" && $tahun_lahir < 2000) {
+        $pesan = "Tahun lahir minimal adalah tahun 2000.";
     } elseif (!in_array($jenis_kelamin, ["L", "P"], true)) {
         $pesan = "Jenis kelamin tidak valid.";
     } elseif (!in_array($status_aktif, ["0", "1"], true)) {
@@ -178,11 +183,6 @@ function e($data) {
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Cetak_Export.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Cetak/Export</h7> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
                     <h7 class="fw-bold mb-4">About Me</h7> 
                     </a>
@@ -212,21 +212,22 @@ function e($data) {
 
                     <form method="POST">
                         <div class="mb-3">
-                            <label class="form-label">NIS</label>
+                            <label class="form-label">NIS (Maksimal 15 Digit Angka)</label>
                             <input
                                 type="text"
                                 name="nis"
                                 class="form-control"
                                 placeholder="-- Masukkan NIS --"
-                                maxlength="9"
+                                maxlength="15"
                                 inputmode="numeric"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                 value="<?= e($nis) ?>"
                                 required
                             >
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">NISN</label>
+                            <label class="form-label">NISN (Maksimal 10 Digit Angka)</label>
                             <input
                                 type="text"
                                 name="nisn"
@@ -234,6 +235,7 @@ function e($data) {
                                 placeholder="-- Masukkan NISN --"
                                 maxlength="10"
                                 inputmode="numeric"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                 value="<?= e($nisn) ?>"
                             >
                         </div>
@@ -260,11 +262,12 @@ function e($data) {
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Tanggal Lahir</label>
+                            <label class="form-label">Tanggal Lahir (Minimal Tahun 2000)</label>
                             <input
                                 type="date"
                                 name="tanggal_lahir"
                                 class="form-control"
+                                min="2000-01-01"
                                 value="<?= e($tanggal_lahir) ?>"
                             >
                         </div>
