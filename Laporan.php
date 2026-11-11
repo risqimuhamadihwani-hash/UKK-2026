@@ -225,6 +225,64 @@ if ($status !== '') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- DataTables Bootstrap 5 CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
+    
+    <style>
+        /* PENGATURAN KHUSUS CETAK LAPORAN (LANDSCAPE AGAR TIDAK TERPOTONG) */
+        @media print {
+            @page {
+                size: landscape;
+                margin: 10mm;
+            }
+
+            /* Sembunyikan Sidebar, Form Filter, Tombol Aksi, dan Elemen Pendukung Lainnya */
+            .col-md-3, .col-lg-2, 
+            .card:has(form), 
+            .btn, 
+            .row.mb-4,
+            .dataTables_length, 
+            .dataTables_filter, 
+            .dataTables_info, 
+            .dataTables_paginate, 
+            hr, 
+            nav {
+                display: none !important;
+            }
+
+            /* Perlebar area konten utama */
+            main, .col-md-9, .col-lg-10 {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                font-size: 10pt;
+            }
+
+            /* Styling tabel bersih saat dicetak */
+            table.table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+
+            table.table th, table.table td {
+                background-color: transparent !important;
+                color: #000000 !important;
+                border: 1px solid #444 !important;
+                padding: 6px 8px !important;
+            }
+
+            thead.table-dark th {
+                background-color: #212529 !important;
+                color: #fff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
 </head>
 <body>
 
