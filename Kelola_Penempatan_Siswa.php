@@ -7,6 +7,7 @@ if (!isset($_SESSION['id_user'])) {
     exit;
 }
 
+// QUERY DENGAN CASE WHEN AGAR TANGGAL SELESAI MENGIKUTI TAHUN AJARAN AKTIF
 $data = mysqli_query(
     $koneksi,
     "SELECT
@@ -16,7 +17,10 @@ $data = mysqli_query(
         ta.nama AS tahun_ajaran,
         k.nama AS nama_kelas,
         ks.tanggal_mulai,
-        ks.tanggal_selesai,
+        CASE 
+            WHEN ta.status_aktif = 1 THEN ta.tanggal_selesai 
+            ELSE COALESCE(ks.tanggal_selesai, ta.tanggal_selesai) 
+        END AS tanggal_selesai,
         ks.status_aktif
     FROM t_kelas_siswa ks
     INNER JOIN t_siswa s ON ks.siswa_id = s.id
@@ -43,7 +47,8 @@ $data = mysqli_query(
 <div class="container-fluid">
     <div class="row">
         <!-- SIDEBAR -->
-        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
+
+<div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
             <h4 class="text-white fw-bold mb-4 ">
             Pelanggaran Siswa
             </h4>
@@ -126,6 +131,7 @@ $data = mysqli_query(
                 </a>
             </div>
 
+            <div class="card shadow-sm border-0 p-3">
                 <table id="tabelPenempatan" class="table table-hover table-striped table-bordered align-middle">
                     <thead class="table-dark">
                         <tr>
@@ -170,7 +176,6 @@ $data = mysqli_query(
                         <?php endif; ?>
                     </tbody>
                 </table>
-
             </div>
         </main>
     </div>
@@ -194,7 +199,7 @@ $(document).ready(function () {
         info: true,
         columnDefs: [
             {
-                targets: [0, 7, 8], // Kolom No, Status, dan Aksi dimatikan sorting & searching-nya agar rapi
+                targets: [0, 7, 8],
                 orderable: false,
                 searchable: false
             }

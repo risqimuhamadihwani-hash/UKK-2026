@@ -18,35 +18,25 @@ if (isset($_SESSION['id_user'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
-        <!-- Google Font: Poppins -->
+    <!-- Google Font: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <link rel="stylesheet"
-          href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
-
     <style>
-        /* Menerapkan font Poppins dan membuat seluruh teks menjadi bold (semi-bold/bold) */
+        /* Menerapkan font Poppins dan mengatur ketebalan teks secara global */
         body, * {
             font-family: 'Poppins', sans-serif !important;
-            font-weight: 600 !important; /* Mengatur ketebalan teks secara global */
+            font-weight: 600 !important;
         }
 
-        /* Jika ingin beberapa bagian heading atau judul lebih tebal lagi */
         h1, h4, .fw-bold {
             font-weight: 700 !important;
         }
-    </style>
 
-    
-    <style>
         body {
             height: 100vh;
-            background-color: #f8f9fa; /* Senada dengan background content dashboard */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
         }
+
         .login-container {
             max-width: 900px;
             background: #ffffff;
@@ -55,7 +45,7 @@ if (isset($_SESSION['id_user'])) {
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             border: 1px solid rgba(0, 0, 0, 0.05);
         }
-        /* Sisi kiri disesuaikan dengan warna sidebar dashboard kamu */
+
         .left-side {
             background-color: #212529; 
             color: white;
@@ -64,27 +54,31 @@ if (isset($_SESSION['id_user'])) {
             flex-direction: column;
             justify-content: center;
         }
+
         .right-side {
             padding: 40px;
         }
+
         .form-control {
             border-radius: 0 8px 8px 0;
             padding: 12px;
             background-color: #f8f9fa;
             border: 1px solid #dee2e6;
         }
+
         .form-control:focus {
             background-color: #fff;
             box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
             border-color: #0d6efd;
         }
+
         .input-group-text {
             border-radius: 8px 0 0 8px;
             background-color: #f8f9fa;
             border: 1px solid #dee2e6;
             border-right: none;
         }
-        /* Tombol menggunakan warna biru persis seperti tombol 'Buka Menu' di dashboard */
+
         .btn-custom {
             background-color: #0d6efd;
             border: none;
@@ -94,6 +88,7 @@ if (isset($_SESSION['id_user'])) {
             font-weight: 600;
             transition: background-color 0.2s;
         }
+
         .btn-custom:hover {
             background-color: #0b5ed7;
             color: white;
@@ -103,7 +98,7 @@ if (isset($_SESSION['id_user'])) {
 <body class="d-flex justify-content-center align-items-center m-0">
 
     <div class="row login-container m-3 w-100">
-        <!-- Sisi Kiri: Menyesuaikan Sidebar Dashboard (Warna Gelap) -->
+        <!-- Sisi Kiri: Sidebar Dashboard -->
         <div class="col-md-6 left-side text-center text-md-start">
             <div class="mb-3">
                 <i class="bi bi-shield-exclamation text-primary fs-1"></i>
@@ -127,7 +122,8 @@ if (isset($_SESSION['id_user'])) {
                     <label for="email" class="form-label small text-muted fw-semibold">Email / Username</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-envelope text-muted"></i></span>
-                        <input type="email" name="email" class="form-control" id="email" placeholder="admin@gmail.com" required>
+                        <!-- Perbaikan: name diubah dari 'Email' menjadi 'email' -->
+                        <input type="email" name="email" class="form-control" id="email" placeholder="Email" required>
                     </div>
                 </div>
 
@@ -135,7 +131,7 @@ if (isset($_SESSION['id_user'])) {
                     <label for="password" class="form-label small text-muted fw-semibold">Password</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-lock text-muted"></i></span>
-                        <input type="password" name="password" class="form-control" id="password" placeholder="••••••••" required>
+                        <input type="password" name="password" class="form-control" id="password" placeholder="Masukan Password" required>
                     </div>
                 </div>
 

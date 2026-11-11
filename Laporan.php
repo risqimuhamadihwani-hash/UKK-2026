@@ -14,11 +14,16 @@ if (!isset($_SESSION['id_user'])) {
 
 $role = strtolower(trim($_SESSION['role'] ?? ''));
 
-// VALIDASI ROLE
-if ($role !== 'admin' && $role !== 'guru') {
+// VALIDASI ROLE (Izinkan admin, guru, dan wali_kelas)
+if ($role !== 'admin' && $role !== 'guru' && $role !== 'wali_kelas' && $role !== 'walikelas') {
     session_destroy();
     header("Location: login.php");
     exit;
+}
+
+// Jika role wali kelas, samakan perlakuannya seperti guru untuk filter data
+if ($role === 'wali_kelas' || $role === 'walikelas') {
+    $role = 'guru';
 }
 
 function e($data) {
@@ -178,7 +183,7 @@ if ($export === 'csv') {
         'Tanggal',
         'Poin',
         'Tindakan',
-        'Keterangan',
+        'Catatan',
         'Status'
     ], ';');
 
@@ -289,7 +294,7 @@ if ($status !== '') {
 <div class="container-fluid">
     <div class="row">
         <!-- SIDEBAR DINAMIS BERDASARKAN ROLE -->
-        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
+        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
             <h4 class="text-white fw-bold mb-4">
                 Pelanggaran Siswa
             </h4>
@@ -300,7 +305,7 @@ if ($status !== '') {
                     </a>
                 </li>
 
-                <?php if ($role === 'admin'): ?>
+                <?php if (strtolower($_SESSION['role'] ?? '') === 'admin'): ?>
                     <li class="nav-item mb-2"><a href="Kelola_Siswa.php" class="nav-link text-white"><span class="fw-bold">Kelola Siswa</span></a></li>
                     <li class="nav-item mb-2"><a href="Kelola_Guru.php" class="nav-link text-white"><span class="fw-bold">Kelola Guru</span></a></li>
                     <li class="nav-item mb-2"><a href="Kelola_Kelas.php" class="nav-link text-white"><span class="fw-bold">Kelola Kelas</span></a></li>
@@ -314,8 +319,8 @@ if ($status !== '') {
                 <?php else: ?>
                     <li class="nav-item mb-2"><a href="Catatan_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catatan Pelanggaran</span></a></li>
                     <li class="nav-item mb-2"><a href="Tindakan.php" class="nav-link text-white"><span class="fw-bold">Tindakan</span></a></li>
-                    <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>
                     <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
+                    <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>
                     <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link active"><span class="fw-bold">Laporan</span></a></li>
                 <?php endif; ?>
 
@@ -413,7 +418,7 @@ if ($status !== '') {
                                     <th>Tanggal</th>
                                     <th>Poin</th>
                                     <th>Tindakan</th>
-                                    <th>Keterangan</th>
+                                    <th>Catatan</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>

@@ -16,11 +16,17 @@ if (!isset($_SESSION['id_user'])) {
 
 $role = strtolower(trim($_SESSION['role'] ?? ''));
 
-// VALIDASI ROLE
-if ($role !== 'admin' && $role !== 'guru') {
+// VALIDASI ROLE (Izinkan admin, guru, dan wali_kelas)
+if ($role !== 'admin' && $role !== 'guru' && $role !== 'wali_kelas' && $role !== 'walikelas') {
     session_destroy();
     header("Location: login.php");
     exit;
+}
+
+// Jika role wali kelas, samakan penanganan hak aksesnya seperti guru
+if ($role === 'wali_kelas' || $role === 'walikelas') {
+    $role = 'guru';
+    $is_wali_kelas = true;
 }
 
 if (!function_exists('e')) {
@@ -153,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $kategori_id = (int) ($pelanggaran['pelanggaran_kategori_id'] ?? 0);
         $poin = (int) $pelanggaran['poin'];
         $status = 'Tercatat';
-        $tindakan = ''; 
+        $tindakan = ''; // Dikosongkan karena form tindakan dihilangkan
 
         // SIMPAN KE DATABASE
         $stmt = $koneksi->prepare(
@@ -253,14 +259,14 @@ $riwayatList = $koneksi->query(
 <div class="container-fluid">
     <div class="row">
         <!-- SIDEBAR -->
-        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
+        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
             <h4 class="text-white fw-bold mb-4">Pelanggaran Siswa</h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2"><a href="dashboard.php" class="nav-link text-white"><span class="fw-bold">Dashboard</span></a></li>
                 <li class="nav-item mb-2"><a href="catatan_pelanggaran.php" class="nav-link active"><span class="fw-bold">Catatan Pelanggaran</span></a></li>
                 <li class="nav-item mb-2"><a href="Tindakan.php" class="nav-link text-white"><span class="fw-bold">Tindakan</span></a></li>
-                <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>
                 <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
+                <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>
                 <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a></li>
                 <hr class="text-secondary">
                 <li class="nav-item"><a href="logout.php" class="nav-link text-danger"><span class="fw-bold">Logout</span></a></li>
@@ -270,7 +276,7 @@ $riwayatList = $koneksi->query(
         <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 p-4">
             <h2>Catatan Pelanggaran Siswa</h2>
-            <p class="text-muted mb-4">Selamat datang, <?= e($nama_guru) ?><?= $is_wali_kelas ? ' (Wali Kelas ' . e($nama_kelas_wali) . ')' : ' (Guru / Admin)' ?></p>
+            <p class="text-muted mb-4">Selamat datang, <?= e($nama_guru) ?><?= $is_wali_kelas ? ' (Wali Kelas ' . e($nama_kelas_wali) . ')' : ' (Guru)' ?></p>
 
             <?php if ($pesan !== ''): ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -334,10 +340,10 @@ $riwayatList = $koneksi->query(
                         </div>
                     </div>
 
-                    <!-- Keterangan & Tombol Simpan -->
+                    <!-- Catatan & Tombol Simpan -->
                     <div class="row g-3 align-items-end">
                         <div class="col-md-10">
-                            <label class="form-label text-muted small mb-1">Keterangan</label>
+                            <label class="form-label text-muted small mb-1">Catatan</label>
                             <textarea name="keterangan" class="form-control form-control-sm" rows="2" placeholder="Catatan detail kronologi kejadian..." required></textarea>
                         </div>
                         <div class="col-md-2">
@@ -360,7 +366,8 @@ $riwayatList = $koneksi->query(
                                 <th>Kelas</th>
                                 <th>Pelanggaran</th>
                                 <th>Poin</th>
-                                <th>Keterangan</th>
+                                <th>Catatan</th>
+                                <th>Tindakan</th>
                                 <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
@@ -376,6 +383,7 @@ $riwayatList = $koneksi->query(
                                         <td><?= e($row['nama_pelanggaran_fix']) ?></td>
                                         <td><span class="badge bg-danger"><?= (int)$row['poin'] ?></span></td>
                                         <td><?= e($row['keterangan']) ?></td>
+                                        <td><?= e($row['tindakan']) ?></td>
                                         <td>
                                             <?php 
                                                 $st = strtolower($row['status']);
@@ -394,7 +402,7 @@ $riwayatList = $koneksi->query(
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="9" class="text-center text-muted py-3">Belum ada catatan pelanggaran.</td>
+                                    <td colspan="10" class="text-center text-muted py-3">Belum ada catatan pelanggaran.</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>

@@ -16,8 +16,8 @@ if (!isset($_SESSION['id_user'])) {
 
 $role = strtolower(trim($_SESSION['role'] ?? ''));
 
-// CEK ROLE ADMIN / GURU
-if ($role !== 'admin' && $role !== 'guru') {
+// VALIDASI ROLE (Izinkan admin, guru, dan wali_kelas)
+if ($role !== 'admin' && $role !== 'guru' && $role !== 'wali_kelas' && $role !== 'walikelas') {
     session_destroy();
     header("Location: login.php");
     exit;
@@ -127,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $kategori_id = (int) ($pelanggaran['pelanggaran_kategori_id'] ?? 0);
         $poin = (int) $pelanggaran['poin'];
 
-        // Update database (Mencakup kolom kelas_id dan pelanggaran_id agar tidak bernilai 0)
+        // Update database
         $stmtUpdate = $koneksi->prepare(
             "UPDATE t_pelanggaran_siswa SET 
                 siswa_id = ?, 
@@ -207,7 +207,7 @@ $pelanggaranList = $koneksi->query(
 <div class="container-fluid">
     <div class="row">
         <!-- SIDEBAR -->
-        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
+        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
             <h4 class="text-white fw-bold mb-4">Pelanggaran Siswa</h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2"><a href="dashboard.php" class="nav-link text-white"><span class="fw-bold">Dashboard</span></a></li>
@@ -284,10 +284,10 @@ $pelanggaranList = $koneksi->query(
                         </div>
                     </div>
 
-                    <!-- Keterangan & Tombol Aksi -->
+                    <!-- Catatan & Tombol Aksi -->
                     <div class="row g-3 align-items-end">
                         <div class="col-md-10">
-                            <label class="form-label text-muted small mb-1">Keterangan</label>
+                            <label class="form-label text-muted small mb-1">Catatan</label>
                             <textarea name="keterangan" class="form-control form-control-sm" rows="3" placeholder="Catatan detail kronologi kejadian..." required><?= e($dataCatatan['keterangan']) ?></textarea>
                         </div>
                         <div class="col-md-2 d-flex gap-2">

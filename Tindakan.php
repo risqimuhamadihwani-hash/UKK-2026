@@ -14,8 +14,10 @@ if (!isset($_SESSION['id_user'])) {
     exit;
 }
 
-// CEK ROLE GURU
-if (strtolower($_SESSION['role'] ?? '') !== 'guru') {
+$role = strtolower(trim($_SESSION['role'] ?? ''));
+
+// CEK ROLE GURU / WALI KELAS
+if ($role !== 'guru' && $role !== 'wali_kelas' && $role !== 'walikelas') {
     header("Location: dashboard.php");
     exit;
 }
@@ -154,10 +156,10 @@ $result = mysqli_stmt_get_result($stmt);
                     <a href="Tindakan.php" class="nav-link active"><span class="fw-bold">Tindakan</span></a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a>
+                    <a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a>
+                    <a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a>

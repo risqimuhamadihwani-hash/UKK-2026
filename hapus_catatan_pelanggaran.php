@@ -16,8 +16,8 @@ if (!isset($_SESSION['id_user'])) {
 
 $role = strtolower(trim($_SESSION['role'] ?? ''));
 
-// CEK ROLE ADMIN / GURU
-if ($role !== 'admin' && $role !== 'guru') {
+// CEK ROLE ADMIN / GURU / WALI KELAS
+if ($role !== 'admin' && $role !== 'guru' && $role !== 'wali_kelas' && $role !== 'walikelas') {
     session_destroy();
     header("Location: login.php");
     exit;

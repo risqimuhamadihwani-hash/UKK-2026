@@ -27,46 +27,50 @@ $name = $_SESSION['name'] ?? 'User';
 $email = $_SESSION['email'] ?? '-';
 $role = strtolower(trim($_SESSION['role'] ?? ''));
 
-// 2. VALIDASI ROLE
-if ($role !== 'admin' && $role !== 'guru') {
+// 2. VALIDASI ROLE (Izinkan admin, guru, dan wali_kelas)
+if ($role !== 'admin' && $role !== 'guru' && $role !== 'wali_kelas' && $role !== 'walikelas') {
     session_destroy();
     header("Location: login.php");
     exit;
 }
 
-// Cek apakah guru yang login bertindak sebagai Wali Kelas
-$nama_kelas_wali = '';
+// Jika role di database adalah wali_kelas, perlakukan hak aksesnya seperti guru/wali kelas
 $is_wali_kelas = false;
+if ($role === 'wali_kelas' || $role === 'walikelas') {
+    $is_wali_kelas = true;
+    $role = 'guru'; // Menggunakan hak akses menu guru
+}
 
-if ($role === 'guru') {
-    // Ambil tahun ajaran aktif
-    $tahunQuery = $koneksi->query("SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
-    $tahunData = $tahunQuery ? $tahunQuery->fetch_assoc() : null;
-    $tahun_id = $tahunData ? (int)$tahunData['id'] : 1;
+// Cek apakah guru/wali kelas ini memegang kelas tertentu
+$nama_kelas_wali = '';
 
-    $session_email = trim($_SESSION['email'] ?? '');
-    
-    // Cari data kelas wali berdasarkan nama guru atau email yang aktif
-    $stmtWali = $koneksi->prepare(
-        "SELECT k.nama AS nama_kelas 
-         FROM t_guru g
-         JOIN t_wali_kelas wk ON wk.guru_id = g.id AND wk.tahun_ajaran_id = ? AND wk.status_aktif = 1
-         JOIN t_kelas k ON k.id = wk.kelas_id
-         WHERE g.nama LIKE ? OR g.email = ? OR g.id = ?
-         LIMIT 1"
-    );
-    $search_name = "%" . $name . "%";
-    $session_id = (int)($_SESSION['id_user'] ?? 0);
-    
-    $stmtWali->bind_param("issi", $tahun_id, $search_name, $session_email, $session_id);
-    $stmtWali->execute();
-    $resWali = $stmtWali->get_result()->fetch_assoc();
-    $stmtWali->close();
+// Ambil tahun ajaran aktif
+$tahunQuery = $koneksi->query("SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
+$tahunData = $tahunQuery ? $tahunQuery->fetch_assoc() : null;
+$tahun_id = $tahunData ? (int)$tahunData['id'] : 1;
 
-    if ($resWali && !empty($resWali['nama_kelas'])) {
-        $nama_kelas_wali = $resWali['nama_kelas'];
-        $is_wali_kelas = true;
-    }
+$session_email = trim($_SESSION['email'] ?? '');
+
+// Cari data kelas wali berdasarkan email atau nama
+$stmtWali = $koneksi->prepare(
+    "SELECT k.nama AS nama_kelas 
+     FROM t_guru g
+     JOIN t_wali_kelas wk ON wk.guru_id = g.id AND wk.tahun_ajaran_id = ? AND wk.status_aktif = 1
+     JOIN t_kelas k ON k.id = wk.kelas_id
+     WHERE g.email = ? OR g.nama LIKE ? OR g.id = ?
+     LIMIT 1"
+);
+$search_name = "%" . $name . "%";
+$session_id = (int)($_SESSION['id_user'] ?? 0);
+
+$stmtWali->bind_param("issi", $tahun_id, $session_email, $search_name, $session_id);
+$stmtWali->execute();
+$resWali = $stmtWali->get_result()->fetch_assoc();
+$stmtWali->close();
+
+if ($resWali && !empty($resWali['nama_kelas'])) {
+    $nama_kelas_wali = $resWali['nama_kelas'];
+    $is_wali_kelas = true;
 }
 
 // 3. AMBIL DATA STATISTIK BERDASARKAN ROLE
@@ -81,7 +85,7 @@ $jml_kelas = 0;
 $jml_pelanggaran_admin = 0;
 
 if ($role === 'guru') {
-    // Ringkasan untuk Guru dari tabel t_pelanggaran_siswa
+    // Ringkasan untuk Guru/Wali Kelas dari tabel t_pelanggaran_siswa
     $query_ringkasan = mysqli_query($koneksi, "
         SELECT
             COUNT(*) AS total_pelanggaran,
@@ -124,6 +128,7 @@ if ($role === 'guru') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard <?= $is_wali_kelas ? 'Wali Kelas' : ucfirst($role) ?></title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -131,7 +136,7 @@ if ($role === 'guru') {
 <div class="container-fluid">
     <div class="row">
         <!-- SIDEBAR DINAMIS -->
-        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
+        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
             <h4 class="text-white fw-bold mb-4">Pelanggaran Siswa</h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
@@ -144,8 +149,8 @@ if ($role === 'guru') {
                     <!-- MENU KHUSUS GURU / WALI KELAS -->
                     <li class="nav-item mb-2"><a href="Catatan_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catatan Pelanggaran</span></a></li>
                     <li class="nav-item mb-2"><a href="Tindakan.php" class="nav-link text-white"><span class="fw-bold">Tindakan</span></a></li>
-                    <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>
                     <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
+                    <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>
                     <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a></li>
                 <?php else: ?>
                     <!-- MENU KHUSUS ADMIN -->
@@ -172,15 +177,15 @@ if ($role === 'guru') {
                 Dashboard <?= $is_wali_kelas ? 'Wali Kelas ' . htmlspecialchars($nama_kelas_wali, ENT_QUOTES, 'UTF-8') : ucfirst($role) ?>
             </h2>
 
-            <!-- INFORMASI USER SESUAI GAMBAR -->
+            <!-- INFORMASI USER -->
             <div class="mb-4 text-secondary">
                 Selamat datang, <span class="fw-bold text-dark"><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></span><br>
                 Email: <span class="text-dark"><?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?></span><br>
-                Role: <span class="badge bg-primary px-2 py-1"><?= $role === 'guru' ? ($is_wali_kelas ? 'Guru (Wali Kelas ' . htmlspecialchars($nama_kelas_wali, ENT_QUOTES, 'UTF-8') . ')' : 'Guru') : htmlspecialchars($role, ENT_QUOTES, 'UTF-8') ?></span>
+                Role: <span class="badge bg-primary px-2 py-1"><?= $role === 'guru' ? ($is_wali_kelas ? 'Wali Kelas' . (!empty($nama_kelas_wali) ? ' (' . htmlspecialchars($nama_kelas_wali, ENT_QUOTES, 'UTF-8') . ')' : '') : 'Guru') : htmlspecialchars($role, ENT_QUOTES, 'UTF-8') ?></span>
             </div>
 
             <?php if ($role === 'guru'): ?>
-                <!-- STATISTIK GURU -->
+                <!-- STATISTIK GURU / WALI KELAS -->
                 <div class="row mt-4 mb-4">
                     <div class="col-md-3 mb-3"><div class="card shadow-sm border-0"><div class="card-body">
                         <h6 class="text-muted">Total Pelanggaran</h6>
@@ -238,6 +243,7 @@ if ($role === 'guru') {
     </div>
 </div>
 
+<!-- Bootstrap 5 JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

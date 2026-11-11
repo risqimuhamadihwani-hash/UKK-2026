@@ -64,7 +64,7 @@ if ($cari !== '') {
     $where .= "
         AND (
             ps.nama_siswa LIKE ?
-            OR ps.nama_kelas LIKE ?
+            OR k.nama LIKE ?
             OR ps.nama_pelanggaran LIKE ?
             OR ps.nama_guru LIKE ?
             OR ps.keterangan LIKE ?
@@ -87,13 +87,13 @@ if ($status !== '') {
     $types .= 's';
 }
 
-// QUERY DATA RIWAYAT
+// QUERY DATA RIWAYAT DENGAN JOIN KELAS YANG AKURAT
 $sql = "
     SELECT
         ps.id,
         ps.siswa_id,
         ps.nama_siswa,
-        ps.nama_kelas,
+        COALESCE(k.nama, ps.nama_kelas, 'Tanpa Kelas') AS nama_kelas,
         ps.nama_pelanggaran,
         ps.nama_guru,
         ps.tanggal,
@@ -102,6 +102,8 @@ $sql = "
         ps.tindakan,
         ps.status
     FROM t_pelanggaran_siswa ps
+    LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = ps.siswa_id AND ks.status_aktif = 1
+    LEFT JOIN t_kelas k ON k.id = ks.kelas_id
     $where
     ORDER BY ps.tanggal DESC, ps.id DESC
 ";
@@ -136,7 +138,7 @@ $result_status = mysqli_query($koneksi, $sql_status);
 <div class="container-fluid">
     <div class="row">
         <!-- SIDEBAR -->
-        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
+       <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
 
             <h4 class="text-white fw-bold mb-4">
                 Pelanggaran Siswa
@@ -161,17 +163,15 @@ $result_status = mysqli_query($koneksi, $sql_status);
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="riwayat.php" class="nav-link active">
-                        <span class="fw-bold">Riwayat</span>
-                    </a>
-                </li>
-
-                <li class="nav-item mb-2">
                     <a href="rekap_poin.php" class="nav-link text-white">
                         <span class="fw-bold">Rekap Poin</span>
                     </a>
                 </li>
-
+                <li class="nav-item mb-2">
+                    <a href="riwayat.php" class="nav-link active">
+                        <span class="fw-bold">Riwayat</span>
+                    </a>
+                </li>
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
                         <span class="fw-bold">Laporan</span>
@@ -256,7 +256,7 @@ $result_status = mysqli_query($koneksi, $sql_status);
                                     <th>Pelanggaran</th>
                                     <th>Poin</th>
                                     <th>Guru Pencatat</th>
-                                    <th>Keterangan</th>
+                                    <th>Catatan</th>
                                     <th>Tindakan</th>
                                     <th>Status</th>
                                 </tr>

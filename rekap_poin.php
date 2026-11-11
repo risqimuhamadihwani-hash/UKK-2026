@@ -1,4 +1,8 @@
 <?php
+// Tampilkan error jika ada untuk debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 require_once 'config/koneksi.php';
 
@@ -10,8 +14,10 @@ if (!isset($_SESSION['id_user'])) {
     exit;
 }
 
-// CEK ROLE GURU
-if (strtolower($_SESSION['role'] ?? '') !== 'guru') {
+$role = strtolower(trim($_SESSION['role'] ?? ''));
+
+// CEK ROLE GURU / WALI KELAS
+if ($role !== 'guru' && $role !== 'wali_kelas' && $role !== 'walikelas') {
     header("Location: dashboard.php");
     exit;
 }
@@ -88,8 +94,7 @@ $result = mysqli_stmt_get_result($stmt);
 <div class="container-fluid">
     <div class="row">
         <!-- SIDEBAR -->
-        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
-
+        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
             <h4 class="text-white fw-bold mb-4">
                 Pelanggaran Siswa
             </h4>
@@ -113,18 +118,15 @@ $result = mysqli_stmt_get_result($stmt);
                     </a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="riwayat.php" class="nav-link text-white">
-                        <span class="fw-bold">Riwayat</span>
-                    </a>
-                </li>
-
-                <li class="nav-item mb-2">
                     <a href="rekap_poin.php" class="nav-link active">
                         <span class="fw-bold">Rekap Poin</span>
                     </a>
                 </li>
-
-
+                <li class="nav-item mb-2">
+                    <a href="riwayat.php" class="nav-link text-white">
+                        <span class="fw-bold">Riwayat</span>
+                    </a>
+                </li>
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
                         <span class="fw-bold">Laporan</span>

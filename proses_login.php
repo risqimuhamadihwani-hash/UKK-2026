@@ -1,13 +1,18 @@
 <?php
 session_start();
-
 include 'config/koneksi.php';
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header("Location: login.php");
+    exit;
+}
 
 $email = $_POST['email'] ?? '';
 $password = $_POST['password'] ?? '';
 
-if ($email == '' || $password == '') {
-    die('Email dan password wajib diisi.');
+if (trim($email) === '' || trim($password) === '') {
+    echo "<script>alert('Email dan password wajib diisi.'); window.location='login.php';</script>";
+    exit;
 }
 
 $email = mysqli_real_escape_string($koneksi, $email);
@@ -24,33 +29,30 @@ if (!$query) {
 }
 
 if (mysqli_num_rows($query) == 1) {
-
     $user = mysqli_fetch_assoc($query);
 
-    // Cek password
-    if (password_verify($password, $user['password'])) {
+    // Bypass: Mendukung password_verify, MD5, ataupun teks biasa (plain text)
+    $password_db = $user['password'];
+    $is_match = false;
 
-        // Simpan data user ke session
+    if (password_verify($password, $password_db) || md5($password) === $password_db || $password === $password_db) {
+        $is_match = true;
+    }
+
+    if ($is_match) {
         $_SESSION['id_user'] = $user['id'];
         $_SESSION['name'] = $user['name'];
         $_SESSION['email'] = $user['email'];
-        // Ubah role ke huruf kecil agar seragam
         $_SESSION['role'] = strtolower(trim($user['role']));
 
-        // KEDUA ROLE SEKARANG DIARAHKAN KE DASHBOARD.PHP YANG SAMA
-        if ($_SESSION['role'] === 'guru' || $_SESSION['role'] === 'admin') {
-            header("Location: dashboard.php");
-            exit;
-        } else {
-            // Jika ada role lain yang tidak dikenal
-            echo "Role akun tidak valid.";
-        }
-
+        header("Location: dashboard.php");
+        exit;
     } else {
-        echo "Password salah.";
+        echo "<script>alert('Password salah.'); window.location='login.php';</script>";
+        exit;
     }
-
 } else {
-    echo "Email tidak ditemukan.";
+    echo "<script>alert('Email tidak ditemukan.'); window.location='login.php';</script>";
+    exit;
 }
 ?>
