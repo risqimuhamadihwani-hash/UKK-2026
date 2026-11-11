@@ -150,8 +150,8 @@ $result_status = mysqli_query($koneksi, $sql_status);
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a href="Catat_Pelanggaran.php" class="nav-link text-white">
-                        <span class="fw-bold">Catat Pelanggaran</span>
+                    <a href="Catatan_Pelanggaran.php" class="nav-link text-white">
+                        <span class="fw-bold">Catatan Pelanggaran</span>
                     </a>
                 </li>
 
@@ -160,16 +160,15 @@ $result_status = mysqli_query($koneksi, $sql_status);
                         <span class="fw-bold">Tindakan</span>
                     </a>
                 </li>
-
                 <li class="nav-item mb-2">
-                    <a href="rekap_poin.php" class="nav-link text-white">
-                        <span class="fw-bold">Rekap Poin</span>
+                    <a href="riwayat.php" class="nav-link active">
+                        <span class="fw-bold">Riwayat</span>
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a href="riwayat.php" class="nav-link active">
-                        <span class="fw-bold">Riwayat</span>
+                    <a href="rekap_poin.php" class="nav-link text-white">
+                        <span class="fw-bold">Rekap Poin</span>
                     </a>
                 </li>
 
@@ -256,7 +255,7 @@ $result_status = mysqli_query($koneksi, $sql_status);
                                     <th>Kelas</th>
                                     <th>Pelanggaran</th>
                                     <th>Poin</th>
-                                    <th>Guru</th>
+                                    <th>Guru Pencatat</th>
                                     <th>Keterangan</th>
                                     <th>Tindakan</th>
                                     <th>Status</th>

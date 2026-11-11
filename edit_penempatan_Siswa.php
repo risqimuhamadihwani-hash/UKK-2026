@@ -94,9 +94,9 @@ $siswa = mysqli_query($koneksi,
      WHERE id NOT IN (SELECT siswa_id FROM t_kelas_siswa WHERE id != $id)
      ORDER BY nama ASC");
 
-// DATA TAHUN AJARAN: Hanya mengambil yang berstatus aktif = 1
+// DATA TAHUN AJARAN: Mengambil id, nama, status_aktif, tanggal_mulai, dan tanggal_selesai
 $tahun = mysqli_query($koneksi,
-    "SELECT id, nama, status_aktif FROM t_tahun_ajaran 
+    "SELECT id, nama, status_aktif, tanggal_mulai, tanggal_selesai FROM t_tahun_ajaran 
      WHERE status_aktif = 1 
      ORDER BY id DESC");
 
@@ -117,7 +117,11 @@ function e($data) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Penempatan Siswa</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 </head>
 
 <body>
@@ -131,63 +135,63 @@ function e($data) {
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Dashboard</h7> 
+                    <span class="fw-bold">Dashboard</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Siswa.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Siswa</h7> 
+                    <span class="fw-bold">Kelola Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Guru.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Guru</h7> 
+                    <span class="fw-bold">Kelola Guru</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kelas.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kelas</h7> 
+                    <span class="fw-bold">Kelola Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Tahun Ajaran</h7> 
+                    <span class="fw-bold">Kelola Tahun Ajaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Penempatan_Siswa.php" class="nav-link active">
-                    <h7 class="fw-bold mb-4">Kelola Penempatan Siswa</h7> 
+                    <span class="fw-bold">Kelola Penempatan Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Wali Kelas</h7> 
+                    <span class="fw-bold">Kelola Wali Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kategori Pelanggaran</h7> 
+                    <span class="fw-bold">Kelola Kategori Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Jenis Pelanggaran</h7> 
+                    <span class="fw-bold">Kelola Jenis Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Laporan</h7> 
+                    <span class="fw-bold">Laporan</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">About Me</h7> 
+                    <span class="fw-bold">About Me</span> 
                     </a>
                 </li>
                 <hr class="text-secondary">
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                    <h7 class="fw-bold mb-4">Logout</h7> 
+                    <span class="fw-bold">Logout</span> 
                     </a>
                 </li>
             </ul>
@@ -211,8 +215,9 @@ function e($data) {
 
                         <div class="mb-3">
                             <label class="form-label">Siswa (Belum Ditempatkan)</label>
-                            <select name="siswa_id" class="form-select" required>
-                                <option value="">-- Pilih Siswa --</option>
+                            <!-- Tambahkan id="selectSiswa" agar bisa dicari menggunakan Select2 -->
+                            <select name="siswa_id" id="selectSiswa" class="form-select" required>
+                                <option value="">-- Pilih atau Cari Siswa --</option>
                                 <?php while ($s = mysqli_fetch_assoc($siswa)): ?>
                                     <option value="<?= $s['id'] ?>"
                                         <?= $d['siswa_id'] == $s['id'] ? 'selected' : '' ?>>
@@ -224,10 +229,19 @@ function e($data) {
 
                         <div class="mb-3">
                             <label class="form-label">Tahun Ajaran (Aktif)</label>
-                            <select name="tahun_ajaran_id" class="form-select" required>
+                            <select name="tahun_ajaran_id" id="tahun_ajaran_id" class="form-select" required onchange="updateTanggal()">
                                 <option value="">-- Pilih Tahun Ajaran Aktif --</option>
-                                <?php while ($t = mysqli_fetch_assoc($tahun)): ?>
+                                <?php 
+                                $arr_tahun = [];
+                                while ($t = mysqli_fetch_assoc($tahun)): 
+                                    $arr_tahun[$t['id']] = [
+                                        'mulai' => $t['tanggal_mulai'],
+                                        'selesai' => $t['tanggal_selesai']
+                                    ];
+                                ?>
                                     <option value="<?= $t['id'] ?>"
+                                        data-mulai="<?= $t['tanggal_mulai'] ?>"
+                                        data-selesai="<?= $t['tanggal_selesai'] ?>"
                                         <?= $d['tahun_ajaran_id'] == $t['id'] ? 'selected' : '' ?>>
                                         <?= e($t['nama']) ?>
                                     </option>
@@ -250,16 +264,16 @@ function e($data) {
 
                         <div class="mb-3">
                             <label class="form-label">Tanggal Mulai</label>
-                            <input type="date" name="tanggal_mulai"
-                                class="form-control"
-                                value="<?= e($d['tanggal_mulai']) ?>" required>
+                            <input type="date" name="tanggal_mulai" id="tanggal_mulai"
+                                class="form-control bg-light"
+                                value="<?= e($d['tanggal_mulai']) ?>" readonly required>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Tanggal Selesai</label>
-                            <input type="date" name="tanggal_selesai"
-                                class="form-control"
-                                value="<?= e($d['tanggal_selesai']) ?>" required>
+                            <input type="date" name="tanggal_selesai" id="tanggal_selesai"
+                                class="form-control bg-light"
+                                value="<?= e($d['tanggal_selesai']) ?>" readonly required>
                         </div>
 
                         <div class="mb-3">
@@ -293,6 +307,33 @@ function e($data) {
     </div>
 </div>
 
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- Bootstrap 5 JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#selectSiswa').select2({
+        theme: 'bootstrap-5',
+        width: '100%'
+    });
+});
+
+function updateTanggal() {
+    var select = document.getElementById('tahun_ajaran_id');
+    var selectedOption = select.options[select.selectedIndex];
+    
+    var mulai = selectedOption.getAttribute('data-mulai');
+    var selesai = selectedOption.getAttribute('data-selesai');
+    
+    if (mulai && selesai) {
+        document.getElementById('tanggal_mulai').value = mulai;
+        document.getElementById('tanggal_selesai').value = selesai;
+    }
+}
+</script>
 </body>
 </html>

@@ -17,8 +17,8 @@ if ($id <= 0) {
 
 $pesan = "";
 
-// Ambil data tahun ajaran aktif secara otomatis
-$tahun_aktif_query = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
+// Ambil data tahun ajaran aktif secara otomatis (termasuk tanggal mulai & selesai)
+$tahun_aktif_query = mysqli_query($koneksi, "SELECT id, nama, tanggal_mulai, tanggal_selesai FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
 $tahun_aktif = mysqli_fetch_assoc($tahun_aktif_query);
 $tahun_ajaran_aktif_id = $tahun_aktif ? (int)$tahun_aktif['id'] : 0;
 
@@ -158,63 +158,63 @@ function e($data) {
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Dashboard</h7> 
+                    <span class="fw-bold">Dashboard</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Siswa.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Siswa</h7> 
+                    <span class="fw-bold">Kelola Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Guru.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Guru</h7> 
+                    <span class="fw-bold">Kelola Guru</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kelas.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kelas</h7> 
+                    <span class="fw-bold">Kelola Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Tahun Ajaran</h7> 
+                    <span class="fw-bold">Kelola Tahun Ajaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Penempatan Siswa</h7> 
+                    <span class="fw-bold">Kelola Penempatan Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Wali_Kelas.php" class="nav-link active">
-                    <h7 class="fw-bold mb-4">Kelola Wali Kelas</h7> 
+                    <span class="fw-bold">Kelola Wali Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kategori Pelanggaran</h7> 
+                    <span class="fw-bold">Kelola Kategori Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Jenis Pelanggaran</h7> 
+                    <span class="fw-bold">Kelola Jenis Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Laporan</h7> 
+                    <span class="fw-bold">Laporan</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">About Me</h7> 
+                    <span class="fw-bold">About Me</span> 
                     </a>
                 </li>
                 <hr class="text-secondary">
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                    <h7 class="fw-bold mb-4">Logout</h7> 
+                    <span class="fw-bold">Logout</span> 
                     </a>
                 </li>
             </ul>
@@ -275,17 +275,17 @@ function e($data) {
                         <div class="mb-3">
                             <label class="form-label">Tanggal Mulai</label>
                             <input type="date" name="tanggal_mulai"
-                                class="form-control"
-                                value="<?= e($data['tanggal_mulai']) ?>"
-                                required>
+                                class="form-control bg-light"
+                                value="<?= $tahun_aktif ? e($tahun_aktif['tanggal_mulai']) : e($data['tanggal_mulai']) ?>"
+                                readonly required>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Tanggal Selesai</label>
                             <input type="date" name="tanggal_selesai"
-                                class="form-control"
-                                value="<?= e($data['tanggal_selesai']) ?>"
-                                required>
+                                class="form-control bg-light"
+                                value="<?= $tahun_aktif ? e($tahun_aktif['tanggal_selesai']) : e($data['tanggal_selesai']) ?>"
+                                readonly required>
                         </div>
 
                         <div class="mb-3">

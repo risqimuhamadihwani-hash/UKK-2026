@@ -84,6 +84,16 @@ $sql = "
 $params = [];
 $types = '';
 
+// Filter status: Jika user memilih status tertentu, gunakan itu. 
+// Jika tidak, secara default sembunyikan yang sudah 'selesai' agar pindah ke riwayat.
+if (in_array($status_filter, ['tercatat', 'diproses', 'selesai'], true)) {
+    $sql .= " AND p.status = ?";
+    $params[] = $status_filter;
+    $types .= "s";
+} else {
+    $sql .= " AND p.status != 'selesai'";
+}
+
 if ($cari !== '') {
     $sql .= " AND (
         p.nama_siswa LIKE ?
@@ -98,12 +108,6 @@ if ($cari !== '') {
     $params[] = $keyword;
     $params[] = $keyword;
     $types .= "ssss";
-}
-
-if (in_array($status_filter, ['tercatat', 'diproses', 'selesai'], true)) {
-    $sql .= " AND p.status = ?";
-    $params[] = $status_filter;
-    $types .= "s";
 }
 
 $sql .= " ORDER BY p.id DESC";
@@ -144,16 +148,16 @@ $result = mysqli_stmt_get_result($stmt);
                     <a href="dashboard.php" class="nav-link text-white"><span class="fw-bold">Dashboard</span></a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="Catat_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catat Pelanggaran</span></a>
+                    <a href="Catatan_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catatan Pelanggaran</span></a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Tindakan.php" class="nav-link active"><span class="fw-bold">Tindakan</span></a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a>
+                    <a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a>
                 </li>
                 <li class="nav-item mb-2">
-                    <a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a>
+                    <a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a>
@@ -204,7 +208,7 @@ $result = mysqli_stmt_get_result($stmt);
                                         <th>Tanggal</th>
                                         <th>Poin</th>
                                         <th>Tindakan</th>
-                                        <th>Status Tindakan</th>
+                                        <th>Status</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>

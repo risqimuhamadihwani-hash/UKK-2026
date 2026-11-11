@@ -22,7 +22,7 @@ $data = mysqli_query(
     INNER JOIN t_siswa s ON ks.siswa_id = s.id
     INNER JOIN t_tahun_ajaran ta ON ks.tahun_ajaran_id = ta.id
     INNER JOIN t_kelas k ON ks.kelas_id = k.id
-    ORDER BY ks.id DESC"
+    ORDER BY ks.id ASC"
 );
 ?>
 

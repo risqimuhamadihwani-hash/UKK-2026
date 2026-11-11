@@ -27,6 +27,7 @@ function e($data) {
 
 $cari = trim($_GET['cari'] ?? '');
 $status = $_GET['status'] ?? '';
+$tanggal = trim($_GET['tanggal'] ?? ''); 
 $export = $_GET['export'] ?? '';
 
 // Ambil ID Guru jika role adalah guru
@@ -66,8 +67,7 @@ $types = '';
 
 // Jika guru, batasi hanya menampilkan pelanggaran untuk siswa di kelas yang diwalikelaskan
 if ($role === 'guru') {
-    // Ambil daftar ID siswa yang berada di kelas wali tersebut
-    $siswaWaliIds = [0]; // default array kosong agar tidak error in
+    $siswaWaliIds = [0]; 
     if (isset($kelas_id_wali) && $kelas_id_wali > 0) {
         $stmtSiswaWali = $koneksi->prepare(
             "SELECT siswa_id FROM t_kelas_siswa WHERE kelas_id = ? AND tahun_ajaran_id = ? AND status_aktif = 1"
@@ -82,15 +82,15 @@ if ($role === 'guru') {
     }
     
     $inClause = implode(',', $siswaWaliIds);
-    $where[] = "siswa_id IN ($inClause)";
+    $where[] = "ps.siswa_id IN ($inClause)";
 }
 
 if ($cari !== '') {
     $where[] = "(
-        nama_siswa LIKE ?
-        OR nama_kelas LIKE ?
-        OR nama_pelanggaran LIKE ?
-        OR status LIKE ?
+        s.nama LIKE ?
+        OR k.nama LIKE ?
+        OR p.nama LIKE ?
+        OR ps.status LIKE ?
     )";
 
     $keyword = "%$cari%";
@@ -102,29 +102,41 @@ if ($cari !== '') {
 }
 
 if ($status !== '') {
-    $where[] = "status = ?";
+    $where[] = "ps.status = ?";
     $params[] = $status;
     $types .= 's';
 }
 
+if ($tanggal !== '') {
+    $where[] = "ps.tanggal = ?";
+    $params[] = $tanggal;
+    $types .= 's';
+}
+
+// QUERY MENGGUNAKAN JOIN AGAR NAMA KELAS & JENIS PELANGGARAN MUNCUL DENGAN BENAR
 $sql = "SELECT
-            id,
-            nama_siswa,
-            nama_kelas,
-            nama_pelanggaran,
-            nama_guru,
-            tanggal,
-            poin,
-            tindakan,
-            keterangan,
-            status
-        FROM t_pelanggaran_siswa";
+            ps.id,
+            s.nama AS nama_siswa,
+            COALESCE(k.nama, ps.nama_kelas, '-') AS nama_kelas,
+            COALESCE(p.nama, ps.nama_pelanggaran, '-') AS nama_pelanggaran,
+            g.nama AS nama_guru,
+            ps.tanggal,
+            ps.poin,
+            ps.tindakan,
+            ps.keterangan,
+            ps.status
+        FROM t_pelanggaran_siswa ps
+        LEFT JOIN t_siswa s ON s.id = ps.siswa_id
+        LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = ps.siswa_id AND ks.status_aktif = 1
+        LEFT JOIN t_kelas k ON k.id = ks.kelas_id
+        LEFT JOIN t_pelanggaran p ON p.id = ps.pelanggaran_id
+        LEFT JOIN t_guru g ON g.id = ps.guru_id";
 
 if (!empty($where)) {
     $sql .= " WHERE " . implode(" AND ", $where);
 }
 
-$sql .= " ORDER BY tanggal DESC, id DESC";
+$sql .= " GROUP BY ps.id ORDER BY ps.tanggal DESC, ps.id DESC";
 
 $stmt = $koneksi->prepare($sql);
 
@@ -231,7 +243,6 @@ if ($status !== '') {
                 </li>
 
                 <?php if ($role === 'admin'): ?>
-                    <!-- MENU ADMIN -->
                     <li class="nav-item mb-2"><a href="Kelola_Siswa.php" class="nav-link text-white"><span class="fw-bold">Kelola Siswa</span></a></li>
                     <li class="nav-item mb-2"><a href="Kelola_Guru.php" class="nav-link text-white"><span class="fw-bold">Kelola Guru</span></a></li>
                     <li class="nav-item mb-2"><a href="Kelola_Kelas.php" class="nav-link text-white"><span class="fw-bold">Kelola Kelas</span></a></li>
@@ -243,11 +254,10 @@ if ($status !== '') {
                     <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link active"><span class="fw-bold">Laporan</span></a></li>
                     <li class="nav-item mb-2"><a href="about_me.php" class="nav-link text-white"><span class="fw-bold">About Me</span></a></li>
                 <?php else: ?>
-                    <!-- MENU GURU / WALI KELAS (TANPA ABOUT ME) -->
-                    <li class="nav-item mb-2"><a href="Catat_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catat Pelanggaran</span></a></li>
+                    <li class="nav-item mb-2"><a href="Catatan_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catatan Pelanggaran</span></a></li>
                     <li class="nav-item mb-2"><a href="Tindakan.php" class="nav-link text-white"><span class="fw-bold">Tindakan</span></a></li>
-                    <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
                     <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>
+                    <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
                     <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link active"><span class="fw-bold">Laporan</span></a></li>
                 <?php endif; ?>
 
@@ -293,11 +303,16 @@ if ($status !== '') {
                 <div class="card-body">
                     <h5 class="mb-3">Filter Laporan</h5>
                     <form method="GET" action="Laporan.php" class="row g-3">
-                        <div class="col-md-8">
+                        <div class="col-md-5">
                             <label class="form-label">Cari Data:</label>
                             <input type="text" name="cari" class="form-control"
                                    value="<?= e($cari) ?>"
                                    placeholder="Nama siswa, kelas, pelanggaran">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Tanggal:</label>
+                            <input type="date" name="tanggal" class="form-control" value="<?= e($tanggal) ?>">
                         </div>
 
                         <div class="col-md-4">
@@ -392,8 +407,8 @@ if ($status !== '') {
 <!-- Bootstrap 5 JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <!-- DataTables JS -->
-<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/datatables.net/js/dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
 $(document).ready(function () {

@@ -10,8 +10,8 @@ if (!isset($_SESSION['id_user'])) {
 
 $pesan = "";
 
-// Ambil data tahun ajaran aktif secara otomatis
-$tahun_aktif_query = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
+// Ambil data tahun ajaran aktif secara otomatis (termasuk tanggal mulai & selesai)
+$tahun_aktif_query = mysqli_query($koneksi, "SELECT id, nama, tanggal_mulai, tanggal_selesai FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
 $tahun_aktif = mysqli_fetch_assoc($tahun_aktif_query);
 $tahun_ajaran_aktif_id = $tahun_aktif ? (int)$tahun_aktif['id'] : 0;
 
@@ -129,13 +129,14 @@ $kelas = mysqli_query($koneksi,
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Penempatan Siswa</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 </head>
 
 <body>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 <div class="container-fluid">
     <div class="row">
@@ -228,8 +229,9 @@ $kelas = mysqli_query($koneksi,
 
                         <div class="mb-3">
                             <label class="form-label">Siswa</label>
-                            <select name="siswa_id" class="form-select" required>
-                                <option value="">-- Pilih Siswa --</option>
+                            <!-- Tambahkan id="selectSiswa" agar bisa dipanggil oleh Select2 -->
+                            <select name="siswa_id" id="selectSiswa" class="form-select" required>
+                                <option value="">-- Pilih atau Cari Siswa --</option>
                                 <?php while ($s = mysqli_fetch_assoc($siswa)): ?>
                                     <option value="<?= $s['id'] ?>">
                                         <?= htmlspecialchars($s['nis'] . ' - ' . $s['nama']) ?>
@@ -269,7 +271,9 @@ $kelas = mysqli_query($koneksi,
                             <input
                                 type="date"
                                 name="tanggal_mulai"
-                                class="form-control"
+                                class="form-control bg-light"
+                                value="<?= $tahun_aktif ? htmlspecialchars($tahun_aktif['tanggal_mulai']) : '' ?>"
+                                readonly
                                 required
                             >
                         </div>
@@ -279,7 +283,9 @@ $kelas = mysqli_query($koneksi,
                             <input
                                 type="date"
                                 name="tanggal_selesai"
-                                class="form-control"
+                                class="form-control bg-light"
+                                value="<?= $tahun_aktif ? htmlspecialchars($tahun_aktif['tanggal_selesai']) : '' ?>"
+                                readonly
                                 required
                             >
                         </div>
@@ -318,5 +324,20 @@ $kelas = mysqli_query($koneksi,
     </div>
 </div>
 
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#selectSiswa').select2({
+        theme: 'bootstrap-5',
+        width: '100%'
+    });
+});
+</script>
 </body>
 </html>

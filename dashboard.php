@@ -24,6 +24,7 @@ if (!isset($_SESSION['id_user'])) {
 }
 
 $name = $_SESSION['name'] ?? 'User';
+$email = $_SESSION['email'] ?? '-';
 $role = strtolower(trim($_SESSION['role'] ?? ''));
 
 // 2. VALIDASI ROLE
@@ -31,6 +32,41 @@ if ($role !== 'admin' && $role !== 'guru') {
     session_destroy();
     header("Location: login.php");
     exit;
+}
+
+// Cek apakah guru yang login bertindak sebagai Wali Kelas
+$nama_kelas_wali = '';
+$is_wali_kelas = false;
+
+if ($role === 'guru') {
+    // Ambil tahun ajaran aktif
+    $tahunQuery = $koneksi->query("SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
+    $tahunData = $tahunQuery ? $tahunQuery->fetch_assoc() : null;
+    $tahun_id = $tahunData ? (int)$tahunData['id'] : 1;
+
+    $session_email = trim($_SESSION['email'] ?? '');
+    
+    // Cari data kelas wali berdasarkan nama guru atau email yang aktif
+    $stmtWali = $koneksi->prepare(
+        "SELECT k.nama AS nama_kelas 
+         FROM t_guru g
+         JOIN t_wali_kelas wk ON wk.guru_id = g.id AND wk.tahun_ajaran_id = ? AND wk.status_aktif = 1
+         JOIN t_kelas k ON k.id = wk.kelas_id
+         WHERE g.nama LIKE ? OR g.email = ? OR g.id = ?
+         LIMIT 1"
+    );
+    $search_name = "%" . $name . "%";
+    $session_id = (int)($_SESSION['id_user'] ?? 0);
+    
+    $stmtWali->bind_param("issi", $tahun_id, $search_name, $session_email, $session_id);
+    $stmtWali->execute();
+    $resWali = $stmtWali->get_result()->fetch_assoc();
+    $stmtWali->close();
+
+    if ($resWali && !empty($resWali['nama_kelas'])) {
+        $nama_kelas_wali = $resWali['nama_kelas'];
+        $is_wali_kelas = true;
+    }
 }
 
 // 3. AMBIL DATA STATISTIK BERDASARKAN ROLE
@@ -87,7 +123,7 @@ if ($role === 'guru') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard <?= ucfirst($role) ?></title>
+    <title>Dashboard <?= $is_wali_kelas ? 'Wali Kelas' : ucfirst($role) ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -105,14 +141,14 @@ if ($role === 'guru') {
                 </li>
 
                 <?php if ($role === 'guru'): ?>
-                    <!-- MENU KHUSUS GURU / WALI KELAS (DENGAN LAPORAN, TANPA ABOUT ME) -->
-                    <li class="nav-item mb-2"><a href="Catat_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catat Pelanggaran</span></a></li>
+                    <!-- MENU KHUSUS GURU / WALI KELAS -->
+                    <li class="nav-item mb-2"><a href="Catatan_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catatan Pelanggaran</span></a></li>
                     <li class="nav-item mb-2"><a href="Tindakan.php" class="nav-link text-white"><span class="fw-bold">Tindakan</span></a></li>
-                    <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
                     <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>
+                    <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
                     <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a></li>
                 <?php else: ?>
-                    <!-- MENU KHUSUS ADMIN (DENGAN ABOUT ME & LAPORAN) -->
+                    <!-- MENU KHUSUS ADMIN -->
                     <li class="nav-item mb-2"><a href="Kelola_Siswa.php" class="nav-link text-white"><span class="fw-bold">Kelola Siswa</span></a></li>
                     <li class="nav-item mb-2"><a href="Kelola_Guru.php" class="nav-link text-white"><span class="fw-bold">Kelola Guru</span></a></li>
                     <li class="nav-item mb-2"><a href="Kelola_Kelas.php" class="nav-link text-white"><span class="fw-bold">Kelola Kelas</span></a></li>
@@ -132,10 +168,16 @@ if ($role === 'guru') {
         
         <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 p-4">
-            <h2 class="fw-bold">Dashboard <?= ucfirst($role) ?></h2>
-            <p class="text-muted mb-4">
-                Selamat datang, <?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>. Berikut ringkasan Sistem Informasi Pelanggaran Siswa.
-            </p>
+            <h2 class="fw-bold mb-3">
+                Dashboard <?= $is_wali_kelas ? 'Wali Kelas ' . htmlspecialchars($nama_kelas_wali, ENT_QUOTES, 'UTF-8') : ucfirst($role) ?>
+            </h2>
+
+            <!-- INFORMASI USER SESUAI GAMBAR -->
+            <div class="mb-4 text-secondary">
+                Selamat datang, <span class="fw-bold text-dark"><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></span><br>
+                Email: <span class="text-dark"><?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?></span><br>
+                Role: <span class="badge bg-primary px-2 py-1"><?= $role === 'guru' ? ($is_wali_kelas ? 'Guru (Wali Kelas ' . htmlspecialchars($nama_kelas_wali, ENT_QUOTES, 'UTF-8') . ')' : 'Guru') : htmlspecialchars($role, ENT_QUOTES, 'UTF-8') ?></span>
+            </div>
 
             <?php if ($role === 'guru'): ?>
                 <!-- STATISTIK GURU -->

@@ -102,14 +102,19 @@ $result = mysqli_stmt_get_result($stmt);
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a href="Catat_Pelanggaran.php" class="nav-link text-white">
-                        <span class="fw-bold">Catat Pelanggaran</span>
+                    <a href="Catatan_Pelanggaran.php" class="nav-link text-white">
+                        <span class="fw-bold">Catatan Pelanggaran</span>
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="Tindakan.php" class="nav-link text-white">
                         <span class="fw-bold">Tindakan</span>
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="riwayat.php" class="nav-link text-white">
+                        <span class="fw-bold">Riwayat</span>
                     </a>
                 </li>
 
@@ -119,11 +124,6 @@ $result = mysqli_stmt_get_result($stmt);
                     </a>
                 </li>
 
-                <li class="nav-item mb-2">
-                    <a href="riwayat.php" class="nav-link text-white">
-                        <span class="fw-bold">Riwayat</span>
-                    </a>
-                </li>
 
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
