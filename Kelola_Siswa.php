@@ -126,6 +126,14 @@ if (!$result) {
                 </a>
             </div>
 
+            <!-- NOTIFIKASI BERHASIL DISIMPAN DI SINI -->
+            <?php if (isset($_GET['pesan']) && $_GET['pesan'] === 'berhasil'): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    Data Siswa Berhasil Ditambahkan
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
             <div class="table-responsive">
 
             <table id="tabelSiswa"class="table table-striped table-bordered table-hover align-middle">

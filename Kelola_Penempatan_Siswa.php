@@ -7,7 +7,7 @@ if (!isset($_SESSION['id_user'])) {
     exit;
 }
 
-// QUERY DENGAN CASE WHEN AGAR TANGGAL SELESAI MENGIKUTI TAHUN AJARAN AKTIF
+// QUERY DATA PENEMPATAN SISWA
 $data = mysqli_query(
     $koneksi,
     "SELECT
@@ -16,11 +16,6 @@ $data = mysqli_query(
         s.nama AS nama_siswa,
         ta.nama AS tahun_ajaran,
         k.nama AS nama_kelas,
-        ks.tanggal_mulai,
-        CASE 
-            WHEN ta.status_aktif = 1 THEN ta.tanggal_selesai 
-            ELSE COALESCE(ks.tanggal_selesai, ta.tanggal_selesai) 
-        END AS tanggal_selesai,
         ks.status_aktif
     FROM t_kelas_siswa ks
     INNER JOIN t_siswa s ON ks.siswa_id = s.id
@@ -47,9 +42,8 @@ $data = mysqli_query(
 <div class="container-fluid">
     <div class="row">
         <!-- SIDEBAR -->
-
-<div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
-            <h4 class="text-white fw-bold mb-4 ">
+        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
+            <h4 class="text-white fw-bold mb-4">
             Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
@@ -131,18 +125,24 @@ $data = mysqli_query(
                 </a>
             </div>
 
+            <!-- NOTIFIKASI BERHASIL -->
+            <?php if (isset($_GET['pesan']) && $_GET['pesan'] === 'berhasil'): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                 Siswa berhasil Ditempatkan
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
             <div class="card shadow-sm border-0 p-3">
                 <table id="tabelPenempatan" class="table table-hover table-striped table-bordered align-middle">
                     <thead class="table-dark">
                         <tr>
                             <th width="5%">No</th>
-                            <th width="10%">NIS</th>
+                            <th width="12%">NIS</th>
                             <th>Nama Siswa</th>
-                            <th width="13%">Tahun Ajaran</th>
-                            <th width="10%">Kelas</th>
-                            <th width="12%">Tanggal Mulai</th>
-                            <th width="12%">Tanggal Selesai</th>
-                            <th width="10%">Status</th>
+                            <th width="18%">Tahun Ajaran</th>
+                            <th width="12%">Kelas</th>
+                            <th width="12%">Status</th>
                             <th width="15%">Aksi</th>
                         </tr>
                     </thead>
@@ -156,10 +156,6 @@ $data = mysqli_query(
                                     <td><?= htmlspecialchars($d['nama_siswa']) ?></td>
                                     <td><?= htmlspecialchars($d['tahun_ajaran']) ?></td>
                                     <td><?= htmlspecialchars($d['nama_kelas']) ?></td>
-                                    <td><?= htmlspecialchars($d['tanggal_mulai']) ?></td>
-                                    <td>
-                                        <?= $d['tanggal_selesai'] ? htmlspecialchars($d['tanggal_selesai']) : '-' ?>
-                                    </td>
                                     <td>
                                         <?php if ((int)$d['status_aktif'] === 1): ?>
                                             <span class="badge bg-success">Aktif</span>
@@ -199,7 +195,7 @@ $(document).ready(function () {
         info: true,
         columnDefs: [
             {
-                targets: [0, 7, 8],
+                targets: [0, 5, 6], // Menyesuaikan indeks kolom non-urutan (No, Status, Aksi)
                 orderable: false,
                 searchable: false
             }

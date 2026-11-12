@@ -119,6 +119,13 @@ $result = mysqli_stmt_get_result($stmt);
                 Kembali ke Dashboard
             </a>
         </div>
+        <!-- NOTIFIKASI BERHASIL DISIMPAN DI SINI -->
+            <?php if (isset($_GET['pesan']) && $_GET['pesan'] === 'berhasil'): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    Jenis Pelanggaran Berhasil Ditambahkan.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
 
 
 <div class="table-responsive">

@@ -2,7 +2,6 @@
 session_start();
 include 'config/koneksi.php';
 
-// CEK LOGIN
 if (!isset($_SESSION['id_user'])) {
     header("Location: login.php");
     exit;
@@ -23,14 +22,19 @@ if (!$d) {
     exit;
 }
 
+// Ambil data tahun ajaran aktif secara otomatis untuk tanggal mulai & selesai
+$tahun_aktif_query = mysqli_query($koneksi, "SELECT id, nama, tanggal_mulai, tanggal_selesai FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
+$tahun_aktif = mysqli_fetch_assoc($tahun_aktif_query);
+$tahun_ajaran_aktif_id = $tahun_aktif ? (int)$tahun_aktif['id'] : 0;
+
 $pesan = "";
 
 if (isset($_POST['update'])) {
     $siswa_id = (int)$_POST['siswa_id'];
-    $tahun_ajaran_id = (int)$_POST['tahun_ajaran_id'];
+    $tahun_ajaran_id = $tahun_ajaran_aktif_id;
     $kelas_id = (int)$_POST['kelas_id'];
-    $tanggal_mulai = $_POST['tanggal_mulai'];
-    $tanggal_selesai = $_POST['tanggal_selesai'];
+    $tanggal_mulai = $tahun_aktif ? $tahun_aktif['tanggal_mulai'] : '';
+    $tanggal_selesai = $tahun_aktif ? $tahun_aktif['tanggal_selesai'] : '';
     $status_aktif = (int)$_POST['status_aktif'];
 
     if (
@@ -39,7 +43,7 @@ if (isset($_POST['update'])) {
         $tanggal_selesai == "" ||
         $tanggal_selesai < $tanggal_mulai
     ) {
-        $pesan = "Data tidak valid. Periksa kembali form.";
+        $pesan = "Data tidak valid atau tidak ada tahun ajaran aktif. Periksa kembali form.";
     } else {
         $cek = mysqli_prepare($koneksi,
             "SELECT id FROM t_kelas_siswa
@@ -93,12 +97,6 @@ $siswa = mysqli_query($koneksi,
     "SELECT id, nis, nama FROM t_siswa 
      WHERE id NOT IN (SELECT siswa_id FROM t_kelas_siswa WHERE id != $id)
      ORDER BY nama ASC");
-
-// DATA TAHUN AJARAN: Mengambil id, nama, status_aktif, tanggal_mulai, dan tanggal_selesai
-$tahun = mysqli_query($koneksi,
-    "SELECT id, nama, status_aktif, tanggal_mulai, tanggal_selesai FROM t_tahun_ajaran 
-     WHERE status_aktif = 1 
-     ORDER BY id DESC");
 
 // DATA KELAS
 $kelas = mysqli_query($koneksi,
@@ -215,7 +213,6 @@ function e($data) {
 
                         <div class="mb-3">
                             <label class="form-label">Siswa (Belum Ditempatkan)</label>
-                            <!-- Tambahkan id="selectSiswa" agar bisa dicari menggunakan Select2 -->
                             <select name="siswa_id" id="selectSiswa" class="form-select" required>
                                 <option value="">-- Pilih atau Cari Siswa --</option>
                                 <?php while ($s = mysqli_fetch_assoc($siswa)): ?>
@@ -228,25 +225,13 @@ function e($data) {
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Tahun Ajaran (Aktif)</label>
-                            <select name="tahun_ajaran_id" id="tahun_ajaran_id" class="form-select" required onchange="updateTanggal()">
-                                <option value="">-- Pilih Tahun Ajaran Aktif --</option>
-                                <?php 
-                                $arr_tahun = [];
-                                while ($t = mysqli_fetch_assoc($tahun)): 
-                                    $arr_tahun[$t['id']] = [
-                                        'mulai' => $t['tanggal_mulai'],
-                                        'selesai' => $t['tanggal_selesai']
-                                    ];
-                                ?>
-                                    <option value="<?= $t['id'] ?>"
-                                        data-mulai="<?= $t['tanggal_mulai'] ?>"
-                                        data-selesai="<?= $t['tanggal_selesai'] ?>"
-                                        <?= $d['tahun_ajaran_id'] == $t['id'] ? 'selected' : '' ?>>
-                                        <?= e($t['nama']) ?>
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
+                            <label class="form-label">Tahun Ajaran</label>
+                            <?php if ($tahun_aktif): ?>
+                                <input type="hidden" name="tahun_ajaran_id" value="<?= $tahun_ajaran_aktif_id ?>">
+                                <input type="text" class="form-control bg-light" value="<?= e($tahun_aktif['nama']) ?>" readonly>
+                            <?php else: ?>
+                                <input type="text" class="form-control bg-light text-danger" value="Tidak ada tahun ajaran yang aktif saat ini!" readonly>
+                            <?php endif; ?>
                         </div>
 
                         <div class="mb-3">
@@ -263,20 +248,6 @@ function e($data) {
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Tanggal Mulai</label>
-                            <input type="date" name="tanggal_mulai" id="tanggal_mulai"
-                                class="form-control bg-light"
-                                value="<?= e($d['tanggal_mulai']) ?>" readonly required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Tanggal Selesai</label>
-                            <input type="date" name="tanggal_selesai" id="tanggal_selesai"
-                                class="form-control bg-light"
-                                value="<?= e($d['tanggal_selesai']) ?>" readonly required>
-                        </div>
-
-                        <div class="mb-3">
                             <label class="form-label">Status Aktif</label>
                             <select name="status_aktif" class="form-select" required>
                                 <option value="1" <?= $d['status_aktif'] == 1 ? 'selected' : '' ?>>
@@ -289,7 +260,7 @@ function e($data) {
                         </div>
 
                         <div class="d-flex gap-2 mt-4">
-                            <button type="submit" name="update" class="btn btn-primary px-3 py-1 text-white" style="background-color: #0d6efd;">
+                            <button type="submit" name="update" class="btn btn-primary px-3 py-1 text-white" style="background-color: #0d6efd;" <?= !$tahun_aktif ? 'disabled' : '' ?>>
                                 Simpan Perubahan
                             </button>
                             <a href="Kelola_Penempatan_Siswa.php" class="btn btn-secondary px-3 py-1" style="background-color: #6c757d;">
@@ -321,19 +292,6 @@ $(document).ready(function() {
         width: '100%'
     });
 });
-
-function updateTanggal() {
-    var select = document.getElementById('tahun_ajaran_id');
-    var selectedOption = select.options[select.selectedIndex];
-    
-    var mulai = selectedOption.getAttribute('data-mulai');
-    var selesai = selectedOption.getAttribute('data-selesai');
-    
-    if (mulai && selesai) {
-        document.getElementById('tanggal_mulai').value = mulai;
-        document.getElementById('tanggal_selesai').value = selesai;
-    }
-}
 </script>
 </body>
 </html>

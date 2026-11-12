@@ -212,12 +212,11 @@ function e($data) {
 
                     <form method="POST">
                         <div class="mb-3">
-                            <label class="form-label">NIS (Maksimal 15 Digit Angka)</label>
+                            <label class="form-label">NIS</label>
                             <input
                                 type="text"
                                 name="nis"
                                 class="form-control"
-                                placeholder="-- Masukkan NIS --"
                                 maxlength="15"
                                 inputmode="numeric"
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
@@ -227,12 +226,11 @@ function e($data) {
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">NISN (Maksimal 10 Digit Angka)</label>
+                            <label class="form-label">NISN</label>
                             <input
                                 type="text"
                                 name="nisn"
                                 class="form-control"
-                                placeholder="-- Masukkan NISN --"
                                 maxlength="10"
                                 inputmode="numeric"
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
@@ -246,7 +244,6 @@ function e($data) {
                                 type="text"
                                 name="nama"
                                 class="form-control"
-                                placeholder="-- Masukkan Nama Siswa --"
                                 value="<?= e($nama) ?>"
                                 required
                             >
@@ -278,7 +275,6 @@ function e($data) {
                                 name="alamat"
                                 class="form-control"
                                 rows="3"
-                                placeholder="-- Masukkan Alamat Siswa --"
                             ><?= e($alamat) ?></textarea>
                         </div>
 

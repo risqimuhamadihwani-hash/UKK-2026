@@ -237,12 +237,11 @@ function e($data) {
 
                     <form method="POST" action="edit_siswa.php?id=<?= $id ?>">
                         <div class="mb-3">
-                            <label class="form-label">NIS (Maksimal 15 Digit Angka)</label>
+                            <label class="form-label">NIS (Maks 15 Digit)</label>
                             <input
                                 type="text"
                                 name="nis"
                                 class="form-control"
-                                placeholder="Masukkan NIS (maksimal 15 digit)"
                                 maxlength="15"
                                 inputmode="numeric"
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
@@ -252,7 +251,7 @@ function e($data) {
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">NISN (Maksimal 10 Digit Angka)</label>
+                            <label class="form-label">NISN (Maks 10 digit)</label>
                             <input
                                 type="text"
                                 name="nisn"
@@ -271,7 +270,6 @@ function e($data) {
                                 type="text"
                                 name="nama"
                                 class="form-control"
-                                placeholder="Masukkan nama siswa"
                                 value="<?= e($nama) ?>"
                                 required
                             >
@@ -303,7 +301,7 @@ function e($data) {
                                 name="alamat"
                                 class="form-control"
                                 rows="3"
-                                placeholder="Masukkan alamat siswa"
+                               
                             ><?= e($alamat) ?></textarea>
                         </div>
 

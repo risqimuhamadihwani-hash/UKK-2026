@@ -21,8 +21,9 @@ if (isset($_POST['simpan'])) {
     $siswa_id = (int) $_POST['siswa_id'];
     $tahun_ajaran_id = $tahun_ajaran_aktif_id;
     $kelas_id = (int) $_POST['kelas_id'];
-    $tanggal_mulai = $_POST['tanggal_mulai'];
-    $tanggal_selesai = $_POST['tanggal_selesai'];
+    // Tanggal diambil otomatis dari data tahun ajaran aktif
+    $tanggal_mulai = $tahun_aktif ? $tahun_aktif['tanggal_mulai'] : '';
+    $tanggal_selesai = $tahun_aktif ? $tahun_aktif['tanggal_selesai'] : '';
     $status_aktif = (int) $_POST['status_aktif'];
 
     if (
@@ -229,7 +230,6 @@ $kelas = mysqli_query($koneksi,
 
                         <div class="mb-3">
                             <label class="form-label">Siswa</label>
-                            <!-- Tambahkan id="selectSiswa" agar bisa dipanggil oleh Select2 -->
                             <select name="siswa_id" id="selectSiswa" class="form-select" required>
                                 <option value="">-- Pilih atau Cari Siswa --</option>
                                 <?php while ($s = mysqli_fetch_assoc($siswa)): ?>
@@ -264,30 +264,6 @@ $kelas = mysqli_query($koneksi,
                                     </option>
                                 <?php endwhile; ?>
                             </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Tanggal Mulai</label>
-                            <input
-                                type="date"
-                                name="tanggal_mulai"
-                                class="form-control bg-light"
-                                value="<?= $tahun_aktif ? htmlspecialchars($tahun_aktif['tanggal_mulai']) : '' ?>"
-                                readonly
-                                required
-                            >
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Tanggal Selesai</label>
-                            <input
-                                type="date"
-                                name="tanggal_selesai"
-                                class="form-control bg-light"
-                                value="<?= $tahun_aktif ? htmlspecialchars($tahun_aktif['tanggal_selesai']) : '' ?>"
-                                readonly
-                                required
-                            >
                         </div>
 
                         <div class="mb-3">

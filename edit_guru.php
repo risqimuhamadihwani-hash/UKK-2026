@@ -34,6 +34,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update"])) {
     $nama = trim($_POST["nama"] ?? "");
     $email = trim($_POST["email"] ?? "");
     $status = $_POST["status_aktif"] ?? "";
+    $password_baru = $_POST["password_baru"] ?? "";
+    $konfirmasi_password = $_POST["konfirmasi_password"] ?? "";
 
     if ($nip === "" || $nama === "") {
         $error = "NIP dan Nama Guru wajib diisi.";
@@ -43,6 +45,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update"])) {
         $error = "Status guru tidak valid.";
     } elseif ($email !== "" && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Format email tidak valid.";
+    } elseif ($password_baru !== "" && $password_baru !== $konfirmasi_password) {
+        $error = "Password baru dan konfirmasi password tidak cocok.";
     } else {
 
         // Cek apakah NIP sudah digunakan oleh guru lain di database
@@ -57,26 +61,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update"])) {
         } else {
             $stmtCek->close();
 
-            $stmt = $koneksi->prepare("
-                UPDATE t_guru
-                SET nip = ?, nama = ?, email = NULLIF(?, ''), status_aktif = ?
-                WHERE id = ?
-            ");
-
-            if (!$stmt) {
-                die("Query gagal: " . $koneksi->error);
-            }
-
             $statusInt = (int)$status;
 
-            $stmt->bind_param(
-                "sssii",
-                $nip,
-                $nama,
-                $email,
-                $statusInt,
-                $id
-            );
+            // Jika password diisi, update password juga
+            if ($password_baru !== "") {
+                $hashed_password = password_hash($password_baru, PASSWORD_DEFAULT);
+                $stmt = $koneksi->prepare("
+                    UPDATE t_guru
+                    SET nip = ?, nama = ?, email = NULLIF(?, ''), password = ?, status_aktif = ?
+                    WHERE id = ?
+                ");
+                if (!$stmt) {
+                    die("Query gagal: " . $koneksi->error);
+                }
+                $stmt->bind_param("ssssii", $nip, $nama, $email, $hashed_password, $statusInt, $id);
+            } else {
+                // Jika password kosong, biarkan password lama tidak berubah
+                $stmt = $koneksi->prepare("
+                    UPDATE t_guru
+                    SET nip = ?, nama = ?, email = NULLIF(?, ''), status_aktif = ?
+                    WHERE id = ?
+                ");
+                if (!$stmt) {
+                    die("Query gagal: " . $koneksi->error);
+                }
+                $stmt->bind_param("sssii", $nip, $nama, $email, $statusInt, $id);
+            }
 
             if ($stmt->execute()) {
                 $stmt->close();
@@ -109,7 +119,7 @@ function e($nilai) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Guru</title>
+    <title>Edit Data Guru</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -190,7 +200,7 @@ function e($nilai) {
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h3 class="fw-bold mb-4">Edit Guru</h3>
+            <h3 class="fw-bold mb-4">Edit Data Guru</h3>
 
             <div class="card shadow-sm border" style="background-color: #ffffff; border-color: #dee2e6 !important;">
                 <div class="card-body p-4">
@@ -202,50 +212,77 @@ function e($nilai) {
                     <?php endif; ?>
 
                     <form method="POST">
-                        <div class="mb-3">
-                            <label class="form-label">NIP (Maksimal 18 Digit Angka)</label>
-                            <input
-                                type="text"
-                                name="nip"
-                                class="form-control"
-                                placeholder="Masukkan NIP (maks. 18 digit)"
-                                value="<?= e($nip) ?>"
-                                maxlength="18"
-                                inputmode="numeric"
-                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                required
-                            >
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">NIP</label>
+                                <input
+                                    type="text"
+                                    name="nip"
+                                    class="form-control"
+                                    placeholder="Masukkan NIP (maks. 18 digit)"
+                                    value="<?= e($nip) ?>"
+                                    maxlength="18"
+                                    inputmode="numeric"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                    required
+                                >
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nama Guru</label>
+                                <input
+                                    type="text"
+                                    name="nama"
+                                    class="form-control"
+                                    placeholder="Masukkan Nama Guru"
+                                    value="<?= e($nama) ?>"
+                                    required
+                                >
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Nama Guru</label>
-                            <input
-                                type="text"
-                                name="nama"
-                                class="form-control"
-                                placeholder="Masukkan Nama Guru"
-                                value="<?= e($nama) ?>"
-                                required
-                            >
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    class="form-control"
+                                    placeholder="Masukkan Email"
+                                    value="<?= e($email) ?>"
+                                >
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Password Baru</label>
+                                <input
+                                    type="password"
+                                    name="password_baru"
+                                    class="form-control"
+                                    placeholder="Kosongkan jika password tidak ingin diubah."
+                                >
+                                <small class="text-muted">Kosongkan jika password tidak ingin diubah.</small>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input
-                                type="email"
-                                name="email"
-                                class="form-control"
-                                placeholder="Masukkan Email"
-                                value="<?= e($email) ?>"
-                            >
-                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Konfirmasi Password Baru</label>
+                                <input
+                                    type="password"
+                                    name="konfirmasi_password"
+                                    class="form-control"
+                                    placeholder="Ulangi password baru"
+                                >
+                            </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Status Aktif</label>
-                            <select name="status_aktif" class="form-select" required>
-                                <option value="1" <?= $status === "1" ? "selected" : "" ?>>Aktif</option>
-                                <option value="0" <?= $status === "0" ? "selected" : "" ?>>Tidak Aktif</option>
-                            </select>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Status Aktif</label>
+                                <select name="status_aktif" class="form-select" required>
+                                    <option value="1" <?= $status === "1" ? "selected" : "" ?>>Aktif</option>
+                                    <option value="0" <?= $status === "0" ? "selected" : "" ?>>Tidak Aktif</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="d-flex gap-2 mt-4">
@@ -253,8 +290,8 @@ function e($nilai) {
                                 Simpan Perubahan
                             </button>
 
-                            <a href="Kelola_Guru.php" class="btn btn-dark">
-                                Kembali
+                            <a href="Kelola_Guru.php" class="btn btn-secondary">
+                                Batal
                             </a>
                         </div>
                     </form>

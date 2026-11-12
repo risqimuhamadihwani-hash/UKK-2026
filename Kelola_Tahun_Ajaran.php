@@ -130,10 +130,15 @@ if (!$result) {
                 </a>
             </div>
 
-            <!-- TABEL TAHUN AJARAN -->
-            <div class="table-responsive">
+            <!-- NOTIFIKASI BERHASIL DISIMPAN DI SINI -->
+            <?php if (isset($_GET['pesan']) && $_GET['pesan'] === 'berhasil'): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    Tahun Ajaran Berhasil Ditambahakan.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
 
-               <!-- TABEL TAHUN AJARAN -->
+            <!-- TABEL TAHUN AJARAN -->
 <div class="table-responsive">
 
     <table id="tabelTahunAjaran"

@@ -134,6 +134,12 @@ if (!$data) {
                      Kembali ke Dashboard
                 </a>
             </div>
+            <?php if (isset($_GET['pesan']) && $_GET['pesan'] === 'berhasil'): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    Data Wali Kelas Berhasil Ditambahkan.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
 
             <!-- TABEL DATA -->
             <div class="table-responsive">
