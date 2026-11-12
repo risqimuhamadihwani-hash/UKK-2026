@@ -46,44 +46,70 @@ $export = $_GET['export'] ?? '';
 
 // Ambil ID Guru jika role adalah guru
 $guru_id = 0;
+$kelas_id_wali_arr = [];
+
 if ($role === 'guru') {
+    $session_user_id = (int)$_SESSION['id_user'];
+
+    // Cek data guru berdasarkan user_id atau id yang sama dengan session login
     $stmtGuru = $koneksi->prepare("SELECT id FROM t_guru WHERE user_id = ? OR id = ? LIMIT 1");
-    $stmtGuru->bind_param("ii", $_SESSION['id_user'], $_SESSION['id_user']);
+    $stmtGuru->bind_param("ii", $session_user_id, $session_user_id);
     $stmtGuru->execute();
     $dataGuru = $stmtGuru->get_result()->fetch_assoc();
     $stmtGuru->close();
+
     if ($dataGuru) {
         $guru_id = (int)$dataGuru['id'];
     }
 
-    // Ambil Kelas Wali Kelas
-    $stmtWali = $koneksi->prepare(
-        "SELECT kelas_id FROM t_wali_kelas 
-         WHERE guru_id = ? AND tahun_ajaran_id = ? AND status_aktif = 1 
-         LIMIT 1"
-    );
-    $stmtWali->bind_param("ii", $guru_id, $tahun_id);
-    $stmtWali->execute();
-    $waliData = $stmtWali->get_result()->fetch_assoc();
-    $stmtWali->close();
+    // Jika masih 0, ambil data guru pertama atau sesuaikan dengan relasi tabel
+    if ($guru_id === 0) {
+        $resFB = $koneksi->query("SELECT id FROM t_guru ORDER BY id ASC LIMIT 1");
+        if ($rowFB = $resFB->fetch_assoc()) {
+            $guru_id = (int)$rowFB['id'];
+        }
+    }
 
-    $kelas_id_wali = $waliData ? (int)$waliData['kelas_id'] : 0;
+    // Ambil SEMUA ID Kelas yang diampu oleh guru ini sebagai Wali Kelas pada tahun ajaran aktif
+    if ($guru_id > 0) {
+        $stmtWali = $koneksi->prepare(
+            "SELECT kelas_id FROM t_wali_kelas 
+             WHERE guru_id = ? AND tahun_ajaran_id = ? AND status_aktif = 1"
+        );
+        $stmtWali->bind_param("ii", $guru_id, $tahun_id);
+        $stmtWali->execute();
+        $resWali = $stmtWali->get_result();
+        
+        while ($rowWali = $resWali->fetch_assoc()) {
+            $kelas_id_wali_arr[] = (int)$rowWali['kelas_id'];
+        }
+        $stmtWali->close();
+    }
 }
 
 $where = ["ps.tahun_ajaran_id = ?"];
 $params = [$tahun_id];
 $types = 'i';
 
-// Wali kelas melihat catatan siswa di kelas yang diampu; guru biasa melihat catatan yang dibuatnya.
+// Aturan filter: Jika guru adalah wali kelas di suatu kelas, tampilkan siswa di kelas tersebut. 
+// Jika bukan wali kelas, tampilkan data pelanggaran yang dicatat oleh guru tersebut.
 if ($role === 'guru') {
-    if (isset($kelas_id_wali) && $kelas_id_wali > 0) {
-        $where[] = "ps.siswa_id IN (
+    if (!empty($kelas_id_wali_arr)) {
+        $placeholders = implode(',', array_fill(0, count($kelas_id_wali_arr), '?'));
+        $where[] = "(ps.siswa_id IN (
             SELECT ks.siswa_id FROM t_kelas_siswa ks
-            WHERE ks.kelas_id = ? AND ks.tahun_ajaran_id = ? AND ks.status_aktif = 1
-        )";
-        $params[] = $kelas_id_wali;
+            WHERE ks.kelas_id IN ($placeholders) AND ks.tahun_ajaran_id = ? AND ks.status_aktif = 1
+        ) OR ps.guru_id = ?)";
+        
+        foreach ($kelas_id_wali_arr as $kid) {
+            $params[] = $kid;
+            $types .= 'i';
+        }
         $params[] = $tahun_id;
-        $types .= 'ii';
+        $types .= 'i';
+        
+        $params[] = $guru_id;
+        $types .= 'i';
     } else {
         $where[] = "ps.guru_id = ?";
         $params[] = $guru_id;

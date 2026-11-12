@@ -1,13 +1,7 @@
 <?php
 session_start();
 
-$koneksi = new mysqli("localhost", "root", "", "db_ukk_2026");
-
-if ($koneksi->connect_error) {
-    die("Koneksi database gagal: " . $koneksi->connect_error);
-}
-
-$koneksi->set_charset("utf8mb4");
+require_once __DIR__ . '/config/koneksi.php';
 
 $sql = "
     SELECT id, nip, nama, email, status_aktif

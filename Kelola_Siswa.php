@@ -1,11 +1,5 @@
 <?php
-$koneksi = new mysqli("localhost", "root", "", "db_ukk_2026");
-
-if ($koneksi->connect_error) {
-    die("Koneksi database gagal: " . $koneksi->connect_error);
-}
-
-$koneksi->set_charset("utf8mb4");
+require_once __DIR__ . '/config/koneksi.php';
 
 $sql = "
     SELECT id, nis, nisn, nama, jenis_kelamin,
@@ -27,7 +21,7 @@ if (!$result) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Kelola Siswa <?= ucfirst($role) ?></p></title>
+    <title>Kelola Siswa</title>
    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 

@@ -235,13 +235,17 @@ $result = mysqli_stmt_get_result($stmt);
 
                                             <form method="POST">
                                                 <td>
-                                                    <textarea
-                                                        name="tindakan"
-                                                        class="form-control form-control-sm"
-                                                        rows="2"
-                                                        placeholder="Masukkan tindakan..."
-                                                        required
-                                                    ><?= e($row['tindakan']) ?></textarea>
+                                                    <select name="tindakan" class="form-select form-select-sm" required>
+                                                        <option value="" disabled <?= empty($row['tindakan']) ? 'selected' : '' ?>>-- Pilih Tindakan --</option>
+                                                        <option value="Teguran Lisan" <?= $row['tindakan'] === 'Teguran Lisan' ? 'selected' : '' ?>>Teguran Lisan</option>
+                                                        <option value="Peringatan Tertulis (SP 1)" <?= $row['tindakan'] === 'Peringatan Tertulis (SP 1)' ? 'selected' : '' ?>>Peringatan Tertulis (SP 1)</option>
+                                                        <option value="Peringatan Tertulis (SP 2)" <?= $row['tindakan'] === 'Peringatan Tertulis (SP 2)' ? 'selected' : '' ?>>Peringatan Tertulis (SP 2)</option>
+                                                        <option value="Peringatan Tertulis (SP 3)" <?= $row['tindakan'] === 'Peringatan Tertulis (SP 3)' ? 'selected' : '' ?>>Peringatan Tertulis (SP 3)</option>
+                                                        <option value="Panggilan Orang Tua / Wali" <?= $row['tindakan'] === 'Panggilan Orang Tua / Wali' ? 'selected' : '' ?>>Panggilan Orang Tua / Wali</option>
+                                                        <option value="Skorsing" <?= $row['tindakan'] === 'Skorsing' ? 'selected' : '' ?>>Skorsing</option>
+                                                        <option value="Bimbingan Konseling (BK)" <?= $row['tindakan'] === 'Bimbingan Konseling (BK)' ? 'selected' : '' ?>>Bimbingan Konseling (BK)</option>
+                                                        <option value="Kerja Bakti / Sanksi Edukatif" <?= $row['tindakan'] === 'Kerja Bakti / Sanksi Edukatif' ? 'selected' : '' ?>>Kerja Bakti / Sanksi Edukatif</option>
+                                                    </select>
                                                 </td>
 
                                                 <td>
@@ -320,6 +324,5 @@ $(document).ready(function () {
     });
 });
 </script>
-
 </body>
 </html>

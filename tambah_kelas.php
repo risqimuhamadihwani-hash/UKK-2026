@@ -172,7 +172,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
                                 type="text"
                                 name="nama"
                                 class="form-control"
-                                placeholder="Contoh: X RPL 1"
+                                placeholder="Contoh: RPL"
                                 maxlength="100"
                                 value="<?= htmlspecialchars($nama, ENT_QUOTES, 'UTF-8') ?>"
                                 required

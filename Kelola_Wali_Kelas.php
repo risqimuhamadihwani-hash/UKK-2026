@@ -143,7 +143,7 @@ if (!$data) {
 
             <!-- TABEL DATA -->
             <div class="table-responsive">
-                <table id="tabelWaliKelas" class="table table-hover table-striped table-bordered align-middle w-100">
+                <table id="tabelWaliKelas" class= "table table-striped table-bordered align-middle">
                     <thead class="table-dark">
                         <tr>
                             <th>No</th>

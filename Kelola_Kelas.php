@@ -1,9 +1,5 @@
 <?php
-$koneksi = new mysqli("localhost", "root", "", "db_ukk_2026");
-
-if ($koneksi->connect_error) {
-    die("Koneksi database gagal: " . $koneksi->connect_error);
-}
+require_once __DIR__ . '/config/koneksi.php';
 
 $sql = "
      SELECT id, 

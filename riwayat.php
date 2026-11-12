@@ -24,11 +24,9 @@ function e($data) {
 function bindParams($stmt, $types, &$params) {
     if ($types !== '') {
         $bind = [$types];
-
         foreach ($params as $key => &$value) {
             $bind[] = &$value;
         }
-
         call_user_func_array([$stmt, 'bind_param'], $bind);
     }
 }
@@ -37,26 +35,36 @@ function bindParams($stmt, $types, &$params) {
 $cari = trim($_GET['cari'] ?? '');
 $status = trim($_GET['status'] ?? '');
 
-// QUERY FILTER
+// QUERY FILTER DASAR
 $where = " WHERE 1=1 ";
 $params = [];
 $types = '';
 
-// FILTER KHUSUS WALI KELAS
+// KARENA LOGIN SEBAGAI WALI KELAS, BATASI HANYA KELAS YANG DIAKUI WALI KELAS TERSEBUT DAN VALID (BUKAN 'BELUM DITEMPATKAN')
 if ($role === 'walikelas') {
     $where .= "
-        AND ps.kelas_id IN (
-            SELECT wk.kelas_id
-            FROM t_wali_kelas wk
-            INNER JOIN t_guru g ON g.id = wk.guru_id
-            WHERE g.user_id = ?
-            AND g.status_aktif = 1
-            AND wk.status_aktif = 1
+        AND (
+            ks.kelas_id IN (
+                SELECT wk.kelas_id
+                FROM t_wali_kelas wk
+                INNER JOIN t_guru g ON g.id = wk.guru_id
+                WHERE g.user_id = ?
+                AND g.status_aktif = 1
+                AND wk.status_aktif = 1
+            )
+            OR ps.kelas_id IN (
+                SELECT wk.kelas_id
+                FROM t_wali_kelas wk
+                INNER JOIN t_guru g ON g.id = wk.guru_id
+                WHERE g.user_id = ?
+                AND g.status_aktif = 1
+                AND wk.status_aktif = 1
+            )
         )
     ";
-
     $params[] = (int) $_SESSION['id_user'];
-    $types .= 'i';
+    $params[] = (int) $_SESSION['id_user'];
+    $types .= 'ii';
 }
 
 // PENCARIAN
@@ -66,14 +74,12 @@ if ($cari !== '') {
             ps.nama_siswa LIKE ?
             OR k.nama LIKE ?
             OR ps.nama_pelanggaran LIKE ?
-            OR ps.nama_guru LIKE ?
+            OR g_pencatat.nama LIKE ?
             OR ps.keterangan LIKE ?
             OR ps.tindakan LIKE ?
         )
     ";
-
     $keyword = "%$cari%";
-
     for ($i = 0; $i < 6; $i++) {
         $params[] = $keyword;
         $types .= 's';
@@ -87,15 +93,15 @@ if ($status !== '') {
     $types .= 's';
 }
 
-// QUERY DATA RIWAYAT DENGAN JOIN KELAS YANG AKURAT
+// QUERY DATA RIWAYAT DENGAN JOIN KE TABEL KELAS AGAR NAMA KELAS VALID & MENYARING DATA TANPA KELAS
 $sql = "
     SELECT
         ps.id,
         ps.siswa_id,
         ps.nama_siswa,
         COALESCE(k.nama, ps.nama_kelas, 'Tanpa Kelas') AS nama_kelas,
-        ps.nama_pelanggaran,
-        ps.nama_guru,
+        COALESCE(tp.nama, ps.nama_pelanggaran, '-') AS nama_pelanggaran,
+        COALESCE(g_pencatat.nama, ps.nama_guru, 'Sistem / Wali Kelas') AS nama_guru,
         ps.tanggal,
         ps.keterangan,
         ps.poin,
@@ -103,8 +109,11 @@ $sql = "
         ps.status
     FROM t_pelanggaran_siswa ps
     LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = ps.siswa_id AND ks.status_aktif = 1
-    LEFT JOIN t_kelas k ON k.id = ks.kelas_id
+    LEFT JOIN t_kelas k ON k.id = COALESCE(ps.kelas_id, ks.kelas_id)
+    LEFT JOIN t_pelanggaran tp ON tp.id = ps.pelanggaran_id
+    LEFT JOIN t_guru g_pencatat ON g_pencatat.id = ps.guru_id
     $where
+    AND k.id IS NOT NULL
     ORDER BY ps.tanggal DESC, ps.id DESC
 ";
 
@@ -115,7 +124,6 @@ if (!$stmt) {
 }
 
 bindParams($stmt, $types, $params);
-
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
@@ -139,52 +147,16 @@ $result_status = mysqli_query($koneksi, $sql_status);
     <div class="row">
         <!-- SIDEBAR -->
        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
-
-            <h4 class="text-white fw-bold mb-4">
-                Pelanggaran Siswa
-            </h4>
+            <h4 class="text-white fw-bold mb-4">Pelanggaran Siswa</h4>
             <ul class="nav nav-pills flex-column">
-
-                <li class="nav-item mb-2">
-                    <a href="dashboard.php" class="nav-link text-white">
-                        <span class="fw-bold">Dashboard</span>
-                    </a>
-                </li>
-
-                <li class="nav-item mb-2">
-                    <a href="catatan_pelanggaran.php" class="nav-link text-white">
-                        <span class="fw-bold">Catatan Pelanggaran</span>
-                    </a>
-                </li>
-
-                <li class="nav-item mb-2">
-                    <a href="Tindakan.php" class="nav-link text-white">
-                        <span class="fw-bold">Tindakan</span>
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="rekap_poin.php" class="nav-link text-white">
-                        <span class="fw-bold">Rekap Poin</span>
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="riwayat.php" class="nav-link active">
-                        <span class="fw-bold">Riwayat</span>
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Laporan.php" class="nav-link text-white">
-                        <span class="fw-bold">Laporan</span>
-                    </a>
-                </li>
-
+                <li class="nav-item mb-2"><a href="dashboard.php" class="nav-link text-white"><span class="fw-bold">Dashboard</span></a></li>
+                <li class="nav-item mb-2"><a href="catatan_pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catatan Pelanggaran</span></a></li>
+                <li class="nav-item mb-2"><a href="Tindakan.php" class="nav-link text-white"><span class="fw-bold">Tindakan</span></a></li>
+                <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
+                <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link active"><span class="fw-bold">Riwayat</span></a></li>
+                <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a></li>
                 <hr class="text-secondary">
-
-                <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-danger">
-                        <span class="fw-bold">Logout</span>
-                    </a>
-                </li>
+                <li class="nav-item"><a href="logout.php" class="nav-link text-danger"><span class="fw-bold">Logout</span></a></li>
             </ul>
         </div>
         
@@ -192,9 +164,7 @@ $result_status = mysqli_query($koneksi, $sql_status);
         <main class="col-md-9 col-lg-10 p-4">
             <div class="mb-4">
                 <h3>Riwayat Pelanggaran</h3>
-                <p class="text-muted">
-                    Menampilkan seluruh riwayat pencatatan pelanggaran siswa.
-                </p>
+                <p class="text-muted">Menampilkan seluruh riwayat pencatatan pelanggaran siswa khusus kelas binaan Anda.</p>
             </div>
 
             <!-- FILTER -->
@@ -204,13 +174,7 @@ $result_status = mysqli_query($koneksi, $sql_status);
                     <form method="GET" class="row g-3">
                         <div class="col-md-8">
                             <label class="form-label">Pencarian</label>
-                            <input
-                                type="text"
-                                name="cari"
-                                class="form-control"
-                                placeholder="Cari nama siswa, kelas, pelanggaran..."
-                                value="<?= e($cari) ?>"
-                            >
+                            <input type="text" name="cari" class="form-control" placeholder="Cari nama siswa, kelas, pelanggaran..." value="<?= e($cari) ?>">
                         </div>
 
                         <div class="col-md-4">
@@ -218,10 +182,7 @@ $result_status = mysqli_query($koneksi, $sql_status);
                             <select name="status" class="form-select">
                                 <option value="">Semua</option>
                                 <?php while ($st = mysqli_fetch_assoc($result_status)): ?>
-                                    <option
-                                        value="<?= e($st['status']) ?>"
-                                        <?= $status === $st['status'] ? 'selected' : '' ?>
-                                    >
+                                    <option value="<?= e($st['status']) ?>" <?= $status === $st['status'] ? 'selected' : '' ?>>
                                         <?= e(ucfirst($st['status'])) ?>
                                     </option>
                                 <?php endwhile; ?>
@@ -229,12 +190,8 @@ $result_status = mysqli_query($koneksi, $sql_status);
                         </div>
 
                         <div class="col-12">
-                            <button type="submit" class="btn btn-primary">
-                                Cari
-                            </button>
-                            <a href="riwayat.php" class="btn btn-secondary">
-                                Reset
-                            </a>
+                            <button type="submit" class="btn btn-primary">Cari</button>
+                            <a href="riwayat.php" class="btn btn-secondary">Reset</a>
                         </div>
                     </form>
                 </div>
@@ -244,7 +201,6 @@ $result_status = mysqli_query($koneksi, $sql_status);
             <div class="card shadow-sm border-0">
                 <div class="card-body">
                     <h5 class="mb-3">Data Riwayat Pelanggaran</h5>
-
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped align-middle">
                             <thead class="table-dark">
@@ -261,7 +217,6 @@ $result_status = mysqli_query($koneksi, $sql_status);
                                     <th>Status</th>
                                 </tr>
                             </thead>
-
                             <tbody>
                             <?php if (mysqli_num_rows($result) > 0): ?>
                                 <?php $no = 1; ?>
@@ -272,11 +227,7 @@ $result_status = mysqli_query($koneksi, $sql_status);
                                         <td><?= e($row['nama_siswa']) ?></td>
                                         <td><?= e($row['nama_kelas']) ?></td>
                                         <td><?= e($row['nama_pelanggaran']) ?></td>
-                                        <td>
-                                            <span class="badge bg-primary">
-                                                <?= e($row['poin']) ?> Poin
-                                            </span>
-                                        </td>
+                                        <td><span class="badge bg-primary"><?= e($row['poin']) ?> Poin</span></td>
                                         <td><?= e($row['nama_guru']) ?></td>
                                         <td><?= e($row['keterangan']) ?></td>
                                         <td><?= e($row['tindakan']) ?></td>
@@ -291,17 +242,13 @@ $result_status = mysqli_query($koneksi, $sql_status);
                                                 $warna = 'primary';
                                             }
                                             ?>
-                                            <span class="badge bg-<?= $warna ?>">
-                                                <?= e(ucfirst($row['status'])) ?>
-                                            </span>
+                                            <span class="badge bg-<?= $warna ?>"><?= e(ucfirst($row['status'])) ?></span>
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="10" class="text-center">
-                                        Data riwayat pelanggaran tidak ditemukan.
-                                    </td>
+                                    <td colspan="10" class="text-center">Data riwayat pelanggaran untuk kelas Anda tidak ditemukan.</td>
                                 </tr>
                             <?php endif; ?>
                             </tbody>
@@ -309,7 +256,6 @@ $result_status = mysqli_query($koneksi, $sql_status);
                     </div>
                 </div>
             </div>
-
         </main>
     </div>
 </div>
