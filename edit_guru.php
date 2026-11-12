@@ -1,20 +1,17 @@
 <?php
 session_start();
 require_once "config/koneksi.php";
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-
 if ($id <= 0) {
     die("ID guru tidak valid.");
 }
 
-$stmt = $koneksi->prepare("SELECT * FROM t_guru WHERE id = ?");
+$stmt = $koneksi->prepare("SELECT * FROM t_guru WHERE id = ? LIMIT 1");
 $stmt->bind_param("i", $id);
 $stmt->execute();
-
-$result = $stmt->get_result();
-$guru = $result->fetch_assoc();
-
+$guru = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 
 if (!$guru) {
@@ -22,14 +19,12 @@ if (!$guru) {
 }
 
 $error = "";
-
 $nip = $guru['nip'];
 $nama = $guru['nama'];
 $email = $guru['email'] ?? "";
 $status = (string)$guru['status_aktif'];
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update"])) {
-
     $nip = trim($_POST["nip"] ?? "");
     $nama = trim($_POST["nama"] ?? "");
     $email = trim($_POST["email"] ?? "");
@@ -37,73 +32,66 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update"])) {
     $password_baru = $_POST["password_baru"] ?? "";
     $konfirmasi_password = $_POST["konfirmasi_password"] ?? "";
 
-    if ($nip === "" || $nama === "") {
-        $error = "NIP dan Nama Guru wajib diisi.";
-    } elseif (!ctype_digit($nip) || strlen($nip) > 18) {
-        $error = "NIP hanya boleh berisi angka dan maksimal 18 karakter.";
+    if ($nip === "" || $nama === "" || $email === "") {
+        $error = "NIP, Nama Guru, dan Email wajib diisi.";
+    } elseif (strlen($nip) > 30) {
+        $error = "NIP maksimal 30 karakter.";
     } elseif (!in_array($status, ["0", "1"], true)) {
         $error = "Status guru tidak valid.";
-    } elseif ($email !== "" && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Format email tidak valid.";
-    } elseif ($password_baru !== "" && $password_baru !== $konfirmasi_password) {
+    } elseif ($password_baru !== "" && strlen($password_baru) < 6) {
+        $error = "Password baru minimal 6 karakter.";
+    } elseif ($password_baru !== $konfirmasi_password) {
         $error = "Password baru dan konfirmasi password tidak cocok.";
     } else {
-
-        // Cek apakah NIP sudah digunakan oleh guru lain di database
         $stmtCek = $koneksi->prepare("SELECT id FROM t_guru WHERE nip = ? AND id != ?");
         $stmtCek->bind_param("si", $nip, $id);
         $stmtCek->execute();
         $stmtCek->store_result();
 
         if ($stmtCek->num_rows > 0) {
-            $error = "NIP sudah terdaftar oleh guru lain. Gunakan NIP yang berbeda.";
+            $error = "NIP sudah terdaftar oleh guru lain.";
             $stmtCek->close();
         } else {
             $stmtCek->close();
+            $user_id = (int)($guru['user_id'] ?? 0);
 
-            $statusInt = (int)$status;
+            try {
+                $koneksi->begin_transaction();
+                $statusInt = (int)$status;
 
-            // Jika password diisi, update password juga
-            if ($password_baru !== "") {
-                $hashed_password = password_hash($password_baru, PASSWORD_DEFAULT);
-                $stmt = $koneksi->prepare("
-                    UPDATE t_guru
-                    SET nip = ?, nama = ?, email = NULLIF(?, ''), password = ?, status_aktif = ?
-                    WHERE id = ?
-                ");
-                if (!$stmt) {
-                    die("Query gagal: " . $koneksi->error);
+                $stmtGuru = $koneksi->prepare("UPDATE t_guru SET nip = ?, nama = ?, email = ?, status_aktif = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
+                $stmtGuru->bind_param("sssii", $nip, $nama, $email, $statusInt, $id);
+                $stmtGuru->execute();
+                $stmtGuru->close();
+
+                // Akun login berada di t_users dan terhubung melalui t_guru.user_id.
+                if ($user_id <= 0) {
+                    throw new Exception("Akun login guru tidak terhubung. Periksa user_id pada tabel t_guru.");
                 }
-                $stmt->bind_param("ssssii", $nip, $nama, $email, $hashed_password, $statusInt, $id);
-            } else {
-                // Jika password kosong, biarkan password lama tidak berubah
-                $stmt = $koneksi->prepare("
-                    UPDATE t_guru
-                    SET nip = ?, nama = ?, email = NULLIF(?, ''), status_aktif = ?
-                    WHERE id = ?
-                ");
-                if (!$stmt) {
-                    die("Query gagal: " . $koneksi->error);
+
+                if ($password_baru !== "") {
+                    $password_hash = password_hash($password_baru, PASSWORD_DEFAULT);
+                    $stmtUser = $koneksi->prepare("UPDATE t_users SET name = ?, email = ?, password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
+                    $stmtUser->bind_param("sssi", $nama, $email, $password_hash, $user_id);
+                } else {
+                    $stmtUser = $koneksi->prepare("UPDATE t_users SET name = ?, email = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
+                    $stmtUser->bind_param("ssi", $nama, $email, $user_id);
                 }
-                $stmt->bind_param("sssii", $nip, $nama, $email, $statusInt, $id);
-            }
+                $stmtUser->execute();
+                if ($stmtUser->affected_rows === 0 && $stmtUser->errno) {
+                    throw new Exception($stmtUser->error);
+                }
+                $stmtUser->close();
 
-            if ($stmt->execute()) {
-                $stmt->close();
-                $koneksi->close();
-
+                $koneksi->commit();
                 header("Location: Kelola_Guru.php?pesan=diubah");
                 exit;
-
-            } else {
-                if ($stmt->errno == 1062) {
-                    $error = "NIP atau data unik lainnya sudah terdaftar.";
-                } else {
-                    $error = "Gagal mengubah data guru: " . $stmt->error;
-                }
+            } catch (Throwable $e) {
+                $koneksi->rollback();
+                $error = "Gagal mengubah data guru: " . $e->getMessage();
             }
-
-            $stmt->close();
         }
     }
 }
@@ -219,11 +207,9 @@ function e($nilai) {
                                     type="text"
                                     name="nip"
                                     class="form-control"
-                                    placeholder="Masukkan NIP (maks. 18 digit)"
+                                    placeholder="Masukkan NIP"
                                     value="<?= e($nip) ?>"
-                                    maxlength="18"
-                                    inputmode="numeric"
-                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                    maxlength="30"
                                     required
                                 >
                             </div>
@@ -259,9 +245,11 @@ function e($nilai) {
                                     type="password"
                                     name="password_baru"
                                     class="form-control"
-                                    placeholder="Kosongkan jika password tidak ingin diubah."
+                                    placeholder="Masukkan password baru jika ingin mengganti"
+                                    minlength="6"
+                                    autocomplete="new-password"
                                 >
-                                <small class="text-muted">Kosongkan jika password tidak ingin diubah.</small>
+                                <small class="text-muted">Jika diisi dan disimpan, password baru otomatis menggantikan password lama. Minimal 6 karakter.</small>
                             </div>
                         </div>
 
@@ -273,6 +261,8 @@ function e($nilai) {
                                     name="konfirmasi_password"
                                     class="form-control"
                                     placeholder="Ulangi password baru"
+                                    minlength="6"
+                                    autocomplete="new-password"
                                 >
                             </div>
 

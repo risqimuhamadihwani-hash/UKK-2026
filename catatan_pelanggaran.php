@@ -169,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
 
         $stmt->bind_param(
-            "iisiisiississis",
+            "iisisiisiississ",
             $tahun_id,
             $siswa_id,
             $nama_siswa,

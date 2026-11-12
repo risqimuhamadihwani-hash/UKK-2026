@@ -147,7 +147,7 @@ if ($role === 'guru') {
 
                 <?php if ($role === 'guru'): ?>
                     <!-- MENU KHUSUS GURU / WALI KELAS -->
-                    <li class="nav-item mb-2"><a href="Catatan_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catatan Pelanggaran</span></a></li>
+                    <li class="nav-item mb-2"><a href="catatan_pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catatan Pelanggaran</span></a></li>
                     <li class="nav-item mb-2"><a href="Tindakan.php" class="nav-link text-white"><span class="fw-bold">Tindakan</span></a></li>
                     <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
                     <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>

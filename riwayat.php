@@ -152,7 +152,7 @@ $result_status = mysqli_query($koneksi, $sql_status);
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a href="Catatan_Pelanggaran.php" class="nav-link text-white">
+                    <a href="catatan_pelanggaran.php" class="nav-link text-white">
                         <span class="fw-bold">Catatan Pelanggaran</span>
                     </a>
                 </li>

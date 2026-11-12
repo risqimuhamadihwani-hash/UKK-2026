@@ -1,22 +1,14 @@
 <?php
-// Tampilkan error jika ada untuk debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 session_start();
 require_once 'config/koneksi.php';
-
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-// CEK LOGIN
 if (!isset($_SESSION['id_user'])) {
     header("Location: login.php");
     exit;
 }
 
 $role = strtolower(trim($_SESSION['role'] ?? ''));
-
-// CEK ROLE GURU / WALI KELAS
 if ($role !== 'guru' && $role !== 'wali_kelas' && $role !== 'walikelas') {
     header("Location: dashboard.php");
     exit;
@@ -27,8 +19,31 @@ function e($data) {
 }
 
 $cari = trim($_GET['cari'] ?? '');
+$tanggal_mulai = trim($_GET['tanggal_mulai'] ?? '');
+$tanggal_selesai = trim($_GET['tanggal_selesai'] ?? '');
 
-// QUERY REKAP POIN DENGAN JOIN KELAS YANG AKURAT
+// Pilih tahun ajaran aktif sebagai nilai awal, tetapi izinkan pengguna mengganti tahun.
+$tahunList = $koneksi->query("SELECT id, nama, status_aktif FROM t_tahun_ajaran ORDER BY tanggal_mulai DESC, id DESC");
+$tahunAktif = $koneksi->query("SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 ORDER BY id DESC LIMIT 1")->fetch_assoc();
+$tahun_id = (int)($_GET['tahun_ajaran_id'] ?? ($tahunAktif['id'] ?? 0));
+if ($tahun_id < 1) {
+    $fallbackTahun = $koneksi->query("SELECT id FROM t_tahun_ajaran ORDER BY id DESC LIMIT 1")->fetch_assoc();
+    $tahun_id = (int)($fallbackTahun['id'] ?? 0);
+}
+
+// Validasi tanggal agar filter hanya menerima format YYYY-MM-DD.
+foreach (['tanggal_mulai' => $tanggal_mulai, 'tanggal_selesai' => $tanggal_selesai] as $namaField => $nilaiTanggal) {
+    if ($nilaiTanggal !== '') {
+        $tanggalObj = DateTime::createFromFormat('!Y-m-d', $nilaiTanggal);
+        if (!$tanggalObj || $tanggalObj->format('Y-m-d') !== $nilaiTanggal) {
+            die('Format tanggal tidak valid.');
+        }
+    }
+}
+if ($tanggal_mulai !== '' && $tanggal_selesai !== '' && $tanggal_selesai < $tanggal_mulai) {
+    die('Tanggal selesai tidak boleh sebelum tanggal mulai.');
+}
+
 $sql = "
     SELECT
         p.siswa_id,
@@ -37,47 +52,38 @@ $sql = "
         COUNT(*) AS jumlah_pelanggaran,
         SUM(p.poin) AS total_poin
     FROM t_pelanggaran_siswa p
-    LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = p.siswa_id AND ks.status_aktif = 1
-    LEFT JOIN t_kelas k ON k.id = ks.kelas_id
-    WHERE 1=1
+    LEFT JOIN t_kelas_siswa ks
+        ON ks.siswa_id = p.siswa_id
+        AND ks.tahun_ajaran_id = p.tahun_ajaran_id
+        AND ks.status_aktif = 1
+    LEFT JOIN t_kelas k ON k.id = COALESCE(p.kelas_id, ks.kelas_id)
+    WHERE p.tahun_ajaran_id = ?
 ";
-
-$params = [];
-$types = '';
+$params = [$tahun_id];
+$types = 'i';
 
 if ($cari !== '') {
-    $sql .= " AND (
-        p.nama_siswa LIKE ?
-        OR k.nama LIKE ?
-        OR p.nama_kelas LIKE ?
-    )";
-
+    $sql .= " AND (p.nama_siswa LIKE ? OR k.nama LIKE ? OR p.nama_kelas LIKE ?)";
     $keyword = "%$cari%";
-
-    $params[] = $keyword;
-    $params[] = $keyword;
-    $params[] = $keyword;
-
-    $types .= "sss";
+    array_push($params, $keyword, $keyword, $keyword);
+    $types .= 'sss';
+}
+if ($tanggal_mulai !== '') {
+    $sql .= " AND p.tanggal >= ?";
+    $params[] = $tanggal_mulai;
+    $types .= 's';
+}
+if ($tanggal_selesai !== '') {
+    $sql .= " AND p.tanggal <= ?";
+    $params[] = $tanggal_selesai;
+    $types .= 's';
 }
 
-$sql .= "
-    GROUP BY p.siswa_id, p.nama_siswa, nama_kelas
-    ORDER BY total_poin DESC, p.nama_siswa ASC
-";
-
-$stmt = mysqli_prepare($koneksi, $sql);
-
-if (!$stmt) {
-    die("Query rekap poin gagal: " . e(mysqli_error($koneksi)));
-}
-
-if (!empty($params)) {
-    mysqli_stmt_bind_param($stmt, $types, ...$params);
-}
-
-mysqli_stmt_execute($stmt);
-$result = mysqli_stmt_get_result($stmt);
+$sql .= " GROUP BY p.siswa_id, p.nama_siswa, nama_kelas ORDER BY total_poin DESC, p.nama_siswa ASC";
+$stmt = $koneksi->prepare($sql);
+$stmt->bind_param($types, ...$params);
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 
 <!DOCTYPE html>
@@ -107,7 +113,7 @@ $result = mysqli_stmt_get_result($stmt);
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a href="Catatan_Pelanggaran.php" class="nav-link text-white">
+                    <a href="catatan_pelanggaran.php" class="nav-link text-white">
                         <span class="fw-bold">Catatan Pelanggaran</span>
                     </a>
                 </li>
@@ -156,25 +162,35 @@ $result = mysqli_stmt_get_result($stmt);
             <!-- PENCARIAN -->
             <div class="card shadow-sm mb-4 border-0">
                 <div class="card-body">
-                    <form method="GET" class="row g-2">
-                        <div class="col-md-9">
-                            <input
-                                type="text"
-                                name="cari"
-                                class="form-control"
-                                placeholder="Cari nama siswa atau kelas..."
-                                value="<?= e($cari) ?>"
-                            >
-                        </div>
-
+                    <form method="GET" class="row g-3 align-items-end">
                         <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary">
-                                Cari
-                            </button>
-
-                            <a href="rekap_poin.php" class="btn btn-secondary">
-                                Reset
-                            </a>
+                            <label class="form-label">Tahun Ajaran</label>
+                            <select name="tahun_ajaran_id" class="form-select">
+                                <?php while ($th = $tahunList->fetch_assoc()): ?>
+                                    <option value="<?= (int)$th['id'] ?>" <?= $tahun_id === (int)$th['id'] ? 'selected' : '' ?>>
+                                        <?= e($th['nama']) ?><?= (int)$th['status_aktif'] === 1 ? ' (Aktif)' : '' ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Cari Siswa / Kelas</label>
+                            <input type="text" name="cari" class="form-control"
+                                   placeholder="Cari nama siswa atau kelas..." value="<?= e($cari) ?>">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Tanggal Mulai</label>
+                            <input type="date" name="tanggal_mulai" class="form-control"
+                                   value="<?= e($tanggal_mulai) ?>">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Tanggal Selesai</label>
+                            <input type="date" name="tanggal_selesai" class="form-control"
+                                   value="<?= e($tanggal_selesai) ?>">
+                        </div>
+                        <div class="col-md-2 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <a href="rekap_poin.php" class="btn btn-secondary">Reset</a>
                         </div>
                     </form>
                 </div>
@@ -183,7 +199,15 @@ $result = mysqli_stmt_get_result($stmt);
             <!-- TABEL REKAP -->
             <div class="card shadow-sm border-0">
                 <div class="card-body">
-                    <h5 class="mb-3">Data Rekap Poin Siswa</h5>
+                    <h5 class="mb-2">Data Rekap Poin Siswa</h5>
+                    <p class="text-muted small mb-3">
+                        <?php if ($tanggal_mulai !== '' || $tanggal_selesai !== ''): ?>
+                            Periode: <?= $tanggal_mulai !== '' ? e(date('d-m-Y', strtotime($tanggal_mulai))) : 'Awal data' ?>
+                            sampai <?= $tanggal_selesai !== '' ? e(date('d-m-Y', strtotime($tanggal_selesai))) : 'Sekarang' ?>
+                        <?php else: ?>
+                            Menampilkan seluruh periode data.
+                        <?php endif; ?>
+                    </p>
 
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped align-middle">

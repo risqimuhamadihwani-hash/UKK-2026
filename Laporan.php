@@ -26,6 +26,15 @@ if ($role === 'wali_kelas' || $role === 'walikelas') {
     $role = 'guru';
 }
 
+// Tahun ajaran berlaku untuk admin maupun guru.
+$tahunList = $koneksi->query("SELECT id, nama, status_aktif FROM t_tahun_ajaran ORDER BY tanggal_mulai DESC, id DESC");
+$tahunAktif = $koneksi->query("SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 ORDER BY id DESC LIMIT 1")->fetch_assoc();
+$tahun_id = (int)($_GET['tahun_ajaran_id'] ?? ($tahunAktif['id'] ?? 0));
+if ($tahun_id < 1) {
+    $fallbackTahun = $koneksi->query("SELECT id FROM t_tahun_ajaran ORDER BY id DESC LIMIT 1")->fetch_assoc();
+    $tahun_id = (int)($fallbackTahun['id'] ?? 0);
+}
+
 function e($data) {
     return htmlspecialchars((string)($data ?? ''), ENT_QUOTES, 'UTF-8');
 }
@@ -47,11 +56,6 @@ if ($role === 'guru') {
         $guru_id = (int)$dataGuru['id'];
     }
 
-    // Ambil Tahun Ajaran Aktif
-    $tahunQuery = $koneksi->query("SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
-    $tahunData = $tahunQuery ? $tahunQuery->fetch_assoc() : null;
-    $tahun_id = $tahunData ? (int)$tahunData['id'] : 1;
-
     // Ambil Kelas Wali Kelas
     $stmtWali = $koneksi->prepare(
         "SELECT kelas_id FROM t_wali_kelas 
@@ -66,28 +70,25 @@ if ($role === 'guru') {
     $kelas_id_wali = $waliData ? (int)$waliData['kelas_id'] : 0;
 }
 
-$where = [];
-$params = [];
-$types = '';
+$where = ["ps.tahun_ajaran_id = ?"];
+$params = [$tahun_id];
+$types = 'i';
 
-// Jika guru, batasi hanya menampilkan pelanggaran untuk siswa di kelas yang diwalikelaskan
+// Wali kelas melihat catatan siswa di kelas yang diampu; guru biasa melihat catatan yang dibuatnya.
 if ($role === 'guru') {
-    $siswaWaliIds = [0]; 
     if (isset($kelas_id_wali) && $kelas_id_wali > 0) {
-        $stmtSiswaWali = $koneksi->prepare(
-            "SELECT siswa_id FROM t_kelas_siswa WHERE kelas_id = ? AND tahun_ajaran_id = ? AND status_aktif = 1"
-        );
-        $stmtSiswaWali->bind_param("ii", $kelas_id_wali, $tahun_id);
-        $stmtSiswaWali->execute();
-        $resSW = $stmtSiswaWali->get_result();
-        while ($rSW = $resSW->fetch_assoc()) {
-            $siswaWaliIds[] = (int)$rSW['siswa_id'];
-        }
-        $stmtSiswaWali->close();
+        $where[] = "ps.siswa_id IN (
+            SELECT ks.siswa_id FROM t_kelas_siswa ks
+            WHERE ks.kelas_id = ? AND ks.tahun_ajaran_id = ? AND ks.status_aktif = 1
+        )";
+        $params[] = $kelas_id_wali;
+        $params[] = $tahun_id;
+        $types .= 'ii';
+    } else {
+        $where[] = "ps.guru_id = ?";
+        $params[] = $guru_id;
+        $types .= 'i';
     }
-    
-    $inClause = implode(',', $siswaWaliIds);
-    $where[] = "ps.siswa_id IN ($inClause)";
 }
 
 if ($cari !== '') {
@@ -132,7 +133,7 @@ $sql = "SELECT
             ps.status
         FROM t_pelanggaran_siswa ps
         LEFT JOIN t_siswa s ON s.id = ps.siswa_id
-        LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = ps.siswa_id AND ks.status_aktif = 1
+        LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = ps.siswa_id AND ks.tahun_ajaran_id = ps.tahun_ajaran_id AND ks.status_aktif = 1
         LEFT JOIN t_kelas k ON k.id = ks.kelas_id
         LEFT JOIN t_pelanggaran p ON p.id = ps.pelanggaran_id
         LEFT JOIN t_guru g ON g.id = ps.guru_id";
@@ -317,7 +318,7 @@ if ($status !== '') {
                     <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link active"><span class="fw-bold">Laporan</span></a></li>
                     <li class="nav-item mb-2"><a href="about_me.php" class="nav-link text-white"><span class="fw-bold">About Me</span></a></li>
                 <?php else: ?>
-                    <li class="nav-item mb-2"><a href="Catatan_Pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catatan Pelanggaran</span></a></li>
+                    <li class="nav-item mb-2"><a href="catatan_pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catatan Pelanggaran</span></a></li>
                     <li class="nav-item mb-2"><a href="Tindakan.php" class="nav-link text-white"><span class="fw-bold">Tindakan</span></a></li>
                     <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
                     <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>
@@ -366,7 +367,17 @@ if ($status !== '') {
                 <div class="card-body">
                     <h5 class="mb-3">Filter Laporan</h5>
                     <form method="GET" action="Laporan.php" class="row g-3">
-                        <div class="col-md-5">
+                        <div class="col-md-3">
+                            <label class="form-label">Tahun Ajaran:</label>
+                            <select name="tahun_ajaran_id" class="form-select">
+                                <?php while ($th = $tahunList->fetch_assoc()): ?>
+                                    <option value="<?= (int)$th['id'] ?>" <?= $tahun_id === (int)$th['id'] ? 'selected' : '' ?>>
+                                        <?= e($th['nama']) ?><?= (int)$th['status_aktif'] === 1 ? ' (Aktif)' : '' ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
                             <label class="form-label">Cari Data:</label>
                             <input type="text" name="cari" class="form-control"
                                    value="<?= e($cari) ?>"
