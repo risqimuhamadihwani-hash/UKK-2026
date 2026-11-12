@@ -22,15 +22,6 @@ $cari = trim($_GET['cari'] ?? '');
 $tanggal_mulai = trim($_GET['tanggal_mulai'] ?? '');
 $tanggal_selesai = trim($_GET['tanggal_selesai'] ?? '');
 
-// Pilih tahun ajaran aktif sebagai nilai awal, tetapi izinkan pengguna mengganti tahun.
-$tahunList = $koneksi->query("SELECT id, nama, status_aktif FROM t_tahun_ajaran ORDER BY tanggal_mulai DESC, id DESC");
-$tahunAktif = $koneksi->query("SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 ORDER BY id DESC LIMIT 1")->fetch_assoc();
-$tahun_id = (int)($_GET['tahun_ajaran_id'] ?? ($tahunAktif['id'] ?? 0));
-if ($tahun_id < 1) {
-    $fallbackTahun = $koneksi->query("SELECT id FROM t_tahun_ajaran ORDER BY id DESC LIMIT 1")->fetch_assoc();
-    $tahun_id = (int)($fallbackTahun['id'] ?? 0);
-}
-
 // Validasi tanggal agar filter hanya menerima format YYYY-MM-DD.
 foreach (['tanggal_mulai' => $tanggal_mulai, 'tanggal_selesai' => $tanggal_selesai] as $namaField => $nilaiTanggal) {
     if ($nilaiTanggal !== '') {
@@ -54,13 +45,12 @@ $sql = "
     FROM t_pelanggaran_siswa p
     LEFT JOIN t_kelas_siswa ks
         ON ks.siswa_id = p.siswa_id
-        AND ks.tahun_ajaran_id = p.tahun_ajaran_id
         AND ks.status_aktif = 1
     LEFT JOIN t_kelas k ON k.id = COALESCE(p.kelas_id, ks.kelas_id)
-    WHERE p.tahun_ajaran_id = ?
+    WHERE 1=1
 ";
-$params = [$tahun_id];
-$types = 'i';
+$params = [];
+$types = '';
 
 if ($cari !== '') {
     $sql .= " AND (p.nama_siswa LIKE ? OR k.nama LIKE ? OR p.nama_kelas LIKE ?)";
@@ -81,7 +71,9 @@ if ($tanggal_selesai !== '') {
 
 $sql .= " GROUP BY p.siswa_id, p.nama_siswa, nama_kelas ORDER BY total_poin DESC, p.nama_siswa ASC";
 $stmt = $koneksi->prepare($sql);
-$stmt->bind_param($types, ...$params);
+if (!empty($params)) {
+    $stmt->bind_param($types, ...$params);
+}
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
@@ -163,17 +155,7 @@ $result = $stmt->get_result();
             <div class="card shadow-sm mb-4 border-0">
                 <div class="card-body">
                     <form method="GET" class="row g-3 align-items-end">
-                        <div class="col-md-3">
-                            <label class="form-label">Tahun Ajaran</label>
-                            <select name="tahun_ajaran_id" class="form-select">
-                                <?php while ($th = $tahunList->fetch_assoc()): ?>
-                                    <option value="<?= (int)$th['id'] ?>" <?= $tahun_id === (int)$th['id'] ? 'selected' : '' ?>>
-                                        <?= e($th['nama']) ?><?= (int)$th['status_aktif'] === 1 ? ' (Aktif)' : '' ?>
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <label class="form-label">Cari Siswa / Kelas</label>
                             <input type="text" name="cari" class="form-control"
                                    placeholder="Cari nama siswa atau kelas..." value="<?= e($cari) ?>">
