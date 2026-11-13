@@ -145,14 +145,19 @@ if ($role === 'guru') {
                     </a>
                 </li>
 
-                <?php if ($role === 'guru'): ?>
-                    <!-- MENU KHUSUS GURU / WALI KELAS -->
-                    <li class="nav-item mb-2"><a href="catatan_pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catatan Pelanggaran</span></a></li>
-                    <li class="nav-item mb-2"><a href="Tindakan.php" class="nav-link text-white"><span class="fw-bold">Tindakan</span></a></li>
-                    <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
-                    <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>
-                    <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a></li>
-                <?php else: ?>
+<?php if ($role === 'guru'): ?>
+        <!-- MENU KHUSUS GURU / WALI KELAS -->
+        <li class="nav-item mb-2"><a href="catatan_pelanggaran.php" class="nav-link text-white"><span class="fw-bold">Catatan Pelanggaran</span></a></li>
+        <li class="nav-item mb-2"><a href="Tindakan.php" class="nav-link text-white"><span class="fw-bold">Tindakan</span></a></li>
+        <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
+        <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>
+        
+        <!-- MENU LAPORAN HANYA MUNCUL JIKA DIA WALI KELAS -->
+        <?php if ($is_wali_kelas): ?>
+            <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a></li>
+        <?php endif; ?>
+       
+    <?php else: ?>
                     <!-- MENU KHUSUS ADMIN -->
                     <li class="nav-item mb-2"><a href="Kelola_Siswa.php" class="nav-link text-white"><span class="fw-bold">Kelola Siswa</span></a></li>
                     <li class="nav-item mb-2"><a href="Kelola_Guru.php" class="nav-link text-white"><span class="fw-bold">Kelola Guru</span></a></li>

@@ -22,8 +22,39 @@ if ($role !== 'guru' && $role !== 'wali_kelas' && $role !== 'walikelas') {
     exit;
 }
 
+// Jika role wali kelas, samakan penanganan hak aksesnya seperti guru
+if ($role === 'wali_kelas' || $role === 'walikelas') {
+    $role = 'guru';
+}
+
 function e($data) {
     return htmlspecialchars((string)($data ?? ''), ENT_QUOTES, 'UTF-8');
+}
+
+$session_id = (int)($_SESSION['id_user'] ?? 0);
+
+// Ambil tahun ajaran aktif
+$tahunQuery = $koneksi->query("SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
+$tahunData = $tahunQuery ? $tahunQuery->fetch_assoc() : null;
+$tahun_id = $tahunData ? (int)$tahunData['id'] : 1;
+
+// DETEKSI APAKAH GURU INI WALI KELAS
+$is_wali_kelas = false;
+$stmtWali = $koneksi->prepare(
+    "SELECT k.nama AS nama_kelas 
+     FROM t_guru g
+     JOIN t_wali_kelas wk ON wk.guru_id = g.id AND wk.tahun_ajaran_id = ? AND wk.status_aktif = 1
+     JOIN t_kelas k ON k.id = wk.kelas_id
+     WHERE g.user_id = ? OR g.id = ?
+     LIMIT 1"
+);
+$stmtWali->bind_param("iii", $tahun_id, $session_id, $session_id);
+$stmtWali->execute();
+$resWali = $stmtWali->get_result()->fetch_assoc();
+$stmtWali->close();
+
+if ($resWali && !empty($resWali['nama_kelas'])) {
+    $is_wali_kelas = true;
 }
 
 $pesan = '';
@@ -86,8 +117,6 @@ $sql = "
 $params = [];
 $types = '';
 
-// Filter status: Jika user memilih status tertentu, gunakan itu. 
-// Jika tidak, secara default sembunyikan yang sudah 'selesai' agar pindah ke riwayat.
 if (in_array($status_filter, ['tercatat', 'diproses', 'selesai'], true)) {
     $sql .= " AND p.status = ?";
     $params[] = $status_filter;
@@ -161,9 +190,14 @@ $result = mysqli_stmt_get_result($stmt);
                 <li class="nav-item mb-2">
                     <a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a>
                 </li>
-                <li class="nav-item mb-2">
-                    <a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a>
-                </li>
+                
+                <!-- MENU LAPORAN HANYA MUNCUL JIKA WALI KELAS -->
+                <?php if ($is_wali_kelas): ?>
+                    <li class="nav-item mb-2">
+                        <a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a>
+                    </li>
+                <?php endif; ?>
+
                 <hr class="text-secondary">
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger"><span class="fw-bold">Logout</span></a>

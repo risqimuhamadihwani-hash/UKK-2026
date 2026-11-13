@@ -159,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $kategori_id = (int) ($pelanggaran['pelanggaran_kategori_id'] ?? 0);
         $poin = (int) $pelanggaran['poin'];
         $status = 'Tercatat';
-        $tindakan = ''; // Dikosongkan karena form tindakan dihilangkan
+        $tindakan = ''; 
 
         // SIMPAN KE DATABASE
         $stmt = $koneksi->prepare(
@@ -229,7 +229,7 @@ $pelanggaranList = $koneksi->query(
      ORDER BY CAST(SUBSTRING(kode, 4) AS UNSIGNED) ASC"
 );
 
-// QUERY RIWAYAT DENGAN JOIN AGAR NAMA KELAS & JENIS PELANGGARAN MUNCUL DENGAN BENAR
+// QUERY RIWAYAT
 $riwayatList = $koneksi->query(
     "SELECT ps.*, 
             COALESCE(k.nama, ps.nama_kelas, '-') AS nama_kelas_fix, 
@@ -267,7 +267,12 @@ $riwayatList = $koneksi->query(
                 <li class="nav-item mb-2"><a href="Tindakan.php" class="nav-link text-white"><span class="fw-bold">Tindakan</span></a></li>
                 <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
                 <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>
-                <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a></li>
+                
+                <!-- MENU LAPORAN HANYA MUNCUL JIKA WALI KELAS -->
+                <?php if ($is_wali_kelas): ?>
+                    <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a></li>
+                <?php endif; ?>
+
                 <hr class="text-secondary">
                 <li class="nav-item"><a href="logout.php" class="nav-link text-danger"><span class="fw-bold">Logout</span></a></li>
             </ul>

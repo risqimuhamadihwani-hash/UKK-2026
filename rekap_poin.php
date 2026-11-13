@@ -18,6 +18,32 @@ function e($data) {
     return htmlspecialchars((string)($data ?? ''), ENT_QUOTES, 'UTF-8');
 }
 
+$session_id = (int)($_SESSION['id_user'] ?? 0);
+
+// Ambil tahun ajaran aktif
+$tahunQuery = $koneksi->query("SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
+$tahunData = $tahunQuery ? $tahunQuery->fetch_assoc() : null;
+$tahun_id = $tahunData ? (int)$tahunData['id'] : 1;
+
+// DETEKSI APAKAH USER ADALAH WALI KELAS
+$is_wali_kelas = false;
+$stmtWali = $koneksi->prepare(
+    "SELECT k.nama AS nama_kelas 
+     FROM t_guru g
+     JOIN t_wali_kelas wk ON wk.guru_id = g.id AND wk.tahun_ajaran_id = ? AND wk.status_aktif = 1
+     JOIN t_kelas k ON k.id = wk.kelas_id
+     WHERE g.user_id = ? OR g.id = ?
+     LIMIT 1"
+);
+$stmtWali->bind_param("iii", $tahun_id, $session_id, $session_id);
+$stmtWali->execute();
+$resWali = $stmtWali->get_result()->fetch_assoc();
+$stmtWali->close();
+
+if ($resWali && !empty($resWali['nama_kelas'])) {
+    $is_wali_kelas = true;
+}
+
 $cari = trim($_GET['cari'] ?? '');
 $tanggal_mulai = trim($_GET['tanggal_mulai'] ?? '');
 $tanggal_selesai = trim($_GET['tanggal_selesai'] ?? '');
@@ -125,11 +151,15 @@ $result = $stmt->get_result();
                         <span class="fw-bold">Riwayat</span>
                     </a>
                 </li>
-                <li class="nav-item mb-2">
-                    <a href="Laporan.php" class="nav-link text-white">
-                        <span class="fw-bold">Laporan</span>
-                    </a>
-                </li>
+                
+                <!-- MENU LAPORAN HANYA MUNCUL JIKA WALI KELAS -->
+                <?php if ($is_wali_kelas): ?>
+                    <li class="nav-item mb-2">
+                        <a href="Laporan.php" class="nav-link text-white">
+                            <span class="fw-bold">Laporan</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
 
                 <hr class="text-secondary">
 

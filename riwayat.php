@@ -1,4 +1,8 @@
 <?php
+// Tampilkan error jika ada untuk debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 require_once 'config/koneksi.php';
 
@@ -31,6 +35,35 @@ function bindParams($stmt, $types, &$params) {
     }
 }
 
+$session_id = (int)($_SESSION['id_user'] ?? 0);
+
+// Ambil tahun ajaran aktif
+$tahunQuery = $koneksi->query("SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
+$tahunData = $tahunQuery ? $tahunQuery->fetch_assoc() : null;
+$tahun_id = $tahunData ? (int)$tahunData['id'] : 1;
+
+// DETEKSI APAKAH USER ADALAH WALI KELAS
+$is_wali_kelas = false;
+if ($role === 'walikelas') {
+    $is_wali_kelas = true;
+} else {
+    // Cek apakah guru biasa ternyata memegang wali kelas di tahun ajaran aktif
+    $stmtWali = $koneksi->prepare(
+        "SELECT k.nama AS nama_kelas 
+         FROM t_guru g
+         JOIN t_wali_kelas wk ON wk.guru_id = g.id AND wk.tahun_ajaran_id = ? AND wk.status_aktif = 1
+         JOIN t_kelas k ON k.id = wk.kelas_id
+         WHERE g.user_id = ? OR g.id = ?
+         LIMIT 1"
+    );
+    $stmtWali->bind_param("iii", $tahun_id, $session_id, $session_id);
+    $stmtWali->execute();
+    if ($stmtWali->get_result()->num_rows > 0) {
+        $is_wali_kelas = true;
+    }
+    $stmtWali->close();
+}
+
 // FILTER PENCARIAN
 $cari = trim($_GET['cari'] ?? '');
 $status = trim($_GET['status'] ?? '');
@@ -40,7 +73,7 @@ $where = " WHERE 1=1 ";
 $params = [];
 $types = '';
 
-// KARENA LOGIN SEBAGAI WALI KELAS, BATASI HANYA KELAS YANG DIAKUI WALI KELAS TERSEBUT DAN VALID (BUKAN 'BELUM DITEMPATKAN')
+// KARENA LOGIN SEBAGAI WALI KELAS, BATASI HANYA KELAS YANG DIAKUI WALI KELAS TERSEBUT
 if ($role === 'walikelas') {
     $where .= "
         AND (
@@ -62,8 +95,8 @@ if ($role === 'walikelas') {
             )
         )
     ";
-    $params[] = (int) $_SESSION['id_user'];
-    $params[] = (int) $_SESSION['id_user'];
+    $params[] = $session_id;
+    $params[] = $session_id;
     $types .= 'ii';
 }
 
@@ -146,7 +179,7 @@ $result_status = mysqli_query($koneksi, $sql_status);
 <div class="container-fluid">
     <div class="row">
         <!-- SIDEBAR -->
-       <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
+        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
             <h4 class="text-white fw-bold mb-4">Pelanggaran Siswa</h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2"><a href="dashboard.php" class="nav-link text-white"><span class="fw-bold">Dashboard</span></a></li>
@@ -154,7 +187,12 @@ $result_status = mysqli_query($koneksi, $sql_status);
                 <li class="nav-item mb-2"><a href="Tindakan.php" class="nav-link text-white"><span class="fw-bold">Tindakan</span></a></li>
                 <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
                 <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link active"><span class="fw-bold">Riwayat</span></a></li>
-                <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a></li>
+                
+                <!-- MENU LAPORAN HANYA MUNCUL JIKA WALI KELAS -->
+                <?php if ($is_wali_kelas): ?>
+                    <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a></li>
+                <?php endif; ?>
+
                 <hr class="text-secondary">
                 <li class="nav-item"><a href="logout.php" class="nav-link text-danger"><span class="fw-bold">Logout</span></a></li>
             </ul>
