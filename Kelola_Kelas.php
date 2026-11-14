@@ -1,12 +1,19 @@
 <?php
+session_start();
 require_once __DIR__ . '/config/koneksi.php';
 
+// Cek apakah user sudah login
+if (!isset($_SESSION['id_user'])) {
+    header("Location: login.php");
+    exit;
+}
+
 $sql = "
-     SELECT id, 
-     nama, 
-     tingkat, 
-     jurusan,
-     status_aktif
+    SELECT id, 
+    nama, 
+    tingkat, 
+    jurusan,
+    status_aktif
     FROM t_kelas
     ORDER BY id ASC";
 
@@ -20,88 +27,85 @@ if (!$result) {
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <meta charset="UTF-8">
-    <title>Kelola Kelas</title>
-
-    <link href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css"
-          rel="stylesheet">
-          
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kelola Kelas - JusticeAdmin</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- DataTables Bootstrap 5 CSS -->
+    <link href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 </head>
-<body>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-
+<body class="bg-light">
 
 <div class="container-fluid">
     <div class="row">
         <!-- SIDEBAR -->
-
-<div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
-            <h4 class="text-white fw-bold mb-4 ">
-            Pelanggaran Siswa
+        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
+            <h4 class="text-white fw-bold mb-4">
+                Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Dashboard</h7> 
+                        <span class="fw-bold">Dashboard</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Siswa.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Siswa</h7> 
+                        <span class="fw-bold">Kelola Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Guru.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Guru</h7> 
+                        <span class="fw-bold">Kelola Guru</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kelas.php" class="nav-link active">
-                    <h7 class="fw-bold mb-4">Kelola Kelas</h7> 
+                        <span class="fw-bold">Kelola Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Tahun Ajaran</h7> 
+                        <span class="fw-bold">Kelola Tahun Ajaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Penempatan Siswa</h7> 
+                        <span class="fw-bold">Kelola Penempatan Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Wali Kelas</h7> 
+                        <span class="fw-bold">Kelola Wali Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kategori Pelanggaran</h7> 
+                        <span class="fw-bold">Kelola Kategori Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Jenis Pelanggaran</h7> 
+                        <span class="fw-bold">Kelola Jenis Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Laporan</h7> 
+                        <span class="fw-bold">Laporan</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">About Me</h7> 
+                        <span class="fw-bold">About Me</span> 
                     </a>
                 </li>
                 <hr class="text-secondary">
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                    <h7 class="fw-bold mb-4">Logout</h7> 
+                        <span class="fw-bold">Logout</span> 
                     </a>
                 </li>
             </ul>
@@ -109,8 +113,8 @@ if (!$result) {
 
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
-        <h1>Kelola Kelas</h1>
 
+            <h1><strong>Kelola Kelas</strong></h1> 
             <p>Halaman untuk mengelola data kelas</p>
 
             <div class="mb-3">
@@ -118,74 +122,84 @@ if (!$result) {
                     + Tambah Kelas
                 </a>
                 <a href="dashboard.php" class="btn btn-dark">
-                     Kembali ke Dashboard
+                    Kembali ke Dashboard
                 </a>
             </div>
 
-            <!-- NOTIFIKASI BERHASIL DISIMPAN DI SINI -->
-            <?php if (isset($_GET['pesan']) && $_GET['pesan'] === 'berhasil'): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    Kelas Berhasil Ditambahkan.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+            <!-- NOTIFIKASI BERHASIL / DIUBAH / DIHAPUS -->
+            <?php if (isset($_GET['pesan'])): ?>
+                <?php if ($_GET['pesan'] === 'berhasil'): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Data Kelas Berhasil Ditambahkan!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php elseif ($_GET['pesan'] === 'diubah' || $_GET['pesan'] === 'edit'): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Data Kelas Berhasil Diperbarui!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php elseif ($_GET['pesan'] === 'dihapus' || $_GET['pesan'] === 'hapus'): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Data Kelas Berhasil Dihapus!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
 
-    <div class="table-responsive">
-    <table id="tabelKelas"
-           class="table table-hover table-striped table-bordered align-middle">
+            <div class="table-responsive">
+                <table id="tabelKelas" class="table table-hover table-striped table-bordered align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nama Kelas</th>
+                            <th>Tingkat</th>
+                            <th>Jurusan</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while ($kelas = $result->fetch_assoc()) { ?>
+                        <tr>
+                            <td><?= htmlspecialchars($kelas['id']) ?></td>
+                            <td><?= htmlspecialchars($kelas['nama']) ?></td>
+                            <td><?= htmlspecialchars($kelas['tingkat']) ?></td>
+                            <td><?= htmlspecialchars($kelas['jurusan']) ?></td>
+                            <td>
+                                <?php if ((int)$kelas['status_aktif'] === 1) { ?>
+                                    <span class="badge bg-success">Aktif</span>
+                                <?php } else { ?>
+                                    <span class="badge bg-secondary">Tidak Aktif</span>
+                                <?php } ?>
+                            </td>
+                            <td>
+                                <a href="edit_kelas.php?id=<?= (int)$kelas['id'] ?>"
+                                   class="btn btn-warning btn-sm">
+                                    Edit
+                                </a>
 
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Nama Kelas</th>
-                <th>Tingkat</th>
-                <th>Jurusan</th>
-                <th>Status</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
+                                <a href="hapus_kelas.php?id=<?= (int)$kelas['id'] ?>"
+                                   onclick="return confirm('Yakin ingin menghapus kelas ini?')"
+                                   class="btn btn-danger btn-sm">
+                                    Hapus
+                                </a>
+                            </td>
+                        </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
 
-        <tbody>
-            <?php while ($kelas = $result->fetch_assoc()) { ?>
-            <tr>
-                <td><?= htmlspecialchars($kelas['id']) ?></td>
-                <td><?= htmlspecialchars($kelas['nama']) ?></td>
-                <td><?= htmlspecialchars($kelas['tingkat']) ?></td>
-                <td><?= htmlspecialchars($kelas['jurusan']) ?></td>
-                <td>
-                    <?php if ((int)$kelas['status_aktif'] === 1) { ?>
-                        <span class="badge bg-success">Aktif</span>
-                    <?php } else { ?>
-                        <span class="badge bg-secondary">Tidak Aktif</span>
-                    <?php } ?>
-                </td>
-                <td>
-                    <a href="edit_kelas.php?id=<?= (int)$kelas['id'] ?>"
-                       class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
-
-                    <a href="hapus_kelas.php?id=<?= (int)$kelas['id'] ?>"
-                       onclick="return confirm('Yakin ingin menghapus kelas ini?')"
-                       class="btn btn-danger btn-sm">
-                        Hapus
-                    </a>
-                </td>
-            </tr>
-            <?php } ?>
-        </tbody>
-    </table>
-
-
-            </main>
-        </div>
+        </main>
     </div>
 </div>
 
+<!-- jQuery & Bootstrap 5 Bundle JS -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- DataTables JS -->
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
-
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
@@ -193,13 +207,11 @@ $(document).ready(function () {
     $('#tabelKelas').DataTable({
         pageLength: 10,
         lengthMenu: [5, 10, 25, 50, 100],
-
         ordering: true,
         order: [[0, 'asc']],
         searching: true,
         paging: true,
         info: true,
-
         columnDefs: [
             {
                 targets: 5,
@@ -207,16 +219,14 @@ $(document).ready(function () {
                 searchable: false
             }
         ],
-
         language: {
             search: "Cari:",
-            lengthMenu: "Tampilkan _MENU_ data",
+            lengthMenu: "Tampilkan _MENU_ data Kelas",
             info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
             infoEmpty: "Tidak ada data yang ditampilkan",
             infoFiltered: "(difilter dari _MAX_ total data)",
             zeroRecords: "Data kelas tidak ditemukan",
             emptyTable: "Belum ada data kelas",
-
             paginate: {
                 first: "Pertama",
                 last: "Terakhir",

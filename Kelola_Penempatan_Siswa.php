@@ -1,13 +1,35 @@
 <?php
+// INISIASI SESSION & KONEKSI DATABASE
 session_start();
-include 'config/koneksi.php';
+require_once __DIR__ . '/config/koneksi.php';
 
+// Cek apakah user sudah login atau belum
 if (!isset($_SESSION['id_user'])) {
     header("Location: login.php");
     exit;
 }
 
-// QUERY DATA PENEMPATAN SISWA
+// Ambil statistik penempatan siswa
+$countTotalPenempatan = 0;
+$countBelumDitempatkan = 0;
+$countTahunAktif = 0;
+
+$resTotal = $koneksi->query("SELECT COUNT(*) as total FROM t_kelas_siswa");
+if ($resTotal) {
+    $countTotalPenempatan = $resTotal->fetch_assoc()['total'];
+}
+
+$resBelum = $koneksi->query("SELECT COUNT(*) as total FROM t_siswa s LEFT JOIN t_kelas_siswa ks ON s.id = ks.siswa_id WHERE ks.id IS NULL");
+if ($resBelum) {
+    $countBelumDitempatkan = $resBelum->fetch_assoc()['total'];
+}
+
+$resTahun = $koneksi->query("SELECT COUNT(*) as total FROM t_tahun_ajaran WHERE status_aktif = 1");
+if ($resTahun) {
+    $countTahunAktif = $resTahun->fetch_assoc()['total'];
+}
+
+// QUERY DATA PENEMPATAN SISWA (Status disinkronkan langsung dari t_siswa / Kelola Siswa)
 $data = mysqli_query(
     $koneksi,
     "SELECT
@@ -16,13 +38,17 @@ $data = mysqli_query(
         s.nama AS nama_siswa,
         ta.nama AS tahun_ajaran,
         k.nama AS nama_kelas,
-        ks.status_aktif
+        s.status_aktif AS status_aktif
     FROM t_kelas_siswa ks
     INNER JOIN t_siswa s ON ks.siswa_id = s.id
     INNER JOIN t_tahun_ajaran ta ON ks.tahun_ajaran_id = ta.id
     INNER JOIN t_kelas k ON ks.kelas_id = k.id
     ORDER BY ks.id ASC"
 );
+
+if (!$data) {
+    die("Query gagal: " . $koneksi->error);
+}
 ?>
 
 <!DOCTYPE html>
@@ -49,63 +75,63 @@ $data = mysqli_query(
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Dashboard</h7> 
+                    <span class="fw-bold">Dashboard</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Siswa.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Siswa</h7> 
+                    <span class="fw-bold">Kelola Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Guru.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Guru</h7> 
+                    <span class="fw-bold">Kelola Guru</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kelas.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kelas</h7> 
+                    <span class="fw-bold">Kelola Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Tahun Ajaran</h7> 
+                    <span class="fw-bold">Kelola Tahun Ajaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Penempatan_Siswa.php" class="nav-link active">
-                    <h7 class="fw-bold mb-4">Kelola Penempatan Siswa</h7> 
+                    <span class="fw-bold">Kelola Penempatan Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Wali Kelas</h7> 
+                    <span class="fw-bold">Kelola Wali Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kategori Pelanggaran</h7> 
+                    <span class="fw-bold">Kelola Kategori Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Jenis Pelanggaran</h7> 
+                    <span class="fw-bold">Kelola Jenis Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Laporan</h7> 
+                    <span class="fw-bold">Laporan</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">About Me</h7> 
+                    <span class="fw-bold">About Me</span> 
                     </a>
                 </li>
                 <hr class="text-secondary">
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                    <h7 class="fw-bold mb-4">Logout</h7> 
+                    <span class="fw-bold">Logout</span> 
                     </a>
                 </li>
             </ul>
@@ -113,8 +139,31 @@ $data = mysqli_query(
 
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
-            <h1>Penempatan Siswa</h1>
-            <p class="text-muted">Halaman untuk mengelola penempatan siswa ke kelas</p>
+
+            <h1><strong>Kelola Penempatan Siswa</strong></h1> 
+            <p>Halaman untuk mengelola penempatan siswa ke kelas</p>
+
+            <!-- KARTU STATISTIK PENEMPATAN SISWA (Minimalis Tanpa Gambar/Ikon) -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0 p-3 h-100">
+                        <span class="text-muted small mb-1">Total Penempatan</span>
+                        <h2 class="fw-bold mb-0 text-primary"><?= $countTotalPenempatan ?></h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0 p-3 h-100">
+                        <span class="text-muted small mb-1">Siswa Belum Ditempatkan</span>
+                        <h2 class="fw-bold mb-0 text-success"><?= $countBelumDitempatkan ?></h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0 p-3 h-100">
+                        <span class="text-muted small mb-1">Tahun Ajaran Aktif</span>
+                        <h2 class="fw-bold mb-0 text-warning"><?= $countTahunAktif ?></h2>
+                    </div>
+                </div>
+            </div>
 
             <div class="mb-3">
                 <a href="Tambah_Penempatan_Siswa.php" class="btn btn-primary">
@@ -125,15 +174,28 @@ $data = mysqli_query(
                 </a>
             </div>
 
-            <!-- NOTIFIKASI BERHASIL -->
-            <?php if (isset($_GET['pesan']) && $_GET['pesan'] === 'berhasil'): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                 Siswa berhasil Ditempatkan
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+            <!-- NOTIFIKASI BERHASIL / DIUBAH / DIHAPUS -->
+            <?php if (isset($_GET['pesan'])): ?>
+                <?php if ($_GET['pesan'] === 'berhasil'): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Siswa Berhasil Ditempatkan!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php elseif ($_GET['pesan'] === 'diubah' || $_GET['pesan'] === 'edit'): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Data Penempatan Siswa Berhasil Diperbarui!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php elseif ($_GET['pesan'] === 'dihapus' || $_GET['pesan'] === 'hapus'): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Data Penempatan Siswa Berhasil Dihapus!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
 
-            <div class="card shadow-sm border-0 p-3">
+            <div class="table-responsive">
+
                 <table id="tabelPenempatan" class="table table-hover table-striped table-bordered align-middle">
                     <thead class="table-dark">
                         <tr>
@@ -195,14 +257,14 @@ $(document).ready(function () {
         info: true,
         columnDefs: [
             {
-                targets: [0, 5, 6], // Menyesuaikan indeks kolom non-urutan (No, Status, Aksi)
+                targets: [0, 5, 6], // Kolom No, Status, Aksi tidak bisa di-sort dan search
                 orderable: false,
                 searchable: false
             }
         ],
         language: {
             search: "Cari:",
-            lengthMenu: "Tampilkan _MENU_ data",
+            lengthMenu: "Tampilkan _MENU_ data Penempatan Siswa",
             info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
             infoEmpty: "Tidak ada data yang ditampilkan",
             infoFiltered: "(difilter dari _MAX_ total data)",

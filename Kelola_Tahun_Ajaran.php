@@ -113,7 +113,8 @@ if (!$result) {
 
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
-            <h1>Kelola Tahun Ajaran</h1>
+
+            <h1><strong>Kelola Tahun Ajaran</strong></h1> 
 
             <p>Halaman untuk mengelola data tahun ajaran</p>
 
@@ -227,7 +228,7 @@ if (!$result) {
 
             language: {
                 search: "Cari:",
-                lengthMenu: "Tampilkan _MENU_ data",
+                lengthMenu: "Tampilkan _MENU_ data Tahun Ajaran",
                 info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
                 infoEmpty: "Tidak ada data yang ditampilkan",
                 infoFiltered: "(difilter dari _MAX_ total data)",

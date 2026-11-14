@@ -372,7 +372,6 @@ $riwayatList = $koneksi->query(
                                 <th>Pelanggaran</th>
                                 <th>Poin</th>
                                 <th>Catatan</th>
-                                <th>Tindakan</th>
                                 <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
@@ -388,7 +387,6 @@ $riwayatList = $koneksi->query(
                                         <td><?= e($row['nama_pelanggaran_fix']) ?></td>
                                         <td><span class="badge bg-danger"><?= (int)$row['poin'] ?></span></td>
                                         <td><?= e($row['keterangan']) ?></td>
-                                        <td><?= e($row['tindakan']) ?></td>
                                         <td>
                                             <?php 
                                                 $st = strtolower($row['status']);
@@ -407,7 +405,7 @@ $riwayatList = $koneksi->query(
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="10" class="text-center text-muted py-3">Belum ada catatan pelanggaran.</td>
+                                    <td colspan="9" class="text-center text-muted py-3">Belum ada catatan pelanggaran.</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>

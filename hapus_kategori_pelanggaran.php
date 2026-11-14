@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 include 'config/koneksi.php';
@@ -35,7 +34,8 @@ if (mysqli_stmt_execute($stmt)) {
     mysqli_stmt_close($stmt);
 
     if ($jumlah > 0) {
-        header("Location: Kelola_Kategori_Pelanggaran.php");
+        // DITAMBAHKAN ?pesan=dihapus AGAR NOTIFIKASI MUNCUL DI KELOLA KATEGORI
+        header("Location: Kelola_Kategori_Pelanggaran.php?pesan=dihapus");
         exit;
     }
 

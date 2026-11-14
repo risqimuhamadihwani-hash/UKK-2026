@@ -364,8 +364,8 @@ if ($status !== '') {
         <main class="col-md-9 col-lg-10 p-4">
 
             <div class="mb-4">
-                <h3>Laporan Pelanggaran Siswa</h3>
-                <p class="text-muted mb-4">Rekap data pelanggaran siswa.</p>
+                <h1><strong>Laporan Pelanggaran Siswa</strong></h1>
+                <p>Rekap data pelanggaran siswa.</p>
             </div>
 
             <!-- RINGKASAN LAPORAN -->
@@ -522,7 +522,7 @@ $(document).ready(function () {
         dom: '<"row mb-3"<"col-md-6"l><"col-md-6"f>>rt<"row mt-3 align-items-center"<"col-md-6"i><"col-md-6 d-flex justify-content-end"p>>',
         language: {
             search: "Cari:",
-            lengthMenu: "Tampilkan _MENU_ data",
+            lengthMenu: "Tampilkan _MENU_ data Laporan",
             info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
             infoEmpty: "Tidak ada data yang ditampilkan",
             infoFiltered: "(disaring dari _MAX_ total data)",

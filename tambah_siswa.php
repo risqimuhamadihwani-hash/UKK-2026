@@ -212,11 +212,12 @@ function e($data) {
 
                     <form method="POST">
                         <div class="mb-3">
-                            <label class="form-label">NIS</label>
+                            <label class="form-label">NIS (Maxsimal 15 Angka)</label>
                             <input
                                 type="text"
                                 name="nis"
                                 class="form-control"
+                                placeholder="Masukkan NIS"
                                 maxlength="15"
                                 inputmode="numeric"
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
@@ -226,11 +227,12 @@ function e($data) {
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">NISN</label>
+                            <label class="form-label">NISN (Maxsimal 10 Angka)</label>
                             <input
                                 type="text"
                                 name="nisn"
                                 class="form-control"
+                                placeholder="Masukkan NISN"
                                 maxlength="10"
                                 inputmode="numeric"
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
@@ -244,6 +246,7 @@ function e($data) {
                                 type="text"
                                 name="nama"
                                 class="form-control"
+                                placeholder="Masukkan Nama Lengkap Siswa"
                                 value="<?= e($nama) ?>"
                                 required
                             >
@@ -274,6 +277,7 @@ function e($data) {
                             <textarea
                                 name="alamat"
                                 class="form-control"
+                                placeholder="Masukkan Alamat Lengkap Siswa"
                                 rows="3"
                             ><?= e($alamat) ?></textarea>
                         </div>

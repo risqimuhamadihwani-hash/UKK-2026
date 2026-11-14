@@ -8,7 +8,8 @@ if (isset($_GET['id'])) {
     mysqli_stmt_bind_param($stmt, "i", $id);
 
     if (mysqli_stmt_execute($stmt)) {
-        header("Location: Kelola_Siswa.php");
+        // DIUBAH: Menambahkan parameter ?pesan=hapus di sini
+        header("Location: Kelola_Siswa.php?pesan=hapus");
         exit;
     } else {
         echo "Gagal menghapus data siswa: " . mysqli_error($koneksi);

@@ -1,4 +1,5 @@
 <?php
+// INISIASI SESSION & KONEKSI DATABASE
 session_start();
 include 'config/koneksi.php';
 
@@ -21,7 +22,6 @@ if (isset($_POST['simpan'])) {
     $siswa_id = (int) $_POST['siswa_id'];
     $tahun_ajaran_id = $tahun_ajaran_aktif_id;
     $kelas_id = (int) $_POST['kelas_id'];
-    // Tanggal diambil otomatis dari data tahun ajaran aktif
     $tanggal_mulai = $tahun_aktif ? $tahun_aktif['tanggal_mulai'] : '';
     $tanggal_selesai = $tahun_aktif ? $tahun_aktif['tanggal_selesai'] : '';
     $status_aktif = (int) $_POST['status_aktif'];
@@ -34,11 +34,8 @@ if (isset($_POST['simpan'])) {
         $tanggal_selesai == "" ||
         $tanggal_selesai < $tanggal_mulai
     ) {
-
         $pesan = "Data tidak valid atau tidak ada tahun ajaran aktif. Periksa kembali form.";
-
     } else {
-
         $cek = mysqli_prepare($koneksi,
             "SELECT id FROM t_kelas_siswa
              WHERE siswa_id = ? AND tahun_ajaran_id = ?"
@@ -54,11 +51,8 @@ if (isset($_POST['simpan'])) {
         mysqli_stmt_store_result($cek);
 
         if (mysqli_stmt_num_rows($cek) > 0) {
-
             $pesan = "Siswa sudah ditempatkan pada tahun ajaran tersebut.";
-
         } else {
-
             $stmt = mysqli_prepare($koneksi,
                 "INSERT INTO t_kelas_siswa
                 (
@@ -83,17 +77,14 @@ if (isset($_POST['simpan'])) {
             );
 
             if (mysqli_stmt_execute($stmt)) {
-
                 mysqli_stmt_close($stmt);
                 mysqli_stmt_close($cek);
 
-                header("Location: Kelola_Penempatan_Siswa.php");
+                // DITAMBAHKAN ?pesan=berhasil AGAR NOTIFIKASI DI KELOLA PENEMPATAN MUNCUL
+                header("Location: Kelola_Penempatan_Siswa.php?pesan=berhasil");
                 exit;
-
             } else {
-
                 $pesan = "Gagal menyimpan data.";
-
             }
 
             mysqli_stmt_close($stmt);
@@ -103,9 +94,9 @@ if (isset($_POST['simpan'])) {
     }
 }
 
-// DATA SISWA: Menyembunyikan siswa yang sudah ditempatkan di tahun ajaran aktif, diurutkan berdasarkan NIS
+// DATA SISWA: Menyertakan status_aktif dari t_siswa agar bisa dibaca otomatis oleh JavaScript
 $siswa = mysqli_query($koneksi,
-    "SELECT id, nis, nama
+    "SELECT id, nis, nama, status_aktif
      FROM t_siswa
      WHERE id NOT IN (
          SELECT siswa_id FROM t_kelas_siswa WHERE tahun_ajaran_id = $tahun_ajaran_aktif_id
@@ -233,7 +224,7 @@ $kelas = mysqli_query($koneksi,
                             <select name="siswa_id" id="selectSiswa" class="form-select" required>
                                 <option value="">-- Pilih atau Cari Siswa --</option>
                                 <?php while ($s = mysqli_fetch_assoc($siswa)): ?>
-                                    <option value="<?= $s['id'] ?>">
+                                    <option value="<?= $s['id'] ?>" data-status="<?= $s['status_aktif'] ?>">
                                         <?= htmlspecialchars($s['nis'] . ' - ' . $s['nama']) ?>
                                     </option>
                                 <?php endwhile; ?>
@@ -312,6 +303,15 @@ $(document).ready(function() {
     $('#selectSiswa').select2({
         theme: 'bootstrap-5',
         width: '100%'
+    });
+
+    $('#selectSiswa').on('change', function() {
+        var selectedOption = $(this).find(':selected');
+        var statusSiswa = selectedOption.data('status');
+        
+        if (statusSiswa !== undefined && statusSiswa !== '') {
+            $('select[name="status_aktif"]').val(statusSiswa);
+        }
     });
 });
 </script>

@@ -103,7 +103,17 @@ if (isset($_POST['simpan'])) {
 
             if (mysqli_stmt_execute($update)) {
                 mysqli_stmt_close($update);
-                header("Location: Kelola_Wali_Kelas.php");
+
+                // Sinkronkan status_aktif guru di tabel t_guru agar ikut berubah otomatis
+                $update_guru = mysqli_prepare($koneksi, 
+                    "UPDATE t_guru SET status_aktif = ? WHERE id = ?"
+                );
+                mysqli_stmt_bind_param($update_guru, "ii", $status_aktif, $guru_id);
+                mysqli_stmt_execute($update_guru);
+                mysqli_stmt_close($update_guru);
+
+                // DITAMBAHKAN ?pesan=diubah AGAR NOTIFIKASI MUNCUL DI KELOLA WALI KELAS
+                header("Location: Kelola_Wali_Kelas.php?pesan=diubah");
                 exit;
             } else {
                 $pesan = "Gagal mengubah data wali kelas.";
@@ -143,7 +153,11 @@ function e($data) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Wali Kelas</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -151,7 +165,7 @@ function e($data) {
 <div class="container-fluid">
     <div class="row">
         <!-- SIDEBAR -->
-<div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
+        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
             <h4 class="text-white mb-4">
             Pelanggaran Siswa
             </h4>
@@ -261,12 +275,13 @@ function e($data) {
 
                         <div class="mb-3">
                             <label class="form-label">Guru</label>
-                            <select name="guru_id" class="form-select" required>
-                                <option value="">-- Pilih Guru --</option>
+                            <select name="guru_id" class="form-select select2-guru" required>
+                                <option value="">-- Pilih atau Cari Guru --</option>
                                 <?php while ($g = mysqli_fetch_assoc($guru)): ?>
+                                    <?php $bersihNip = str_ireplace('NIP', '', $g['nip'] ?? ''); ?>
                                     <option value="<?= (int) $g['id'] ?>"
                                         <?= $data['guru_id'] == $g['id'] ? 'selected' : '' ?>>
-                                        <?= e($g['nip'] . ' - ' . $g['nama']) ?>
+                                        <?= e(trim($bersihNip) . ' - ' . $g['nama']) ?>
                                     </option>
                                 <?php endwhile; ?>
                             </select>
@@ -319,6 +334,20 @@ function e($data) {
     </div>
 </div>
 
+<!-- jQuery & Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('.select2-guru').select2({
+        theme: 'bootstrap-5',
+        placeholder: '-- Pilih atau Cari Guru --',
+        allowClear: true,
+        width: '100%'
+    });
+});
+</script>
 </body>
 </html>

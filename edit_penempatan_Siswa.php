@@ -10,7 +10,10 @@ if (!isset($_SESSION['id_user'])) {
 $id = (int)($_GET['id'] ?? 0);
 
 $stmt = mysqli_prepare($koneksi,
-    "SELECT * FROM t_kelas_siswa WHERE id = ?");
+    "SELECT ks.*, s.status_aktif as status_siswa 
+     FROM t_kelas_siswa ks 
+     JOIN t_siswa s ON ks.siswa_id = s.id 
+     WHERE ks.id = ?");
 mysqli_stmt_bind_param($stmt, "i", $id);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
@@ -61,6 +64,7 @@ if (isset($_POST['update'])) {
         if (mysqli_stmt_num_rows($cek) > 0) {
             $pesan = "Siswa sudah ditempatkan pada tahun ajaran tersebut.";
         } else {
+            // Update data penempatan siswa
             $update = mysqli_prepare($koneksi,
                 "UPDATE t_kelas_siswa
                  SET siswa_id = ?, tahun_ajaran_id = ?,
@@ -76,10 +80,20 @@ if (isset($_POST['update'])) {
                 $status_aktif, $id
             );
 
+            // Sinkronkan dan perbarui juga status_aktif di tabel master t_siswa (Kelola Siswa)
+            $update_siswa = mysqli_prepare($koneksi,
+                "UPDATE t_siswa SET status_aktif = ? WHERE id = ?"
+            );
+            mysqli_stmt_bind_param($update_siswa, "ii", $status_aktif, $siswa_id);
+            mysqli_stmt_execute($update_siswa);
+            mysqli_stmt_close($update_siswa);
+
             if (mysqli_stmt_execute($update)) {
                 mysqli_stmt_close($update);
                 mysqli_stmt_close($cek);
-                header("Location: Kelola_Penempatan_Siswa.php");
+
+                // DITAMBAHKAN ?pesan=diubah AGAR NOTIFIKASI DI KELOLA PENEMPATAN MUNCUL
+                header("Location: Kelola_Penempatan_Siswa.php?pesan=diubah");
                 exit;
             } else {
                 $pesan = "Gagal memperbarui data.";
@@ -92,9 +106,9 @@ if (isset($_POST['update'])) {
     }
 }
 
-// DATA SISWA: Menampilkan siswa yang belum ditempatkan, ATAU siswa yang sedang diedit ini sendiri
+// DATA SISWA
 $siswa = mysqli_query($koneksi,
-    "SELECT id, nis, nama FROM t_siswa 
+    "SELECT id, nis, nama, status_aktif FROM t_siswa 
      WHERE id NOT IN (SELECT siswa_id FROM t_kelas_siswa WHERE id != $id)
      ORDER BY nama ASC");
 
@@ -212,11 +226,12 @@ function e($data) {
                     <form method="POST">
 
                         <div class="mb-3">
-                            <label class="form-label">Siswa (Belum Ditempatkan)</label>
+                            <label class="form-label">Siswa</label>
                             <select name="siswa_id" id="selectSiswa" class="form-select" required>
                                 <option value="">-- Pilih atau Cari Siswa --</option>
                                 <?php while ($s = mysqli_fetch_assoc($siswa)): ?>
                                     <option value="<?= $s['id'] ?>"
+                                        data-status="<?= $s['status_aktif'] ?>"
                                         <?= $d['siswa_id'] == $s['id'] ? 'selected' : '' ?>>
                                         <?= e($s['nis'] . ' - ' . $s['nama']) ?>
                                     </option>
@@ -250,10 +265,10 @@ function e($data) {
                         <div class="mb-3">
                             <label class="form-label">Status Aktif</label>
                             <select name="status_aktif" class="form-select" required>
-                                <option value="1" <?= $d['status_aktif'] == 1 ? 'selected' : '' ?>>
+                                <option value="1" <?= $d['status_siswa'] == 1 ? 'selected' : '' ?>>
                                     Aktif
                                 </option>
-                                <option value="0" <?= $d['status_aktif'] == 0 ? 'selected' : '' ?>>
+                                <option value="0" <?= $d['status_siswa'] == 0 ? 'selected' : '' ?>>
                                     Tidak Aktif
                                 </option>
                             </select>
@@ -290,6 +305,15 @@ $(document).ready(function() {
     $('#selectSiswa').select2({
         theme: 'bootstrap-5',
         width: '100%'
+    });
+
+    $('#selectSiswa').on('change', function() {
+        var selectedOption = $(this).find(':selected');
+        var statusSiswa = selectedOption.data('status');
+        
+        if (statusSiswa !== undefined && statusSiswa !== '') {
+            $('select[name="status_aktif"]').val(statusSiswa);
+        }
     });
 });
 </script>

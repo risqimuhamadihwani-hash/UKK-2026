@@ -22,6 +22,7 @@ if (isset($_GET['id'])) {
     }
 }
 
-header("Location: Kelola_Penempatan_Siswa.php");
+// DITAMBAHKAN ?pesan=dihapus AGAR NOTIFIKASI DI KELOLA PENEMPATAN MUNCUL
+header("Location: Kelola_Penempatan_Siswa.php?pesan=dihapus");
 exit;
 ?>

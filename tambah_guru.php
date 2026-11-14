@@ -1,17 +1,9 @@
 <?php
+// INISIASI SESSION & KONEKSI DATABASE
 session_start();
-require_once 'config/koneksi.php'; // Sesuaikan jalur file koneksi jika perlu
+require_once __DIR__ . '/config/koneksi.php';
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
-// Koneksi database fallback jika $conn/$koneksi dari config berbeda
-$koneksi = $conn ?? $koneksi ?? new mysqli("localhost", "root", "", "db_ukk_2026");
-
-if ($koneksi->connect_error) {
-    die("Koneksi database gagal: " . $koneksi->connect_error);
-}
-
-$koneksi->set_charset("utf8mb4");
 
 $error = "";
 $nip = "";
@@ -28,7 +20,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
     $konfirmasi_password = $_POST["konfirmasi_password"] ?? "";
     $status = $_POST["status_aktif"] ?? "1";
 
-    // Validasi input kosong, format NIP, password, dan konfirmasi password
     if ($nip === "" || $nama === "" || $email === "" || $password === "" || $konfirmasi_password === "") {
         $error = "Semua kolom wajib diisi, termasuk konfirmasi password.";
     } elseif (!ctype_digit($nip) || strlen($nip) > 18) {
@@ -42,8 +33,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
     } elseif (!in_array($status, ["0", "1"], true)) {
         $error = "Status guru tidak valid.";
     } else {
-
-        // Cek apakah NIP sudah terdaftar sebelumnya
         $stmtCekNip = $koneksi->prepare("SELECT id FROM t_guru WHERE nip = ?");
         $stmtCekNip->bind_param("s", $nip);
         $stmtCekNip->execute();
@@ -54,79 +43,41 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
             $stmtCekNip->close();
         } else {
             $stmtCekNip->close();
-
             $koneksi->begin_transaction();
 
             try {
-                // Hash password yang diinputkan sendiri
                 $passwordHash = password_hash($password, PASSWORD_DEFAULT);
                 $role = "guru";
                 $rememberToken = "";
 
-                // 1. Membuat akun user di tabel t_users agar bisa login
+                // 1. Membuat akun user di tabel t_users
                 $stmtUser = $koneksi->prepare("
                     INSERT INTO t_users
                     (name, email, password, remember_token, role)
                     VALUES (?, ?, ?, ?, ?)
                 ");
-
-                if (!$stmtUser) {
-                    throw new Exception($koneksi->error);
-                }
-
-                $stmtUser->bind_param(
-                    "sssss",
-                    $nama,
-                    $email,
-                    $passwordHash,
-                    $rememberToken,
-                    $role
-                );
-
-                if (!$stmtUser->execute()) {
-                    throw new Exception($stmtUser->error);
-                }
-
+                $stmtUser->bind_param("sssss", $nama, $email, $passwordHash, $rememberToken, $role);
+                $stmtUser->execute();
                 $user_id = $koneksi->insert_id;
                 $stmtUser->close();
 
-                // 2. Menyimpan data guru di tabel t_guru dan menghubungkannya dengan user_id
+                // 2. Menyimpan data guru di tabel t_guru
                 $statusInt = (int)$status;
-
                 $stmtGuru = $koneksi->prepare("
                     INSERT INTO t_guru
                     (nip, nama, email, status_aktif, user_id)
                     VALUES (?, ?, ?, ?, ?)
                 ");
-
-                if (!$stmtGuru) {
-                    throw new Exception($koneksi->error);
-                }
-
-                $stmtGuru->bind_param(
-                    "sssii",
-                    $nip,
-                    $nama,
-                    $email,
-                    $statusInt,
-                    $user_id
-                );
-
-                if (!$stmtGuru->execute()) {
-                    throw new Exception($stmtGuru->error);
-                }
-
+                $stmtGuru->bind_param("sssii", $nip, $nama, $email, $statusInt, $user_id);
+                $stmtGuru->execute();
                 $stmtGuru->close();
 
                 $koneksi->commit();
-
-                // Redirect kembali ke halaman kelola guru dengan pesan sukses
                 header("Location: Kelola_Guru.php?pesan=berhasil");
                 exit;
 
             } catch (Exception $e) {
                 $koneksi->rollback();
-
                 if ($koneksi->errno == 1062) {
                     $error = "NIP atau Email sudah terdaftar di database.";
                 } else {
@@ -164,63 +115,63 @@ function e($nilai) {
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Dashboard</h7> 
+                    <span class="fw-bold">Dashboard</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Siswa.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Siswa</h7> 
+                    <span class="fw-bold">Kelola Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Guru.php" class="nav-link active">
-                    <h7 class="fw-bold mb-4">Kelola Guru</h7> 
+                    <span class="fw-bold">Kelola Guru</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kelas.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kelas</h7> 
+                    <span class="fw-bold">Kelola Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Tahun Ajaran</h7> 
+                    <span class="fw-bold">Kelola Tahun Ajaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Penempatan Siswa</h7> 
+                    <span class="fw-bold">Kelola Penempatan Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Wali Kelas</h7> 
+                    <span class="fw-bold">Kelola Wali Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kategori Pelanggaran</h7> 
+                    <span class="fw-bold">Kelola Kategori Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Jenis Pelanggaran</h7> 
+                    <span class="fw-bold">Kelola Jenis Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Laporan</h7> 
+                    <span class="fw-bold">Laporan</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">About Me</h7> 
+                    <span class="fw-bold">About Me</span> 
                     </a>
                 </li>
                 <hr class="text-secondary">
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                    <h7 class="fw-bold mb-4">Logout</h7> 
+                    <span class="fw-bold">Logout</span> 
                     </a>
                 </li>
             </ul>
@@ -277,6 +228,7 @@ function e($nilai) {
                                 class="form-control"
                                 placeholder="Masukkan Email untuk Login"
                                 value="<?= e($email) ?>"
+                                autocomplete="off"
                                 required
                             >
                         </div>
@@ -288,6 +240,7 @@ function e($nilai) {
                                 name="password"
                                 class="form-control"
                                 placeholder="Masukkan Password Minimal 6 Karakter"
+                                autocomplete="new-password"
                                 required
                             >
                         </div>
@@ -299,6 +252,7 @@ function e($nilai) {
                                 name="konfirmasi_password"
                                 class="form-control"
                                 placeholder="Ulangi Password yang Sama"
+                                autocomplete="new-password"
                                 required
                             >
                         </div>

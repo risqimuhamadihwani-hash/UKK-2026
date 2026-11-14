@@ -96,7 +96,6 @@ $isAdmin = ($role === 'admin');
 
                 <?php else: ?>
 
-                <!-- PERBAIKAN UTAMA: Mengarah ke dashboard.php bukan guru.php -->
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
                         <span class="fw-bold mb-4">Dashboard</span> 
@@ -155,9 +154,20 @@ $isAdmin = ($role === 'admin');
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
+            <!-- HEADER DENGAN IKON & SUBTITLE SESUAI GAMBAR -->
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>About Me</h2>
-                <span class="badge bg-primary">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="h3 fw-bold mb-0 text-dark">About Me</h1>
+                        <p class="text-muted mb-0" style="font-size: 0.95rem;">Kenali lebih dekat tentang diri saya.</p>
+                    </div>
+                </div>
+                <span class="badge bg-primary px-3 py-2">
                     <?= htmlspecialchars(ucfirst($role)) ?>
                 </span>
             </div>
@@ -167,14 +177,13 @@ $isAdmin = ($role === 'admin');
 
                     <div class="text-center mb-4">
 
-                        <div class="overflow-hidden rounded-circle d-inline-flex justify-content-center align-items-center bg-primary"
-                             style="width: 110px; height: 110px;">
-                            <span class="text-white fw-bold" style="font-size: 40px;">R</span>
+                        <div class="overflow-hidden rounded-circle d-inline-flex justify-content-center align-items-center bg-light border shadow-sm"
+                            style="width: 110px; height: 110px;">
+                        <img src="risqi_png.jpeg" alt="Risqi" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
-
                         <h3 class="mt-3">Risqi</h3>
 
-                        <p class="badge bg-primary">
+                        <p class="badge bg-primary text-white">
                             Siswa Rekayasa Perangkat Lunak
                         </p>
 
@@ -226,8 +235,8 @@ $isAdmin = ($role === 'admin');
                     <div class="p-3 bg-light border rounded mb-4">
                         <p class="mb-0 text-muted">
                         Halo! Saya Risqi Muhamad Ihwani, siswa kelas XII RPL 1 di SMK Muhammadiyah Tasikmalaya. 
-                        Saya mengambil  jurusan Rekayasa Perangkat Lunak dan sedang belajar tentang Membuat server di dalam
-                        game minecraft serta pembuatan website.
+                        Saya mengambil jurusan Rekayasa Perangkat Lunak dan sedang belajar tentang Membuat server di roblox,
+                        minecraft serta pembuatan website.
                         </p>
                     </div>
 

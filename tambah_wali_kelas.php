@@ -10,6 +10,16 @@ if (!isset($_SESSION['id_user'])) {
 
 $pesan = "";
 
+// DATA TAHUN AJARAN: Mengambil id, nama, tanggal_mulai, dan tanggal_selesai yang aktif
+$tahun = mysqli_query($koneksi,
+    "SELECT id, nama, tanggal_mulai, tanggal_selesai
+     FROM t_tahun_ajaran
+     WHERE status_aktif = 1 
+     LIMIT 1"
+);
+$tahun_aktif = mysqli_fetch_assoc($tahun);
+$tahun_ajaran_aktif_id = $tahun_aktif ? (int)$tahun_aktif['id'] : 0;
+
 // PROSES SIMPAN
 if (isset($_POST['simpan'])) {
 
@@ -80,10 +90,19 @@ if (isset($_POST['simpan'])) {
 
             if (mysqli_stmt_execute($stmt)) {
 
+                // Sinkronkan status_aktif guru di tabel t_guru agar ikut berubah sesuai pilihan wali kelas
+                $update_guru = mysqli_prepare($koneksi, 
+                    "UPDATE t_guru SET status_aktif = ? WHERE id = ?"
+                );
+                mysqli_stmt_bind_param($update_guru, "ii", $status_aktif, $guru_id);
+                mysqli_stmt_execute($update_guru);
+                mysqli_stmt_close($update_guru);
+
                 mysqli_stmt_close($stmt);
                 mysqli_stmt_close($cek);
 
-                header("Location: Kelola_Wali_Kelas.php");
+                // DITAMBAHKAN ?pesan=berhasil AGAR NOTIFIKASI MUNCUL DI KELOLA WALI KELAS
+                header("Location: Kelola_Wali_Kelas.php?pesan=berhasil");
                 exit;
 
             } else {
@@ -99,15 +118,6 @@ if (isset($_POST['simpan'])) {
     }
 }
 
-// DATA TAHUN AJARAN: Mengambil id, nama, tanggal_mulai, dan tanggal_selesai yang aktif
-$tahun = mysqli_query($koneksi,
-    "SELECT id, nama, tanggal_mulai, tanggal_selesai
-     FROM t_tahun_ajaran
-     WHERE status_aktif = 1 
-     LIMIT 1"
-);
-$tahun_aktif = mysqli_fetch_assoc($tahun);
-
 // DATA KELAS
 $kelas = mysqli_query($koneksi,
     "SELECT id, nama
@@ -115,11 +125,13 @@ $kelas = mysqli_query($koneksi,
      ORDER BY nama ASC"
 );
 
-// DATA GURU
+// DATA GURU: Hanya menampilkan guru yang BELUM menjadi wali kelas aktif di tahun ajaran aktif ini
 $guru = mysqli_query($koneksi,
-    "SELECT id, nip, nama
-     FROM t_guru
-     ORDER BY nama ASC"
+    "SELECT g.id, g.nip, g.nama, g.status_aktif
+     FROM t_guru g
+     LEFT JOIN t_wali_kelas w ON g.id = w.guru_id AND w.status_aktif = 1 AND w.tahun_ajaran_id = $tahun_ajaran_aktif_id
+     WHERE w.id IS NULL
+     ORDER BY g.nama ASC"
 );
 
 if (!$kelas || !$guru) {
@@ -135,13 +147,14 @@ if (!$kelas || !$guru) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tambah Wali Kelas</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 </head>
 
 <body>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 <div class="container-fluid">
     <div class="row">
@@ -256,11 +269,15 @@ if (!$kelas || !$guru) {
 
                         <div class="mb-3">
                             <label class="form-label">Guru</label>
-                            <select name="guru_id" class="form-select" required>
-                                <option value="">-- Pilih Guru --</option>
+                            <select name="guru_id" class="form-select select2-guru" required>
+                                <option value="">-- Pilih atau Cari Guru --</option>
                                 <?php while ($g = mysqli_fetch_assoc($guru)): ?>
+                                    <?php 
+                                        $bersihNip = str_ireplace('NIP', '', $g['nip'] ?? ''); 
+                                        $statusLabel = ((int)$g['status_aktif'] === 1) ? ' (Aktif)' : ' (Tidak Aktif)';
+                                    ?>
                                     <option value="<?= $g['id'] ?>">
-                                        <?= htmlspecialchars($g['nip'] . ' - ' . $g['nama']) ?>
+                                        <?= htmlspecialchars(trim($bersihNip) . ' - ' . $g['nama'] . $statusLabel) ?>
                                     </option>
                                 <?php endwhile; ?>
                             </select>
@@ -322,6 +339,22 @@ if (!$kelas || !$guru) {
 
     </div>
 </div>
+
+<!-- jQuery & Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('.select2-guru').select2({
+        theme: 'bootstrap-5',
+        placeholder: '-- Pilih atau Cari Guru --',
+        allowClear: true,
+        width: '100%'
+    });
+});
+</script>
 
 </body>
 </html>

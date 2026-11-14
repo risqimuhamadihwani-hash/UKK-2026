@@ -61,10 +61,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update"])) {
                 $koneksi->begin_transaction();
                 $statusInt = (int)$status;
 
+                // 1. Update data guru utama
                 $stmtGuru = $koneksi->prepare("UPDATE t_guru SET nip = ?, nama = ?, email = ?, status_aktif = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
                 $stmtGuru->bind_param("sssii", $nip, $nama, $email, $statusInt, $id);
                 $stmtGuru->execute();
                 $stmtGuru->close();
+
+                // 2. SINKRONISASI: Otomatis ubah status di t_wali_kelas agar ikut nyambung
+                $stmtWali = $koneksi->prepare("UPDATE t_wali_kelas SET status_aktif = ? WHERE guru_id = ?");
+                $stmtWali->bind_param("ii", $statusInt, $id);
+                $stmtWali->execute();
+                $stmtWali->close();
 
                 // Akun login berada di t_users dan terhubung melalui t_guru.user_id.
                 if ($user_id <= 0) {
@@ -200,79 +207,73 @@ function e($nilai) {
                     <?php endif; ?>
 
                     <form method="POST">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">NIP</label>
-                                <input
-                                    type="text"
-                                    name="nip"
-                                    class="form-control"
-                                    placeholder="Masukkan NIP"
-                                    value="<?= e($nip) ?>"
-                                    maxlength="30"
-                                    required
-                                >
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Nama Guru</label>
-                                <input
-                                    type="text"
-                                    name="nama"
-                                    class="form-control"
-                                    placeholder="Masukkan Nama Guru"
-                                    value="<?= e($nama) ?>"
-                                    required
-                                >
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label">NIP</label>
+                            <input
+                                type="text"
+                                name="nip"
+                                class="form-control"
+                                placeholder="Masukkan NIP"
+                                value="<?= e($nip) ?>"
+                                maxlength="30"
+                                required
+                            >
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Email</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    class="form-control"
-                                    placeholder="Masukkan Email"
-                                    value="<?= e($email) ?>"
-                                >
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Password Baru</label>
-                                <input
-                                    type="password"
-                                    name="password_baru"
-                                    class="form-control"
-                                    placeholder="Masukkan password baru jika ingin mengganti"
-                                    minlength="6"
-                                    autocomplete="new-password"
-                                >
-                                <small class="text-muted">Jika diisi dan disimpan, password baru otomatis menggantikan password lama. Minimal 6 karakter.</small>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nama Guru</label>
+                            <input
+                                type="text"
+                                name="nama"
+                                class="form-control"
+                                placeholder="Masukkan Nama Guru"
+                                value="<?= e($nama) ?>"
+                                required
+                            >
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Konfirmasi Password Baru</label>
-                                <input
-                                    type="password"
-                                    name="konfirmasi_password"
-                                    class="form-control"
-                                    placeholder="Ulangi password baru"
-                                    minlength="6"
-                                    autocomplete="new-password"
-                                >
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                class="form-control"
+                                placeholder="Masukkan Email"
+                                value="<?= e($email) ?>"
+                            >
+                        </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Status Aktif</label>
-                                <select name="status_aktif" class="form-select" required>
-                                    <option value="1" <?= $status === "1" ? "selected" : "" ?>>Aktif</option>
-                                    <option value="0" <?= $status === "0" ? "selected" : "" ?>>Tidak Aktif</option>
-                                </select>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password Baru</label>
+                            <input
+                                type="password"
+                                name="password_baru"
+                                class="form-control"
+                                placeholder="Masukkan password baru jika ingin mengganti"
+                                minlength="6"
+                                autocomplete="new-password"
+                            >
+                            <small class="text-muted">Jika diisi dan disimpan, password baru otomatis menggantikan password lama. Minimal 6 karakter.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Konfirmasi Password Baru</label>
+                            <input
+                                type="password"
+                                name="konfirmasi_password"
+                                class="form-control"
+                                placeholder="Ulangi password baru"
+                                minlength="6"
+                                autocomplete="new-password"
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Status Aktif</label>
+                            <select name="status_aktif" class="form-select" required>
+                                <option value="1" <?= $status === "1" ? "selected" : "" ?>>Aktif</option>
+                                <option value="0" <?= $status === "0" ? "selected" : "" ?>>Tidak Aktif</option>
+                            </select>
                         </div>
 
                         <div class="d-flex gap-2 mt-4">

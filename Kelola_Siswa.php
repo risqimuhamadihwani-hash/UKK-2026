@@ -1,6 +1,16 @@
 <?php
+
+// INISIASI SESSION & KONEKSI DATABASE
+session_start();
 require_once __DIR__ . '/config/koneksi.php';
 
+// Cek apakah user sudah login atau belum
+if (!isset($_SESSION['id_user'])) {
+    header("Location: login.php");
+    exit;
+}
+
+// QUERY AMBIL DATA DARI DATABASE
 $sql = "
     SELECT id, nis, nisn, nama, jenis_kelamin,
            tanggal_lahir, alamat, status_aktif
@@ -33,9 +43,9 @@ if (!$result) {
 
 <div class="container-fluid">
     <div class="row">
+        
         <!-- SIDEBAR -->
-
-<div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
+        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
             <h4 class="text-white fw-bold mb-4 ">
             Pelanggaran Siswa
             </h4>
@@ -107,10 +117,11 @@ if (!$result) {
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h1>Kelola Siswa</h1>
+           <h1><strong>Kelola Siswa</strong></h1> 
 
             <p>Halaman untuk mengelola data siswa</p>
-            
+
+            <!-- Tombol Aksi (Tambah & Kembali) -->
             <div class="mb-3">
                 <a href="tambah_siswa.php" class="btn btn-primary">
                    + Tambah Siswa
@@ -120,17 +131,26 @@ if (!$result) {
                 </a>
             </div>
 
-            <!-- NOTIFIKASI BERHASIL DISIMPAN DI SINI -->
-            <?php if (isset($_GET['pesan']) && $_GET['pesan'] === 'berhasil'): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    Data Siswa Berhasil Ditambahkan
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            <?php endif; ?>
+            <!-- NOTIFIKASI BERHASIL DITAMBAHKAN, DIEDIT, ATAU DIHAPUS -->
+        <?php if (isset($_GET['pesan'])): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <?php 
+            if ($_GET['pesan'] === 'berhasil') {
+                echo "Data Siswa Berhasil Ditambahkan!";
+            } elseif ($_GET['pesan'] === 'edit') {
+                echo "Data Siswa Berhasil Diperbarui!";
+            } elseif ($_GET['pesan'] === 'hapus') {
+                echo "Data Siswa Berhasil Dihapus!";
+            }
+            ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+             </div>
+        <?php endif; ?>
 
+            <!-- Tabel Data Siswa -->
             <div class="table-responsive">
 
-            <table id="tabelSiswa"class="table table-striped table-bordered table-hover align-middle">
+            <table id="tabelSiswa" class="table table-striped table-bordered table-hover align-middle">
 
                 <thead class="table-dark">
                     <tr>
@@ -205,13 +225,17 @@ if (!$result) {
 
                 </tbody>
             </table>
+            </div>
 
         </main>
     </div>
 </div>
 
-
+<!-- Library JavaScript -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- Bootstrap JS agar tombol X alert bisa berfungsi -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
 
@@ -231,7 +255,7 @@ $(document).ready(function () {
         language: {
 
             search: "Cari siswa:",
-            lengthMenu: "Tampilkan _MENU_ data",
+            lengthMenu: "Tampilkan _MENU_ data Siswa",
             info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ siswa",
             infoEmpty: "Tidak ada data siswa",
             zeroRecords: "Data siswa tidak ditemukan",

@@ -7,6 +7,26 @@ if (!isset($_SESSION['id_user'])) {
     exit;
 }
 
+// Ambil statistik jumlah wali kelas
+$countTotal = 0;
+$countAktif = 0;
+$countTidakAktif = 0;
+
+$resTotal = $koneksi->query("SELECT COUNT(*) as total FROM t_wali_kelas");
+if ($resTotal) {
+    $countTotal = $resTotal->fetch_assoc()['total'];
+}
+
+$resAktif = $koneksi->query("SELECT COUNT(*) as total FROM t_wali_kelas WHERE status_aktif = 1");
+if ($resAktif) {
+    $countAktif = $resAktif->fetch_assoc()['total'];
+}
+
+$resTidakAktif = $koneksi->query("SELECT COUNT(*) as total FROM t_wali_kelas WHERE status_aktif = 0");
+if ($resTidakAktif) {
+    $countTidakAktif = $resTidakAktif->fetch_assoc()['total'];
+}
+
 $data = mysqli_query(
     $koneksi,
     "SELECT
@@ -37,82 +57,81 @@ if (!$data) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Kelola Wali Kelas</title>
     
-    <!-- HANYA GUNAKAN BOOTSTRAP 5 -->
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- DataTables Bootstrap 5 CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
 </head>
-<body>
+<body class="bg-light">
 
 <div class="container-fluid">
     <div class="row">
         <!-- SIDEBAR -->
-
-<div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
-            <h4 class="text-white fw-bold mb-4 ">
+        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
+            <h4 class="text-white fw-bold mb-4">
             Pelanggaran Siswa
             </h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
                     <a href="dashboard.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Dashboard</h7> 
+                    <span class="fw-bold">Dashboard</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Siswa.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Siswa</h7> 
+                    <span class="fw-bold">Kelola Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Guru.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Guru</h7> 
+                    <span class="fw-bold">Kelola Guru</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kelas.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kelas</h7> 
+                    <span class="fw-bold">Kelola Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Tahun Ajaran</h7> 
+                    <span class="fw-bold">Kelola Tahun Ajaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Penempatan_Siswa.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Penempatan Siswa</h7> 
+                    <span class="fw-bold">Kelola Penempatan Siswa</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Wali_Kelas.php" class="nav-link active">
-                    <h7 class="fw-bold mb-4">Kelola Wali Kelas</h7> 
+                    <span class="fw-bold">Kelola Wali Kelas</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Kategori Pelanggaran</h7> 
+                    <span class="fw-bold">Kelola Kategori Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Kelola Jenis Pelanggaran</h7> 
+                    <span class="fw-bold">Kelola Jenis Pelanggaran</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="Laporan.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">Laporan</h7> 
+                    <span class="fw-bold">Laporan</span> 
                     </a>
                 </li>
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link text-white">
-                    <h7 class="fw-bold mb-4">About Me</h7> 
+                    <span class="fw-bold">About Me</span> 
                     </a>
                 </li>
                 <hr class="text-secondary">
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
-                    <h7 class="fw-bold mb-4">Logout</h7> 
+                    <span class="fw-bold">Logout</span> 
                     </a>
                 </li>
             </ul>
@@ -121,8 +140,30 @@ if (!$data) {
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h1>Kelola Wali Kelas</h1>
+            <h1><strong>Kelola Wali Kelas</strong></h1>
             <p>Halaman untuk menampilkan data wali kelas</p>
+
+            <!-- KARTU STATISTIK WALI KELAS (Minimalis Tanpa Gambar/Ikon) -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0 p-3 h-100">
+                        <span class="text-muted small mb-1">Total Wali Kelas</span>
+                        <h2 class="fw-bold mb-0 text-primary"><?= $countTotal ?></h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0 p-3 h-100">
+                        <span class="text-muted small mb-1">Wali Kelas Aktif</span>
+                        <h2 class="fw-bold mb-0 text-success"><?= $countAktif ?></h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0 p-3 h-100">
+                        <span class="text-muted small mb-1">Tidak Aktif</span>
+                        <h2 class="fw-bold mb-0 text-danger"><?= $countTidakAktif ?></h2>
+                    </div>
+                </div>
+            </div>
 
             <!-- TOMBOL TAMBAH -->
             <div class="mb-3">
@@ -134,16 +175,30 @@ if (!$data) {
                      Kembali ke Dashboard
                 </a>
             </div>
-            <?php if (isset($_GET['pesan']) && $_GET['pesan'] === 'berhasil'): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    Data Wali Kelas Berhasil Ditambahkan.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+
+            <!-- NOTIFIKASI BERHASIL / DIUBAH / DIHAPUS -->
+            <?php if (isset($_GET['pesan'])): ?>
+                <?php if ($_GET['pesan'] === 'berhasil'): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Data Wali Kelas Berhasil Ditambahkan!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php elseif ($_GET['pesan'] === 'diubah' || $_GET['pesan'] === 'edit'): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Data Wali Kelas Berhasil Diperbarui!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php elseif ($_GET['pesan'] === 'dihapus' || $_GET['pesan'] === 'hapus'): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Data Wali Kelas Berhasil Dihapus!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
 
             <!-- TABEL DATA -->
             <div class="table-responsive">
-                <table id="tabelWaliKelas" class= "table table-striped table-bordered align-middle">
+                <table id="tabelWaliKelas" class="table table-striped table-bordered align-middle">
                     <thead class="table-dark">
                         <tr>
                             <th>No</th>
@@ -192,13 +247,12 @@ if (!$data) {
                         <?php endif; ?>
                     </tbody>
                 </table>
-
             </div>
         </main>
     </div>
 </div>
 
-<!-- jQuery (Harus paling atas sebelum script datatables) -->
+<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <!-- Bootstrap 5 Bundle JS -->
@@ -217,7 +271,6 @@ if (!$data) {
             searching: true,
             paging: true,
             info: true,
-            // Struktur layout DOM Bootstrap 5 agar dropdown tampil dan pagination bawah muncul sempurna
             dom: '<"row mb-3"<"col-md-6"l><"col-md-6"f>>rt<"row mt-3"<"col-md-6"i><"col-md-6"p>>',
             columnDefs: [
                 {
@@ -228,7 +281,7 @@ if (!$data) {
             ],
             language: {
                 search: "Cari:",
-                lengthMenu: "Tampilkan _MENU_ data",
+                lengthMenu: "Tampilkan _MENU_ data Wali Kelas",
                 info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
                 infoEmpty: "Tidak ada data yang ditampilkan",
                 infoFiltered: "(difilter dari _MAX_ total data)",

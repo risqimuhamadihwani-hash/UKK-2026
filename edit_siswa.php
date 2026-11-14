@@ -116,7 +116,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["simpan"])) {
                     $stmt->close();
                     $koneksi->close();
 
-                    header("Location: Kelola_Siswa.php");
+                    // DIUBAH MENAMBAHKAN ?pesan=edit
+                    header("Location: Kelola_Siswa.php?pesan=edit");
                     exit;
                 } else {
                     if ($stmt->errno == 1062) {
@@ -301,7 +302,6 @@ function e($data) {
                                 name="alamat"
                                 class="form-control"
                                 rows="3"
-                               
                             ><?= e($alamat) ?></textarea>
                         </div>
 

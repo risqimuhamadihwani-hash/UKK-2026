@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 include 'config/koneksi.php';
@@ -29,7 +28,9 @@ mysqli_stmt_bind_param($stmt, "i", $id);
 
 if (mysqli_stmt_execute($stmt)) {
     mysqli_stmt_close($stmt);
-    header("Location: Kelola_Wali_Kelas.php");
+    
+    // DITAMBAHKAN ?pesan=dihapus AGAR NOTIFIKASI MUNCUL DI KELOLA WALI KELAS
+    header("Location: Kelola_Wali_Kelas.php?pesan=dihapus");
     exit;
 }
 

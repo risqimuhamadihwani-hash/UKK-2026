@@ -22,8 +22,8 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         mysqli_stmt_bind_param($stmt, "i", $id);
         
         if (mysqli_stmt_execute($stmt)) {
-            // Berhasil dihapus, arahkan kembali ke halaman menu8.php
-            header("Location: Kelola_Jenis_Pelanggaran.php?status=sukses_hapus");
+            // Berhasil dihapus, arahkan kembali dengan parameter pesan=dihapus
+            header("Location: Kelola_Jenis_Pelanggaran.php?pesan=dihapus");
             exit;
         } else {
             // Gagal eksekusi query
