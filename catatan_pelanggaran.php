@@ -8,13 +8,14 @@ require_once 'config/koneksi.php';
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-// CEK LOGIN
-if (!isset($_SESSION['id_user'])) {
+// CEK LOGIN (Mendukung berbagai variasi nama session agar tidak terjadi redirect loop)
+$session_id = $_SESSION['id_user'] ?? $_SESSION['user_id'] ?? 0;
+if ($session_id < 1) {
     header("Location: login.php");
     exit;
 }
 
-$role = strtolower(trim($_SESSION['role'] ?? ''));
+$role = strtolower(trim($_SESSION['role'] ?? $_SESSION['level'] ?? ''));
 
 // VALIDASI ROLE (Izinkan admin, guru, dan wali_kelas)
 if ($role !== 'admin' && $role !== 'guru' && $role !== 'wali_kelas' && $role !== 'walikelas') {
@@ -27,6 +28,8 @@ if ($role !== 'admin' && $role !== 'guru' && $role !== 'wali_kelas' && $role !==
 if ($role === 'wali_kelas' || $role === 'walikelas') {
     $role = 'guru';
     $is_wali_kelas = true;
+} else {
+    $is_wali_kelas = false;
 }
 
 if (!function_exists('e')) {
@@ -44,7 +47,7 @@ if (!$koneksi instanceof mysqli) {
 $pesan = '';
 $error = '';
 
-// PENANGANAN PESAN NOTIFIKASI
+// PENANGANAN PESAN NOTIFIKASI & ERROR
 if (isset($_GET['berhasil'])) {
     if ($_GET['berhasil'] === '1' || $_GET['berhasil'] === 'tambah') {
         $pesan = "Catatan pelanggaran berhasil disimpan.";
@@ -55,7 +58,10 @@ if (isset($_GET['berhasil'])) {
     }
 }
 
-$session_id = (int)($_SESSION['id_user'] ?? 0);
+if (isset($_GET['error']) && $_GET['error'] === 'selesai') {
+    $error = "Akses ditolak: Catatan pelanggaran yang sudah berstatus 'Selesai' terkunci dan tidak dapat diubah atau dihapus.";
+}
+
 $session_name = trim($_SESSION['name'] ?? ($_SESSION['nama'] ?? ''));
 
 $tahunQuery = $koneksi->query("SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
@@ -67,7 +73,6 @@ $guru_id = 0;
 $nama_guru = '';
 $nama_kelas_wali = '';
 $kelas_wali_id = 0;
-$is_wali_kelas = false;
 
 $stmtGuru = $koneksi->prepare(
     "SELECT g.id AS guru_id, g.nama AS nama_guru, k.id AS kelas_id, k.nama AS nama_kelas
@@ -91,9 +96,12 @@ if ($dataGuruLogin && !empty($dataGuruLogin['guru_id'])) {
         $is_wali_kelas = true;
     }
 } else {
-    $guru_id = $session_id;
-    $nama_guru = $session_name !== '' ? $session_name : 'Ari Sandriana, S.Kom';
+    $guru_id = 0;
+    $nama_guru = $session_name !== '' ? $session_name : '';
 }
+
+// Ambil daftar seluruh guru untuk dropdown
+$guruListAll = $koneksi->query("SELECT id, nama FROM t_guru ORDER BY nama ASC");
 
 // PROSES SIMPAN PELANGGARAN
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -102,10 +110,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pelanggaran_id = (int) ($_POST['pelanggaran_id'] ?? 0);
         $tanggal = $_POST['tanggal'] ?? date('Y-m-d');
         $keterangan = trim($_POST['keterangan'] ?? '');
+        $guru_id = (int) ($_POST['guru_id'] ?? 0); // Ambil dari pilihan form POST
 
-        if ($siswa_id < 1 || $pelanggaran_id < 1 || $guru_id < 1 || $keterangan === '') {
-            throw new Exception("Lengkapi semua data form dengan benar.");
+        if ($guru_id < 1 || $siswa_id < 1 || $pelanggaran_id < 1 || $keterangan === '') {
+            throw new Exception("Lengkapi semua data form dengan benar (Pastikan Guru Pelapor dipilih).");
         }
+
+        // VALIDASI: Pastikan guru_id benar-benar ada di tabel t_guru
+        $stmtCekGuru = $koneksi->prepare("SELECT id, nama FROM t_guru WHERE id = ? LIMIT 1");
+        $stmtCekGuru->bind_param("i", $guru_id);
+        $stmtCekGuru->execute();
+        $resCekGuru = $stmtCekGuru->get_result()->fetch_assoc();
+        $stmtCekGuru->close();
+
+        if (!$resCekGuru) {
+            throw new Exception("Data guru pelapor tidak valid atau tidak ditemukan di database.");
+        }
+        $nama_guru = $resCekGuru['nama'];
 
         $tanggalObj = DateTime::createFromFormat('!Y-m-d', $tanggal);
         if (!$tanggalObj || $tanggalObj->format('Y-m-d') !== $tanggal) {
@@ -198,7 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Ambil data siswa (Jika wali kelas, filter ketat hanya siswa di kelas walinya)
+// Ambil data siswa (Hanya siswa yang memiliki kelas aktif / INNER JOIN)
 if ($role === 'guru' && $is_wali_kelas) {
     $stmtSiswa = $koneksi->prepare(
         "SELECT s.id, s.nis, s.nama, k.nama AS nama_kelas
@@ -212,14 +233,16 @@ if ($role === 'guru' && $is_wali_kelas) {
     $stmtSiswa->execute();
     $siswaList = $stmtSiswa->get_result();
 } else {
-    $siswaList = $koneksi->query(
-        "SELECT s.id, s.nis, s.nama, COALESCE(MAX(k.nama), 'Tanpa Kelas') AS nama_kelas
+    $stmtSiswa = $koneksi->prepare(
+        "SELECT s.id, s.nis, s.nama, k.nama AS nama_kelas
          FROM t_siswa s
-         LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = s.id AND ks.status_aktif = 1 AND ks.tahun_ajaran_id = $tahun_id
-         LEFT JOIN t_kelas k ON k.id = ks.kelas_id
-         GROUP BY s.id, s.nis, s.nama
+         JOIN t_kelas_siswa ks ON ks.siswa_id = s.id AND ks.tahun_ajaran_id = ? AND ks.status_aktif = 1
+         JOIN t_kelas k ON k.id = ks.kelas_id
          ORDER BY s.nama ASC"
     );
+    $stmtSiswa->bind_param("i", $tahun_id);
+    $stmtSiswa->execute();
+    $siswaList = $stmtSiswa->get_result();
 }
 
 $pelanggaranList = $koneksi->query(
@@ -268,8 +291,7 @@ $riwayatList = $koneksi->query(
                 <li class="nav-item mb-2"><a href="rekap_poin.php" class="nav-link text-white"><span class="fw-bold">Rekap Poin</span></a></li>
                 <li class="nav-item mb-2"><a href="riwayat.php" class="nav-link text-white"><span class="fw-bold">Riwayat</span></a></li>
                 
-                <!-- MENU LAPORAN HANYA MUNCUL JIKA WALI KELAS -->
-                <?php if ($is_wali_kelas): ?>
+                <?php if ($is_wali_kelas || $role === 'admin'): ?>
                     <li class="nav-item mb-2"><a href="Laporan.php" class="nav-link text-white"><span class="fw-bold">Laporan</span></a></li>
                 <?php endif; ?>
 
@@ -281,7 +303,7 @@ $riwayatList = $koneksi->query(
         <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 p-4">
             <h2>Catatan Pelanggaran Siswa</h2>
-            <p class="text-muted mb-4">Selamat datang, <?= e($nama_guru) ?><?= $is_wali_kelas ? ' (Wali Kelas ' . e($nama_kelas_wali) . ')' : ' (Guru)' ?></p>
+            <p class="text-muted mb-4">Selamat datang, <?= e($nama_guru !== '' ? $nama_guru : ucfirst($role)) ?><?= $is_wali_kelas ? ' (Wali Kelas ' . e($nama_kelas_wali) . ')' : ' (' . ucfirst($role) . ')' ?></p>
 
             <?php if ($pesan !== ''): ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -301,19 +323,27 @@ $riwayatList = $koneksi->query(
             <div class="card shadow-sm border-0 p-4 mb-4">
                 <h5 class="fw-bold mb-3">Tambah Catatan Pelanggaran</h5>
                 <form method="POST" action="catatan_pelanggaran.php">
-                    <input type="hidden" name="guru_id" value="<?= (int)$guru_id ?>">
-
+                    
                     <div class="row g-3 align-items-center mb-3">
-                        <!-- Pilihan Kelas (Terkunci jika Wali Kelas) -->
-                        <div class="col-md-3">
-                            <label class="form-label text-muted small mb-1">Kelas</label>
-                            <select id="filterKelas" class="form-select form-select-sm" <?= ($role === 'guru' && $is_wali_kelas) ? 'disabled style="background-color: #e9ecef;"' : '' ?>>
-                                <option value="<?= e($nama_kelas_wali) ?>" selected><?= e($nama_kelas_wali !== '' ? $nama_kelas_wali : '-- Kelas --') ?></option>
+                        <!-- Pilihan Guru Pelapor -->
+                        <div class="col-md-4">
+                            <label class="form-label text-muted small mb-1">Guru Pelapor</label>
+                            <select name="guru_id" id="selectGuru" class="form-select form-select-sm" required>
+                                <option value="">-- Pilih Guru Pelapor --</option>
+                                <?php 
+                                if ($guruListAll) {
+                                    $guruListAll->data_seek(0);
+                                    while ($g = $guruListAll->fetch_assoc()) {
+                                        $selected = ((int)$g['id'] === $guru_id) ? 'selected' : '';
+                                        echo '<option value="' . (int)$g['id'] . '" ' . $selected . '>' . e($g['nama']) . '</option>';
+                                    }
+                                }
+                                ?>
                             </select>
                         </div>
 
                         <!-- Pilih Siswa dengan Select2 -->
-                        <div class="col-md-3">
+                        <div class="col-md-5">
                             <label class="form-label text-muted small mb-1">Siswa</label>
                             <select name="siswa_id" id="selectSiswa" class="form-select form-select-sm" required>
                                 <option value="">-- Pilih Siswa --</option>
@@ -325,8 +355,16 @@ $riwayatList = $koneksi->query(
                             </select>
                         </div>
 
+                        <!-- Tanggal Kejadian -->
+                        <div class="col-md-3">
+                            <label class="form-label text-muted small mb-1">Tanggal</label>
+                            <input type="date" name="tanggal" class="form-control form-control-sm" value="<?= date('Y-m-d') ?>" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 align-items-center mb-3">
                         <!-- Pilih Jenis Pelanggaran -->
-                        <div class="col-md-4">
+                        <div class="col-md-12">
                             <label class="form-label text-muted small mb-1">Jenis Pelanggaran</label>
                             <select name="pelanggaran_id" id="selectPelanggaran" class="form-select form-select-sm" required>
                                 <option value="">-- Pilih Pelanggaran --</option>
@@ -336,12 +374,6 @@ $riwayatList = $koneksi->query(
                                     </option>
                                 <?php endwhile; ?>
                             </select>
-                        </div>
-
-                        <!-- Tanggal Kejadian -->
-                        <div class="col-md-2">
-                            <label class="form-label text-muted small mb-1">Tanggal</label>
-                            <input type="date" name="tanggal" class="form-control form-control-sm" value="<?= date('Y-m-d') ?>" required>
                         </div>
                     </div>
 
@@ -398,8 +430,12 @@ $riwayatList = $koneksi->query(
                                             <span class="badge <?= $badgeClass ?>"><?= e(ucfirst($row['status'])) ?></span>
                                         </td>
                                         <td>
-                                            <a href="edit_catatan_pelanggaran.php?id=<?= (int)$row['id'] ?>" class="btn btn-warning btn-sm text-dark">Edit</a>
-                                            <a href="hapus_catatan_pelanggaran.php?id=<?= (int)$row['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus catatan ini?')">Hapus</a>
+                                            <?php if ($st === 'selesai'): ?>
+                                                <span class="text-muted small fst-italic">Terkunci</span>
+                                            <?php else: ?>
+                                                <a href="edit_catatan_pelanggaran.php?id=<?= (int)$row['id'] ?>" class="btn btn-warning btn-sm text-dark">Edit</a>
+                                                <a href="hapus_catatan_pelanggaran.php?id=<?= (int)$row['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus catatan ini?')">Hapus</a>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>
@@ -426,6 +462,10 @@ $riwayatList = $koneksi->query(
 
 <script>
 $(document).ready(function() {
+    $('#selectGuru').select2({
+        theme: 'bootstrap-5',
+        width: '100%'
+    });
     $('#selectSiswa').select2({
         theme: 'bootstrap-5',
         width: '100%'
