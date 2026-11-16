@@ -90,7 +90,7 @@ if (isset($_POST['simpan'])) {
 
             if (mysqli_stmt_execute($stmt)) {
 
-                // Sinkronkan status_aktif guru di tabel t_guru agar ikut berubah sesuai pilihan wali kelas
+                // 1. Sinkronkan status_aktif guru di tabel t_guru
                 $update_guru = mysqli_prepare($koneksi, 
                     "UPDATE t_guru SET status_aktif = ? WHERE id = ?"
                 );
@@ -98,10 +98,37 @@ if (isset($_POST['simpan'])) {
                 mysqli_stmt_execute($update_guru);
                 mysqli_stmt_close($update_guru);
 
+                // 2. OTOMATIS UBAH ROLE DI TABEL t_users MENJADI 'wali_kelas'
+                // Cari data guru berdasarkan id untuk mendapatkan relasi user_id atau mencocokkan namanya
+                $queryGuruInfo = mysqli_prepare($koneksi, "SELECT user_id, nama FROM t_guru WHERE id = ? LIMIT 1");
+                mysqli_stmt_bind_param($queryGuruInfo, "i", $guru_id);
+                mysqli_stmt_execute($queryGuruInfo);
+                $resGuruInfo = mysqli_stmt_get_result($queryGuruInfo)->fetch_assoc();
+                mysqli_stmt_close($queryGuruInfo);
+
+                if ($resGuruInfo) {
+                    $target_user_id = !empty($resGuruInfo['user_id']) ? (int)$resGuruInfo['user_id'] : 0;
+                    $nama_guru_dipilih = $resGuruInfo['nama'];
+
+                    if ($target_user_id > 0) {
+                        // Update berdasarkan user_id yang terhubung langsung
+                        $update_role = mysqli_prepare($koneksi, "UPDATE t_users SET role = 'wali_kelas' WHERE id = ?");
+                        mysqli_stmt_bind_param($update_role, "i", $target_user_id);
+                        mysqli_stmt_execute($update_role);
+                        mysqli_stmt_close($update_role);
+                    } else {
+                        // Fallback: Jika kolom user_id di t_guru kosong, update berdasarkan kecocokan nama/username di t_users
+                        $update_role_nama = mysqli_prepare($koneksi, "UPDATE t_users SET role = 'wali_kelas' WHERE name = ? OR username = ?");
+                        mysqli_stmt_bind_param($update_role_nama, "ss", $nama_guru_dipilih, $nama_guru_dipilih);
+                        mysqli_stmt_execute($update_role_nama);
+                        mysqli_stmt_close($update_role_nama);
+                    }
+                }
+
                 mysqli_stmt_close($stmt);
                 mysqli_stmt_close($cek);
 
-                // DITAMBAHKAN ?pesan=berhasil AGAR NOTIFIKASI MUNCUL DI KELOLA WALI KELAS
+                // REDIRECT KE KELOLA WALI KELAS DENGAN PESAN BERHASIL
                 header("Location: Kelola_Wali_Kelas.php?pesan=berhasil");
                 exit;
 

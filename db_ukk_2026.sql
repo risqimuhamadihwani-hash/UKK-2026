@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 14, 2026 at 01:18 PM
+-- Generation Time: Nov 16, 2026 at 07:50 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -73,7 +73,7 @@ INSERT INTO `t_guru` (`id`, `nip`, `nama`, `email`, `status_aktif`, `user_id`, `
 (29, 'NIP20260029', 'Yaneu Nurdian, S.Pd, M.Pd', 'YaneuNurdian@gmail.com', 1, 134, '2026-04-30 18:00:00', '2026-11-11 05:16:54'),
 (30, 'NIP20260030', 'Ucu Muhammad Khoer N, S.Pd', 'UcuMuhammadKhoerN@gmail.com', 1, 135, '2026-06-01 18:00:00', '2026-11-11 05:16:54'),
 (31, 'NIP20260031', 'Mira Dwi Rahmawati, S.Ag', 'MiraDwiRahmawati@gmail.com', 1, 136, '2026-07-02 18:00:00', '2026-11-11 05:16:54'),
-(32, 'NIP20260032', 'Aldi Maulana, S.Pd', 'aldimaulana@gmail.com', 1, 137, '2026-08-03 18:00:00', '2026-11-11 05:16:54'),
+(32, 'NIP20260032', 'Aldi Maulana, S.Pd', 'aldimaulana@gmail.com', 1, 137, '2026-08-03 18:00:00', '2026-11-16 01:50:49'),
 (33, 'NIP20260033', 'Eli Rosliah, S.Pd', 'EliRosliah@gmail.com', 1, 138, '2026-09-04 18:00:00', '2026-11-11 05:16:54'),
 (34, 'NIP20260034', 'Isni Nur Fitriani, S.Pd', 'IsniNurFitriani@gmail.com', 1, 139, '2026-10-05 18:00:00', '2026-11-11 05:16:54'),
 (35, 'NIP20260035', 'Aanisah Putri Nur Aini, S.Pd', 'AanisahPutriNurAini@gmail.com', 1, 140, '2026-11-06 18:00:00', '2026-11-11 05:16:54'),
@@ -98,7 +98,7 @@ INSERT INTO `t_guru` (`id`, `nip`, `nama`, `email`, `status_aktif`, `user_id`, `
 (54, 'NIP20260054', 'Rurry Febriani Maryadi, S.Pd', 'RurryFebrianiMaryadi@gmail.com', 1, 159, '2026-11-04 19:15:47', '2026-11-11 05:16:54'),
 (55, 'NIP20260055', 'Irvan Rizal, S.Pd', 'IrvanRizal@gmail.com', 1, 160, '2026-11-04 19:19:21', '2026-11-11 05:16:54'),
 (58, 'NIP1234567', 'ALPA', 'mcok30324@gmail.com', 1, 161, '2026-11-09 20:14:13', '2026-11-11 05:16:54'),
-(59, 'NIP12345678', 'Ari Sandriana, S.Kom', 'AriSandriana@gmail.com', 1, 162, '2026-11-09 20:29:17', '2026-11-13 13:46:03');
+(59, 'NIP12345678', 'Ari Sandriana, S.Kom', 'AriSandriana@gmail.com', 1, 162, '2026-11-09 20:29:17', '2026-11-16 01:50:29');
 
 -- --------------------------------------------------------
 
@@ -150,7 +150,45 @@ CREATE TABLE `t_kelas_siswa` (
 INSERT INTO `t_kelas_siswa` (`id`, `siswa_id`, `tahun_ajaran_id`, `kelas_id`, `tanggal_mulai`, `tanggal_selesai`, `status_aktif`, `created_at`, `updated_at`) VALUES
 (132, 88, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-14 05:28:43', '2026-11-14 05:28:43'),
 (134, 89, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-14 11:17:50', '2026-11-14 11:17:50'),
-(135, 93, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-14 11:21:49', '2026-11-14 11:21:49');
+(136, 90, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:40:36', '2026-11-16 01:40:36'),
+(137, 91, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:40:50', '2026-11-16 01:40:50'),
+(138, 92, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:41:02', '2026-11-16 01:41:02'),
+(139, 93, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:41:13', '2026-11-16 01:41:13'),
+(140, 94, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:41:22', '2026-11-16 01:41:22'),
+(141, 95, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:41:35', '2026-11-16 01:41:35'),
+(142, 96, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:41:46', '2026-11-16 01:41:46'),
+(143, 97, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:41:57', '2026-11-16 01:41:57'),
+(144, 98, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:42:06', '2026-11-16 01:42:06'),
+(145, 99, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:42:17', '2026-11-16 01:42:17'),
+(146, 100, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:42:30', '2026-11-16 01:42:30'),
+(147, 101, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:42:43', '2026-11-16 01:42:43'),
+(148, 102, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:43:05', '2026-11-16 01:43:05'),
+(149, 103, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:43:21', '2026-11-16 01:43:21'),
+(150, 104, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:43:33', '2026-11-16 01:43:33'),
+(151, 105, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:43:44', '2026-11-16 01:43:44'),
+(152, 106, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:44:00', '2026-11-16 01:44:00'),
+(153, 107, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:44:09', '2026-11-16 01:44:09'),
+(154, 108, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:44:20', '2026-11-16 01:44:20'),
+(155, 109, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:44:29', '2026-11-16 01:44:29'),
+(156, 110, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:44:36', '2026-11-16 01:44:36'),
+(157, 111, 25, 11, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:44:45', '2026-11-16 01:44:45'),
+(158, 57, 25, 26, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:45:07', '2026-11-16 01:45:07'),
+(159, 58, 25, 26, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:45:13', '2026-11-16 01:45:13'),
+(160, 59, 25, 26, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:45:17', '2026-11-16 01:45:17'),
+(161, 60, 25, 26, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:45:25', '2026-11-16 01:45:25'),
+(162, 61, 25, 26, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:46:09', '2026-11-16 01:46:09'),
+(163, 62, 25, 26, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:46:25', '2026-11-16 01:46:25'),
+(164, 63, 25, 26, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:46:36', '2026-11-16 01:46:36'),
+(165, 64, 25, 26, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:46:52', '2026-11-16 01:46:52'),
+(166, 65, 25, 26, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:47:10', '2026-11-16 01:47:10'),
+(167, 66, 25, 26, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:47:34', '2026-11-16 01:47:34'),
+(168, 67, 25, 26, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:47:48', '2026-11-16 01:47:48'),
+(169, 68, 25, 26, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:47:57', '2026-11-16 01:47:57'),
+(170, 69, 25, 26, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:48:53', '2026-11-16 01:48:53'),
+(171, 70, 25, 26, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:49:06', '2026-11-16 01:49:06'),
+(172, 71, 25, 26, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:49:20', '2026-11-16 01:49:20'),
+(173, 72, 25, 26, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:49:26', '2026-11-16 01:49:26'),
+(174, 73, 25, 26, '2026-07-01', '2027-06-30', 1, '2026-11-16 01:49:33', '2026-11-16 01:49:33');
 
 -- --------------------------------------------------------
 
@@ -175,16 +213,16 @@ CREATE TABLE `t_pelanggaran` (
 --
 
 INSERT INTO `t_pelanggaran` (`id`, `pelanggaran_kategori_id`, `kode`, `nama`, `poin`, `deskripsi`, `status_aktif`, `created_at`, `updated_at`) VALUES
-(1, 1, 'PG-001', 'Terlambat datang ke sekolah #001', 2, 'Deskripsi pelanggaran nomor 1.', 1, '2026-06-30 18:00:00', '2026-06-30 18:00:00'),
-(2, 2, 'PG-002', 'Tidak memakai atribut lengkap #002', 3, 'Deskripsi pelanggaran nomor 2.', 1, '2026-07-01 18:00:00', '2026-07-01 18:00:00'),
-(3, 3, 'PG-003', 'Tidak memakai seragam sesuai ketentuan #003', 4, 'Deskripsi pelanggaran nomor 3.', 1, '2026-07-02 18:00:00', '2026-07-02 18:00:00'),
-(4, 4, 'PG-004', 'Meninggalkan kelas tanpa izin #004', 5, 'Deskripsi pelanggaran nomor 4.', 1, '2026-07-03 18:00:00', '2026-07-03 18:00:00'),
-(5, 5, 'PG-005', 'Tidak mengerjakan tugas #005', 6, 'Deskripsi pelanggaran nomor 5.', 1, '2026-07-04 18:00:00', '2026-07-04 18:00:00'),
-(6, 6, 'PG-006', 'Rambut tidak sesuai aturan #006', 7, 'Deskripsi pelanggaran nomor 6.', 1, '2026-07-05 18:00:00', '2026-07-05 18:00:00'),
-(7, 7, 'PG-007', 'Membawa barang terlarang #007', 8, 'Deskripsi pelanggaran nomor 7.', 1, '2026-07-06 18:00:00', '2026-07-06 18:00:00'),
-(8, 8, 'PG-008', 'Berkata tidak sopan #008', 9, 'Deskripsi pelanggaran nomor 8.', 1, '2026-07-07 18:00:00', '2026-07-07 18:00:00'),
-(9, 9, 'PG-009', 'Membuang sampah sembarangan #009', 10, 'Deskripsi pelanggaran nomor 9.', 1, '2026-07-08 18:00:00', '2026-07-08 18:00:00'),
-(10, 10, 'PG-010', 'Tidak mengikuti upacara #010', 1, 'Deskripsi pelanggaran nomor 10.', 1, '2026-07-09 18:00:00', '2026-07-09 18:00:00');
+(1, 1, 'PG-001', 'Terlambat datang ke sekolah #001', 2, 'Deskripsi pelanggaran nomor 1.', 1, '2026-06-30 11:00:00', '2026-06-30 11:00:00'),
+(2, 2, 'PG-002', 'Tidak memakai atribut lengkap #002', 3, 'Deskripsi pelanggaran nomor 2.', 1, '2026-07-01 11:00:00', '2026-07-01 11:00:00'),
+(3, 3, 'PG-003', 'Tidak memakai seragam sesuai ketentuan #003', 4, 'Deskripsi pelanggaran nomor 3.', 1, '2026-07-02 11:00:00', '2026-07-02 11:00:00'),
+(4, 4, 'PG-004', 'Meninggalkan kelas tanpa izin #004', 5, 'Deskripsi pelanggaran nomor 4.', 1, '2026-07-03 11:00:00', '2026-07-03 11:00:00'),
+(5, 5, 'PG-005', 'Tidak mengerjakan tugas #005', 6, 'Deskripsi pelanggaran nomor 5.', 1, '2026-07-04 11:00:00', '2026-07-04 11:00:00'),
+(6, 6, 'PG-006', 'Rambut tidak sesuai aturan #006', 7, 'Deskripsi pelanggaran nomor 6.', 1, '2026-07-05 11:00:00', '2026-07-05 11:00:00'),
+(7, 7, 'PG-007', 'Membawa barang terlarang #007', 8, 'Deskripsi pelanggaran nomor 7.', 1, '2026-07-06 11:00:00', '2026-07-06 11:00:00'),
+(8, 8, 'PG-008', 'Berkata tidak sopan #008', 9, 'Deskripsi pelanggaran nomor 8.', 1, '2026-07-07 11:00:00', '2026-07-07 11:00:00'),
+(9, 9, 'PG-009', 'Membuang sampah sembarangan #009', 10, 'Deskripsi pelanggaran nomor 9.', 1, '2026-07-08 11:00:00', '2026-07-08 11:00:00'),
+(10, 10, 'PG-010', 'Tidak mengikuti upacara #010', 1, 'Deskripsi pelanggaran nomor 10.', 1, '2026-07-09 11:00:00', '2026-07-09 11:00:00');
 
 -- --------------------------------------------------------
 
@@ -206,106 +244,16 @@ CREATE TABLE `t_pelanggaran_kategori` (
 --
 
 INSERT INTO `t_pelanggaran_kategori` (`id`, `nama`, `deskripsi`, `status_aktif`, `created_at`, `updated_at`) VALUES
-(1, 'Kedisiplinan 1', 'Kategori pelanggaran nomor 1', 1, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(2, 'Kerapian 1', 'Kategori pelanggaran nomor 2', 1, '2026-07-02 01:00:00', '2026-07-02 01:00:00'),
-(3, 'Kehadiran 1', 'Kategori pelanggaran nomor 3', 1, '2026-07-03 01:00:00', '2026-07-03 01:00:00'),
-(4, 'Ketertiban 1', 'Kategori pelanggaran nomor 4', 1, '2026-07-04 01:00:00', '2026-07-04 01:00:00'),
-(5, 'Perlengkapan 1', 'Kategori pelanggaran nomor 5', 1, '2026-07-05 01:00:00', '2026-07-05 01:00:00'),
-(6, 'Sikap 1', 'Kategori pelanggaran nomor 6', 1, '2026-07-06 01:00:00', '2026-07-06 01:00:00'),
-(7, 'Kebersihan 1', 'Kategori pelanggaran nomor 7', 1, '2026-07-07 01:00:00', '2026-07-07 01:00:00'),
-(8, 'Keamanan 1', 'Kategori pelanggaran nomor 8', 1, '2026-07-08 01:00:00', '2026-07-08 01:00:00'),
-(9, 'Akademik 1', 'Kategori pelanggaran nomor 9', 1, '2026-07-09 01:00:00', '2026-07-09 01:00:00'),
-(10, 'Lingkungan 1', 'Kategori pelanggaran nomor 10', 1, '2026-07-10 01:00:00', '2026-07-10 01:00:00'),
-(11, 'Kedisiplinan 2', 'Kategori pelanggaran nomor 11', 1, '2026-07-11 01:00:00', '2026-07-11 01:00:00'),
-(12, 'Kerapian 2', 'Kategori pelanggaran nomor 12', 1, '2026-07-12 01:00:00', '2026-07-12 01:00:00'),
-(13, 'Kehadiran 2', 'Kategori pelanggaran nomor 13', 1, '2026-07-13 01:00:00', '2026-07-13 01:00:00'),
-(14, 'Ketertiban 2', 'Kategori pelanggaran nomor 14', 1, '2026-07-14 01:00:00', '2026-07-14 01:00:00'),
-(15, 'Perlengkapan 2', 'Kategori pelanggaran nomor 15', 1, '2026-07-15 01:00:00', '2026-07-15 01:00:00'),
-(16, 'Sikap 2', 'Kategori pelanggaran nomor 16', 1, '2026-07-16 01:00:00', '2026-07-16 01:00:00'),
-(17, 'Kebersihan 2', 'Kategori pelanggaran nomor 17', 1, '2026-07-17 01:00:00', '2026-07-17 01:00:00'),
-(18, 'Keamanan 2', 'Kategori pelanggaran nomor 18', 1, '2026-07-18 01:00:00', '2026-07-18 01:00:00'),
-(19, 'Akademik 2', 'Kategori pelanggaran nomor 19', 1, '2026-07-19 01:00:00', '2026-07-19 01:00:00'),
-(20, 'Lingkungan 2', 'Kategori pelanggaran nomor 20', 1, '2026-07-20 01:00:00', '2026-07-20 01:00:00'),
-(21, 'Kedisiplinan 3', 'Kategori pelanggaran nomor 21', 1, '2026-07-21 01:00:00', '2026-07-21 01:00:00'),
-(22, 'Kerapian 3', 'Kategori pelanggaran nomor 22', 1, '2026-07-22 01:00:00', '2026-07-22 01:00:00'),
-(23, 'Kehadiran 3', 'Kategori pelanggaran nomor 23', 1, '2026-07-23 01:00:00', '2026-07-23 01:00:00'),
-(24, 'Ketertiban 3', 'Kategori pelanggaran nomor 24', 1, '2026-07-24 01:00:00', '2026-07-24 01:00:00'),
-(25, 'Perlengkapan 3', 'Kategori pelanggaran nomor 25', 1, '2026-07-25 01:00:00', '2026-07-25 01:00:00'),
-(26, 'Sikap 3', 'Kategori pelanggaran nomor 26', 1, '2026-07-26 01:00:00', '2026-07-26 01:00:00'),
-(27, 'Kebersihan 3', 'Kategori pelanggaran nomor 27', 1, '2026-07-27 01:00:00', '2026-07-27 01:00:00'),
-(28, 'Keamanan 3', 'Kategori pelanggaran nomor 28', 1, '2026-07-28 01:00:00', '2026-07-28 01:00:00'),
-(29, 'Akademik 3', 'Kategori pelanggaran nomor 29', 1, '2026-07-29 01:00:00', '2026-07-29 01:00:00'),
-(30, 'Lingkungan 3', 'Kategori pelanggaran nomor 30', 1, '2026-07-30 01:00:00', '2026-07-30 01:00:00'),
-(31, 'Kedisiplinan 4', 'Kategori pelanggaran nomor 31', 1, '2026-07-31 01:00:00', '2026-07-31 01:00:00'),
-(32, 'Kerapian 4', 'Kategori pelanggaran nomor 32', 1, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(33, 'Kehadiran 4', 'Kategori pelanggaran nomor 33', 1, '2026-07-02 01:00:00', '2026-07-02 01:00:00'),
-(34, 'Ketertiban 4', 'Kategori pelanggaran nomor 34', 1, '2026-07-03 01:00:00', '2026-07-03 01:00:00'),
-(35, 'Perlengkapan 4', 'Kategori pelanggaran nomor 35', 1, '2026-07-04 01:00:00', '2026-07-04 01:00:00'),
-(36, 'Sikap 4', 'Kategori pelanggaran nomor 36', 1, '2026-07-05 01:00:00', '2026-07-05 01:00:00'),
-(37, 'Kebersihan 4', 'Kategori pelanggaran nomor 37', 1, '2026-07-06 01:00:00', '2026-07-06 01:00:00'),
-(38, 'Keamanan 4', 'Kategori pelanggaran nomor 38', 1, '2026-07-07 01:00:00', '2026-07-07 01:00:00'),
-(39, 'Akademik 4', 'Kategori pelanggaran nomor 39', 1, '2026-07-08 01:00:00', '2026-07-08 01:00:00'),
-(40, 'Lingkungan 4', 'Kategori pelanggaran nomor 40', 1, '2026-07-09 01:00:00', '2026-07-09 01:00:00'),
-(41, 'Kedisiplinan 5', 'Kategori pelanggaran nomor 41', 1, '2026-07-10 01:00:00', '2026-07-10 01:00:00'),
-(42, 'Kerapian 5', 'Kategori pelanggaran nomor 42', 1, '2026-07-11 01:00:00', '2026-07-11 01:00:00'),
-(43, 'Kehadiran 5', 'Kategori pelanggaran nomor 43', 1, '2026-07-12 01:00:00', '2026-07-12 01:00:00'),
-(44, 'Ketertiban 5', 'Kategori pelanggaran nomor 44', 1, '2026-07-13 01:00:00', '2026-07-13 01:00:00'),
-(45, 'Perlengkapan 5', 'Kategori pelanggaran nomor 45', 1, '2026-07-14 01:00:00', '2026-07-14 01:00:00'),
-(46, 'Sikap 5', 'Kategori pelanggaran nomor 46', 1, '2026-07-15 01:00:00', '2026-07-15 01:00:00'),
-(47, 'Kebersihan 5', 'Kategori pelanggaran nomor 47', 1, '2026-07-16 01:00:00', '2026-07-16 01:00:00'),
-(48, 'Keamanan 5', 'Kategori pelanggaran nomor 48', 1, '2026-07-17 01:00:00', '2026-07-17 01:00:00'),
-(49, 'Akademik 5', 'Kategori pelanggaran nomor 49', 1, '2026-07-18 01:00:00', '2026-07-18 01:00:00'),
-(50, 'Lingkungan 5', 'Kategori pelanggaran nomor 50', 1, '2026-07-19 01:00:00', '2026-07-19 01:00:00'),
-(51, 'Kedisiplinan 6', 'Kategori pelanggaran nomor 51', 1, '2026-07-20 01:00:00', '2026-07-20 01:00:00'),
-(52, 'Kerapian 6', 'Kategori pelanggaran nomor 52', 1, '2026-07-21 01:00:00', '2026-07-21 01:00:00'),
-(53, 'Kehadiran 6', 'Kategori pelanggaran nomor 53', 1, '2026-07-22 01:00:00', '2026-07-22 01:00:00'),
-(54, 'Ketertiban 6', 'Kategori pelanggaran nomor 54', 1, '2026-07-23 01:00:00', '2026-07-23 01:00:00'),
-(55, 'Perlengkapan 6', 'Kategori pelanggaran nomor 55', 1, '2026-07-24 01:00:00', '2026-07-24 01:00:00'),
-(56, 'Sikap 6', 'Kategori pelanggaran nomor 56', 1, '2026-07-25 01:00:00', '2026-07-25 01:00:00'),
-(57, 'Kebersihan 6', 'Kategori pelanggaran nomor 57', 1, '2026-07-26 01:00:00', '2026-07-26 01:00:00'),
-(58, 'Keamanan 6', 'Kategori pelanggaran nomor 58', 1, '2026-07-27 01:00:00', '2026-07-27 01:00:00'),
-(59, 'Akademik 6', 'Kategori pelanggaran nomor 59', 1, '2026-07-28 01:00:00', '2026-07-28 01:00:00'),
-(60, 'Lingkungan 6', 'Kategori pelanggaran nomor 60', 1, '2026-07-29 01:00:00', '2026-07-29 01:00:00'),
-(61, 'Kedisiplinan 7', 'Kategori pelanggaran nomor 61', 1, '2026-07-30 01:00:00', '2026-07-30 01:00:00'),
-(62, 'Kerapian 7', 'Kategori pelanggaran nomor 62', 1, '2026-07-31 01:00:00', '2026-07-31 01:00:00'),
-(63, 'Kehadiran 7', 'Kategori pelanggaran nomor 63', 1, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(64, 'Ketertiban 7', 'Kategori pelanggaran nomor 64', 1, '2026-07-02 01:00:00', '2026-07-02 01:00:00'),
-(65, 'Perlengkapan 7', 'Kategori pelanggaran nomor 65', 1, '2026-07-03 01:00:00', '2026-07-03 01:00:00'),
-(66, 'Sikap 7', 'Kategori pelanggaran nomor 66', 1, '2026-07-04 01:00:00', '2026-07-04 01:00:00'),
-(67, 'Kebersihan 7', 'Kategori pelanggaran nomor 67', 1, '2026-07-05 01:00:00', '2026-07-05 01:00:00'),
-(68, 'Keamanan 7', 'Kategori pelanggaran nomor 68', 1, '2026-07-06 01:00:00', '2026-07-06 01:00:00'),
-(69, 'Akademik 7', 'Kategori pelanggaran nomor 69', 1, '2026-07-07 01:00:00', '2026-07-07 01:00:00'),
-(70, 'Lingkungan 7', 'Kategori pelanggaran nomor 70', 1, '2026-07-08 01:00:00', '2026-07-08 01:00:00'),
-(71, 'Kedisiplinan 8', 'Kategori pelanggaran nomor 71', 1, '2026-07-09 01:00:00', '2026-07-09 01:00:00'),
-(72, 'Kerapian 8', 'Kategori pelanggaran nomor 72', 1, '2026-07-10 01:00:00', '2026-07-10 01:00:00'),
-(73, 'Kehadiran 8', 'Kategori pelanggaran nomor 73', 1, '2026-07-11 01:00:00', '2026-07-11 01:00:00'),
-(74, 'Ketertiban 8', 'Kategori pelanggaran nomor 74', 1, '2026-07-12 01:00:00', '2026-07-12 01:00:00'),
-(75, 'Perlengkapan 8', 'Kategori pelanggaran nomor 75', 1, '2026-07-13 01:00:00', '2026-07-13 01:00:00'),
-(76, 'Sikap 8', 'Kategori pelanggaran nomor 76', 1, '2026-07-14 01:00:00', '2026-07-14 01:00:00'),
-(77, 'Kebersihan 8', 'Kategori pelanggaran nomor 77', 1, '2026-07-15 01:00:00', '2026-07-15 01:00:00'),
-(78, 'Keamanan 8', 'Kategori pelanggaran nomor 78', 1, '2026-07-16 01:00:00', '2026-07-16 01:00:00'),
-(79, 'Akademik 8', 'Kategori pelanggaran nomor 79', 1, '2026-07-17 01:00:00', '2026-07-17 01:00:00'),
-(80, 'Lingkungan 8', 'Kategori pelanggaran nomor 80', 1, '2026-07-18 01:00:00', '2026-07-18 01:00:00'),
-(81, 'Kedisiplinan 9', 'Kategori pelanggaran nomor 81', 1, '2026-07-19 01:00:00', '2026-07-19 01:00:00'),
-(82, 'Kerapian 9', 'Kategori pelanggaran nomor 82', 1, '2026-07-20 01:00:00', '2026-07-20 01:00:00'),
-(83, 'Kehadiran 9', 'Kategori pelanggaran nomor 83', 1, '2026-07-21 01:00:00', '2026-07-21 01:00:00'),
-(84, 'Ketertiban 9', 'Kategori pelanggaran nomor 84', 1, '2026-07-22 01:00:00', '2026-07-22 01:00:00'),
-(85, 'Perlengkapan 9', 'Kategori pelanggaran nomor 85', 1, '2026-07-23 01:00:00', '2026-07-23 01:00:00'),
-(86, 'Sikap 9', 'Kategori pelanggaran nomor 86', 1, '2026-07-24 01:00:00', '2026-07-24 01:00:00'),
-(87, 'Kebersihan 9', 'Kategori pelanggaran nomor 87', 1, '2026-07-25 01:00:00', '2026-07-25 01:00:00'),
-(88, 'Keamanan 9', 'Kategori pelanggaran nomor 88', 1, '2026-07-26 01:00:00', '2026-07-26 01:00:00'),
-(89, 'Akademik 9', 'Kategori pelanggaran nomor 89', 1, '2026-07-27 01:00:00', '2026-07-27 01:00:00'),
-(90, 'Lingkungan 9', 'Kategori pelanggaran nomor 90', 1, '2026-07-28 01:00:00', '2026-07-28 01:00:00'),
-(91, 'Kedisiplinan 10', 'Kategori pelanggaran nomor 91', 1, '2026-07-29 01:00:00', '2026-07-29 01:00:00'),
-(92, 'Kerapian 10', 'Kategori pelanggaran nomor 92', 1, '2026-07-30 01:00:00', '2026-07-30 01:00:00'),
-(93, 'Kehadiran 10', 'Kategori pelanggaran nomor 93', 1, '2026-07-31 01:00:00', '2026-07-31 01:00:00'),
-(94, 'Ketertiban 10', 'Kategori pelanggaran nomor 94', 1, '2026-07-01 01:00:00', '2026-07-01 01:00:00'),
-(95, 'Perlengkapan 10', 'Kategori pelanggaran nomor 95', 1, '2026-07-02 01:00:00', '2026-07-02 01:00:00'),
-(96, 'Sikap 10', 'Kategori pelanggaran nomor 96', 1, '2026-07-03 01:00:00', '2026-07-03 01:00:00'),
-(97, 'Kebersihan 10', 'Kategori pelanggaran nomor 97', 1, '2026-07-04 01:00:00', '2026-07-04 01:00:00'),
-(98, 'Keamanan 10', 'Kategori pelanggaran nomor 98', 1, '2026-07-05 01:00:00', '2026-07-05 01:00:00'),
-(99, 'Akademik 10', 'Kategori pelanggaran nomor 99', 1, '2026-07-06 01:00:00', '2026-07-06 01:00:00'),
-(100, 'Lingkungan 10', 'Kategori pelanggaran nomor 100', 1, '2026-07-07 01:00:00', '2026-07-07 01:00:00');
+(1, 'Kerapian 1', 'Deskripsi kategori untuk pelanggaran kerapian berpakaian dan atribut.', 1, '2026-06-30 18:00:00', '2026-06-30 18:00:00'),
+(2, 'Kehadiran 1', 'Deskripsi kategori untuk pelanggaran kehadiran dan ketepatan waktu.', 1, '2026-07-01 18:00:00', '2026-07-01 18:00:00'),
+(3, 'Ketertiban 1', 'Deskripsi kategori untuk pelanggaran ketertiban lingkungan sekolah.', 1, '2026-07-02 18:00:00', '2026-07-02 18:00:00'),
+(4, 'Perlengkapan 1', 'Deskripsi kategori untuk pelanggaran kelengkapan belajar siswa.', 1, '2026-07-03 18:00:00', '2026-07-03 18:00:00'),
+(5, 'Sikap 1', 'Deskripsi kategori untuk pelanggaran sikap dan etika siswa.', 1, '2026-07-04 18:00:00', '2026-07-04 18:00:00'),
+(6, 'Kebersihan 1', 'Deskripsi kategori untuk pelanggaran kebersihan kelas dan sekolah.', 1, '2026-07-05 18:00:00', '2026-07-05 18:00:00'),
+(7, 'Keamanan 1', 'Deskripsi kategori untuk pelanggaran aturan keamanan sekolah.', 1, '2026-07-06 18:00:00', '2026-07-06 18:00:00'),
+(8, 'Akademik 1', 'Deskripsi kategori untuk pelanggaran kegiatan belajar dan tugas.', 1, '2026-07-07 18:00:00', '2026-07-07 18:00:00'),
+(9, 'Kerapian 2', 'Deskripsi kategori untuk pelanggaran baju sekolah[cite: 1].', 1, '2026-07-08 18:00:00', '2026-07-08 18:00:00'),
+(10, 'Kedisiplinan', 'Memakai sepatu bebas[cite: 1].', 1, '2026-07-09 18:00:00', '2026-07-09 18:00:00');
 
 -- --------------------------------------------------------
 
@@ -339,7 +287,14 @@ CREATE TABLE `t_pelanggaran_siswa` (
 --
 
 INSERT INTO `t_pelanggaran_siswa` (`id`, `tahun_ajaran_id`, `siswa_id`, `nama_siswa`, `kelas_id`, `nama_kelas`, `pelanggaran_id`, `nama_pelanggaran`, `pelanggaran_kategori_id`, `guru_id`, `nama_guru`, `tanggal`, `keterangan`, `poin`, `tindakan`, `status`, `created_at`, `updated_at`) VALUES
-(106, 25, 88, 'Alfin Rahadian', 11, 'XII RPL 1', 2, '0', 2, 59, '0', '2026-11-01', 'l', 3, 'Teguran Lisan', 'selesai', '2026-11-14 05:55:47', '2026-11-14 05:55:59');
+(107, 25, 88, 'Alfin Rahadian', 11, 'XII RPL 1', 1, '0', 1, 59, '0', '2026-11-16', 'bgg', 2, 'Teguran Lisan', 'selesai', '2026-11-16 02:02:26', '2026-11-16 02:02:37'),
+(108, 25, 57, 'Adi Bayu Maulana Putra', 26, 'XII RPL 2', 7, '0', 7, 32, '0', '2026-11-16', 's', 8, 'Peringatan Tertulis (SP 1)', 'selesai', '2026-11-16 02:20:59', '2026-11-16 04:46:02'),
+(109, 25, 89, 'Alisa Ramadhani', 11, 'XII RPL 1', 6, '0', 6, 59, '0', '2026-11-16', 'ss', 7, 'Teguran Lisan', 'selesai', '2026-11-16 02:57:46', '2026-11-16 02:57:58'),
+(110, 25, 58, 'Agan Basyri Sa\'ady', 26, 'XII RPL 2', 8, '0', 8, 32, '0', '2026-11-16', 'kk', 9, 'Teguran Lisan', 'selesai', '2026-11-16 03:01:11', '2026-11-16 04:46:05'),
+(111, 25, 90, 'Alma Aura Livia', 11, 'XII RPL 1', 7, '0', 7, 59, '0', '2026-11-16', 'sad', 8, 'Teguran Lisan', 'selesai', '2026-11-16 03:02:05', '2026-11-16 03:28:02'),
+(119, 25, 109, 'Risqi Muhamad Ihwani', 11, 'XII RPL 1', 8, '0', 8, 59, '0', '2026-11-16', 'd', 9, 'Teguran Lisan', 'selesai', '2026-11-16 04:29:07', '2026-11-16 04:32:55'),
+(120, 25, 100, 'Muhamad Alfarizi', 11, 'XII RPL 1', 6, '0', 6, 59, '0', '2026-11-16', 'd', 7, 'Skorsing', 'selesai', '2026-11-16 04:33:29', '2026-11-16 04:34:06'),
+(121, 25, 102, 'Muhamad Zidane Maulidan', 11, 'XII RPL 1', 1, 'Terlambat datang ke sekolah #001', 1, 59, 'Ari Sandriana, S.Kom', '2026-11-16', 'd', 2, 'Bimbingan Konseling (BK)', 'selesai', '2026-11-16 04:35:24', '2026-11-16 04:43:29');
 
 -- --------------------------------------------------------
 
@@ -652,7 +607,7 @@ INSERT INTO `t_users` (`id`, `name`, `username`, `email`, `email_verified_at`, `
 (134, 'Yaneu Nurdian, S.Pd, M.Pd', 'Yaneu Nurdian, S.Pd, M.Pd', 'yaneu.nurdian.s.pd.m.pd@gmail.com', '2026-11-11 05:16:54', '$2y$12$XVFV7RDWOV8CARg70T71MOv8bYQeAClr0Vdg2QiP5x9jrkt5UlQHq', '', 'guru', '2026-11-11 05:16:54', '2026-11-11 05:16:54'),
 (135, 'Ucu Muhammad Khoer N, S.Pd', 'Ucu Muhammad Khoer N, S.Pd', 'ucu.muhammad.khoer.n.s.pd@gmail.com', '2026-11-11 05:16:54', '$2y$12$XVFV7RDWOV8CARg70T71MOv8bYQeAClr0Vdg2QiP5x9jrkt5UlQHq', '', 'guru', '2026-11-11 05:16:54', '2026-11-11 05:16:54'),
 (136, 'Mira Dwi Rahmawati, S.Ag', 'Mira Dwi Rahmawati, S.Ag', 'mira.dwi.rahmawati.s.ag@gmail.com', '2026-11-11 05:16:54', '$2y$12$XVFV7RDWOV8CARg70T71MOv8bYQeAClr0Vdg2QiP5x9jrkt5UlQHq', '', 'guru', '2026-11-11 05:16:54', '2026-11-11 05:16:54'),
-(137, 'Aldi Maulana, S.Pd', 'Aldi Maulana, S.Pd', 'aldi.maulana.s.pd@gmail.com', '2026-11-11 05:16:54', '$2y$12$XVFV7RDWOV8CARg70T71MOv8bYQeAClr0Vdg2QiP5x9jrkt5UlQHq', '', 'guru', '2026-11-11 05:16:54', '2026-11-11 05:16:54'),
+(137, 'Aldi Maulana, S.Pd', 'Aldi Maulana, S.Pd', 'aldimaulana@gmail.com', '2026-11-11 05:16:54', '$2y$10$hhAnprlodJLDZT576HstQeE.dgGaRD6zy02s7LhQOXmIgfKziyGLi', '', 'Wali_Kelas', '2026-11-11 05:16:54', '2026-11-16 01:50:49'),
 (138, 'Eli Rosliah, S.Pd', 'Eli Rosliah, S.Pd', 'eli.rosliah.s.pd@gmail.com', '2026-11-11 05:16:54', '$2y$12$XVFV7RDWOV8CARg70T71MOv8bYQeAClr0Vdg2QiP5x9jrkt5UlQHq', '', 'guru', '2026-11-11 05:16:54', '2026-11-11 05:16:54'),
 (139, 'Isni Nur Fitriani, S.Pd', 'Isni Nur Fitriani, S.Pd', 'isni.nur.fitriani.s.pd@gmail.com', '2026-11-11 05:16:54', '$2y$12$XVFV7RDWOV8CARg70T71MOv8bYQeAClr0Vdg2QiP5x9jrkt5UlQHq', '', 'guru', '2026-11-11 05:16:54', '2026-11-11 05:16:54'),
 (140, 'Aanisah Putri Nur Aini, S.Pd', 'Aanisah Putri Nur Aini, S.Pd', 'aanisah.putri.nur.aini.s.pd@gmail.com', '2026-11-11 05:16:54', '$2y$12$XVFV7RDWOV8CARg70T71MOv8bYQeAClr0Vdg2QiP5x9jrkt5UlQHq', '', 'guru', '2026-11-11 05:16:54', '2026-11-11 05:16:54'),
@@ -677,7 +632,7 @@ INSERT INTO `t_users` (`id`, `name`, `username`, `email`, `email_verified_at`, `
 (159, 'Rurry Febriani Maryadi, S.Pd', 'Rurry Febriani Maryadi, S.Pd', 'rurry.febriani.maryadi.s.pd@gmail.com', '2026-11-11 05:16:54', '$2y$12$XVFV7RDWOV8CARg70T71MOv8bYQeAClr0Vdg2QiP5x9jrkt5UlQHq', '', 'guru', '2026-11-11 05:16:54', '2026-11-11 05:16:54'),
 (160, 'Irvan Rizal, S.Pd', 'Irvan Rizal, S.Pd', 'irvan.rizal.s.pd@gmail.com', '2026-11-11 05:16:54', '$2y$12$XVFV7RDWOV8CARg70T71MOv8bYQeAClr0Vdg2QiP5x9jrkt5UlQHq', '', 'guru', '2026-11-11 05:16:54', '2026-11-11 05:16:54'),
 (161, 'ALPA', 'ALPA', 'alpa@gmail.com', '2026-11-11 05:16:54', '$2y$12$XVFV7RDWOV8CARg70T71MOv8bYQeAClr0Vdg2QiP5x9jrkt5UlQHq', '', 'guru', '2026-11-11 05:16:54', '2026-11-11 05:16:54'),
-(162, 'Ari Sandriana, S.Kom', 'Ari Sandriana, S.Kom', 'AriSandriana@gmail.com', '2026-11-11 05:16:54', '$2y$10$9mDHWiH7q/p2aCuz4KQOTOhmmuRY/vcJgO7XuCxUITb9gmKhQ/Jke', '', 'guru', '2026-11-11 05:16:54', '2026-11-13 13:46:03'),
+(162, 'Ari Sandriana, S.Kom', 'Ari Sandriana, S.Kom', 'AriSandriana@gmail.com', '2026-11-11 05:16:54', '$2y$10$kVB5z5zvMrSPQaTBmK6ZpeLw9mr8aD7KzQuzRvRlzGcAqTifmhzGa', '', 'Wali_Kelas', '2026-11-11 05:16:54', '2026-11-16 01:50:30'),
 (170, 'Pak rahmat', NULL, 'rahmat@gmail.com', '2026-11-14 08:25:21', '$2y$10$RnnvktoRmmhObOu0F//jvOqwff.0wd4WdQWm5WoBMXzLXqcpZyuBO', '', 'guru', '2026-11-14 08:25:21', '2026-11-14 08:52:21'),
 (171, 'Mamat hasep', NULL, 'aep@gmail.com', '2026-11-14 09:30:13', '$2y$10$lFj7Nb.znCOnrj5lr5DJjeI85skVYcWn7.Wcp7caCqzZlU.W/5kt.', '', 'guru', '2026-11-14 09:30:13', '2026-11-14 09:30:13'),
 (172, 'Pak rahmat abdul', NULL, 'rahmat@gmail.com', '2026-11-14 09:45:39', '$2y$10$zuMwT7wB0mjickxp.P2dx.PKK216twO2Mmoh3qVDb0omtllNo4Xfm', '', 'guru', '2026-11-14 09:45:39', '2026-11-14 09:45:55'),
@@ -809,7 +764,7 @@ ALTER TABLE `t_kelas`
 -- AUTO_INCREMENT for table `t_kelas_siswa`
 --
 ALTER TABLE `t_kelas_siswa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=136;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=175;
 
 --
 -- AUTO_INCREMENT for table `t_pelanggaran`
@@ -827,7 +782,7 @@ ALTER TABLE `t_pelanggaran_kategori`
 -- AUTO_INCREMENT for table `t_pelanggaran_siswa`
 --
 ALTER TABLE `t_pelanggaran_siswa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=107;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
 
 --
 -- AUTO_INCREMENT for table `t_siswa`

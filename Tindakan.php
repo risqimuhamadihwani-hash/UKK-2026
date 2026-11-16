@@ -38,10 +38,12 @@ $tahunQuery = $koneksi->query("SELECT id FROM t_tahun_ajaran WHERE status_aktif 
 $tahunData = $tahunQuery ? $tahunQuery->fetch_assoc() : null;
 $tahun_id = $tahunData ? (int)$tahunData['id'] : 1;
 
-// DETEKSI APAKAH GURU INI WALI KELAS
+// DETEKSI APAKAH GURU INI WALI KELAS & DAPATKAN KELAS ID-NYA
 $is_wali_kelas = false;
+$kelas_wali_id = 0;
+
 $stmtWali = $koneksi->prepare(
-    "SELECT k.nama AS nama_kelas 
+    "SELECT wk.kelas_id, k.nama AS nama_kelas 
      FROM t_guru g
      JOIN t_wali_kelas wk ON wk.guru_id = g.id AND wk.tahun_ajaran_id = ? AND wk.status_aktif = 1
      JOIN t_kelas k ON k.id = wk.kelas_id
@@ -55,6 +57,7 @@ $stmtWali->close();
 
 if ($resWali && !empty($resWali['nama_kelas'])) {
     $is_wali_kelas = true;
+    $kelas_wali_id = (int) $resWali['kelas_id'];
 }
 
 $pesan = '';
@@ -67,7 +70,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['simpan_tindakan'])) {
     $tindakan = trim($_POST['tindakan'] ?? '');
     $status = trim($_POST['status'] ?? '');
 
-    if ($id <= 0 || $tindakan === '' || !in_array($status, ['tercatat', 'diproses', 'selesai'], true)) {
+    // CEK APAKAH STATUS SEBELUMNYA SUDAH SELESAI (JIKA SUDAH, TOLAK PERUBAHAN)
+    $stmtCheck = $koneksi->prepare("SELECT status FROM t_pelanggaran_siswa WHERE id = ?");
+    $stmtCheck->bind_param("i", $id);
+    $stmtCheck->execute();
+    $currentData = $stmtCheck->get_result()->fetch_assoc();
+    $stmtCheck->close();
+
+    if ($currentData && strtolower($currentData['status']) === 'selesai') {
+        $error = "Data pelanggaran ini sudah selesai dan tidak dapat diubah kembali.";
+    } elseif ($id <= 0 || $tindakan === '' || !in_array($status, ['tercatat', 'diproses', 'selesai'], true)) {
         $error = "Data tindakan atau status tidak valid.";
     } else {
         $stmt = mysqli_prepare($koneksi, "
@@ -112,17 +124,25 @@ $sql = "
     LEFT JOIN t_kelas k ON k.id = p.kelas_id
     LEFT JOIN t_pelanggaran tp ON tp.id = p.pelanggaran_id
     WHERE 1=1
+      AND LOWER(COALESCE(p.status, 'tercatat')) <> 'selesai'
 ";
 
 $params = [];
 $types = '';
 
-if (in_array($status_filter, ['tercatat', 'diproses', 'selesai'], true)) {
-    $sql .= " AND p.status = ?";
+// JIKA AKUN INI WALI KELAS, STRICT FILTER HANYA MENAMPILKAN KELASNYA SAJA (Contoh: XII RPL 1)
+if ($is_wali_kelas && $kelas_wali_id > 0) {
+    $sql .= " AND p.kelas_id = ?";
+    $params[] = $kelas_wali_id;
+    $types .= "i";
+}
+
+// Filter hanya untuk status yang masih perlu ditangani.
+// Status selesai tidak pernah ditampilkan di halaman Tindakan.
+if (in_array($status_filter, ['tercatat', 'diproses'], true)) {
+    $sql .= " AND LOWER(COALESCE(p.status, 'tercatat')) = ?";
     $params[] = $status_filter;
     $types .= "s";
-} else {
-    $sql .= " AND p.status != 'selesai'";
 }
 
 if ($cari !== '') {

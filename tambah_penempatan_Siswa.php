@@ -1,319 +1,155 @@
 <?php
-// INISIASI SESSION & KONEKSI DATABASE
 session_start();
-include 'config/koneksi.php';
+require_once 'auth.php'; 
+require_once 'config.php'; 
 
-// CEK LOGIN
-if (!isset($_SESSION['id_user'])) {
-    header("Location: login.php");
-    exit;
+if (function_exists('requireRole')) {
+    requireRole(['admin']);
 }
 
-$pesan = "";
+$title = 'Tambah Penempatan Siswa';
+$section = 'admin';
 
-// Ambil data tahun ajaran aktif secara otomatis (termasuk tanggal mulai & selesai)
-$tahun_aktif_query = mysqli_query($koneksi, "SELECT id, nama, tanggal_mulai, tanggal_selesai FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
-$tahun_aktif = mysqli_fetch_assoc($tahun_aktif_query);
-$tahun_ajaran_aktif_id = $tahun_aktif ? (int)$tahun_aktif['id'] : 0;
+$db_pdo = $pdo ?? ($conn instanceof PDO ? $conn : null);
 
-// PROSES SIMPAN
-if (isset($_POST['simpan'])) {
-
-    $siswa_id = (int) $_POST['siswa_id'];
-    $tahun_ajaran_id = $tahun_ajaran_aktif_id;
-    $kelas_id = (int) $_POST['kelas_id'];
-    $tanggal_mulai = $tahun_aktif ? $tahun_aktif['tanggal_mulai'] : '';
-    $tanggal_selesai = $tahun_aktif ? $tahun_aktif['tanggal_selesai'] : '';
-    $status_aktif = (int) $_POST['status_aktif'];
-
-    if (
-        $siswa_id <= 0 ||
-        $tahun_ajaran_id <= 0 ||
-        $kelas_id <= 0 ||
-        $tanggal_mulai == "" ||
-        $tanggal_selesai == "" ||
-        $tanggal_selesai < $tanggal_mulai
-    ) {
-        $pesan = "Data tidak valid atau tidak ada tahun ajaran aktif. Periksa kembali form.";
-    } else {
-        $cek = mysqli_prepare($koneksi,
-            "SELECT id FROM t_kelas_siswa
-             WHERE siswa_id = ? AND tahun_ajaran_id = ?"
-        );
-
-        mysqli_stmt_bind_param(
-            $cek, "ii",
-            $siswa_id,
-            $tahun_ajaran_id
-        );
-
-        mysqli_stmt_execute($cek);
-        mysqli_stmt_store_result($cek);
-
-        if (mysqli_stmt_num_rows($cek) > 0) {
-            $pesan = "Siswa sudah ditempatkan pada tahun ajaran tersebut.";
-        } else {
-            $stmt = mysqli_prepare($koneksi,
-                "INSERT INTO t_kelas_siswa
-                (
-                    siswa_id,
-                    tahun_ajaran_id,
-                    kelas_id,
-                    tanggal_mulai,
-                    tanggal_selesai,
-                    status_aktif
-                )
-                VALUES (?, ?, ?, ?, ?, ?)"
-            );
-
-            mysqli_stmt_bind_param(
-                $stmt, "iiissi",
-                $siswa_id,
-                $tahun_ajaran_id,
-                $kelas_id,
-                $tanggal_mulai,
-                $tanggal_selesai,
-                $status_aktif
-            );
-
-            if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_close($stmt);
-                mysqli_stmt_close($cek);
-
-                // DITAMBAHKAN ?pesan=berhasil AGAR NOTIFIKASI DI KELOLA PENEMPATAN MUNCUL
-                header("Location: Kelola_Penempatan_Siswa.php?pesan=berhasil");
-                exit;
-            } else {
-                $pesan = "Gagal menyimpan data.";
-            }
-
-            mysqli_stmt_close($stmt);
-        }
-
-        mysqli_stmt_close($cek);
+// Tahun ajaran aktif (otomatis, hanya satu yang dipakai).
+$tahun_aktif = null;
+if ($db_pdo) {
+    try {
+        $tahun_aktif = $db_pdo->query("SELECT id, nama, tanggal_mulai, tanggal_selesai FROM t_tahun_ajaran WHERE status_aktif = 1 ORDER BY tanggal_mulai DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC) ?: null;
+    } catch (Exception $e) {
+        $tahun_aktif = null;
     }
 }
 
-// DATA SISWA: Menyertakan status_aktif dari t_siswa agar bisa dibaca otomatis oleh JavaScript
-$siswa = mysqli_query($koneksi,
-    "SELECT id, nis, nama, status_aktif
-     FROM t_siswa
-     WHERE id NOT IN (
-         SELECT siswa_id FROM t_kelas_siswa WHERE tahun_ajaran_id = $tahun_ajaran_aktif_id
-     )
-     ORDER BY nis ASC"
-);
+if (isset($_POST['submit'])) {
+    $siswa_id        = trim($_POST['siswa_id'] ?? '');
+    $kelas_id        = trim($_POST['kelas_id'] ?? '');
+    $tahun_ajaran_id = $tahun_aktif['id'] ?? '';
+    $status_aktif    = isset($_POST['status_aktif']) ? 1 : 0;
 
-// DATA KELAS
-$kelas = mysqli_query($koneksi,
-    "SELECT id, nama, tingkat, jurusan
-     FROM t_kelas
-     WHERE status_aktif = 1
-     ORDER BY nama ASC"
-);
+    if (!$tahun_aktif) {
+        echo "<script>alert('Belum ada tahun ajaran aktif. Aktifkan tahun ajaran terlebih dahulu.');</script>";
+    } elseif ($db_pdo) {
+        try {
+            $stmt = $db_pdo->prepare("INSERT INTO t_kelas_siswa (siswa_id, kelas_id, tahun_ajaran_id, tanggal_mulai, tanggal_selesai, status_aktif, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())");
+            $insert = $stmt->execute([$siswa_id, $kelas_id, $tahun_ajaran_id, $tahun_aktif['tanggal_mulai'], $tahun_aktif['tanggal_selesai'], $status_aktif]);
+            
+            if ($insert) {
+                echo "<script>alert('Data penempatan siswa berhasil ditambahkan!'); window.location='penempatan_siswa.php';</script>";
+            } else {
+                echo "<script>alert('Gagal menyimpan data penempatan siswa.');</script>";
+            }
+        } catch (Exception $e) {
+            echo "<script>alert('Error: " . addslashes($e->getMessage()) . "');</script>";
+        }
+    } else {
+        echo "<script>alert('Koneksi database PDO belum terhubung.');</script>";
+    }
+}
 
+// Ambil data untuk dropdown (Siswa, Kelas, Tahun Ajaran)
+$siswa_list = [];
+$kelas_list = [];
+
+if ($db_pdo) {
+    try {
+        // Tambahkan filter NOT IN untuk mengecualikan siswa yang sudah ditempatkan
+        $siswa_list = $db_pdo->query("SELECT id, nama FROM t_siswa WHERE status_aktif = 1 AND id NOT IN (SELECT siswa_id FROM t_kelas_siswa) ORDER BY nama ASC")->fetchAll(PDO::FETCH_ASSOC);
+        
+        $kelas_list = $db_pdo->query("SELECT id, nama FROM t_kelas WHERE status_aktif = 1 ORDER BY nama ASC")->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        // Abaikan jika tabel belum ada / error query dropdown
+    }
+}
 ?>
-
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Penempatan Siswa</title>
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Select2 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    <title><?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?></title>
+    <style>
+        body {
+            background-color: #f4f4f4;
+            overflow-x: hidden;
+            margin: 0;
+        }
+        .content-card {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .nav-pills .nav-link.active {
+            background-color: #00bcd4 !important;
+            color: #ffffff !important;
+            font-weight: bold;
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="container-fluid">
-    <div class="row">
-        <!-- SIDEBAR -->
-        <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
-            <h4 class="text-white fw-bold mb-4">
-             Pelanggaran Siswa
-            </h4>
-            <ul class="nav nav-pills flex-column">
-                <li class="nav-item mb-2">
-                    <a href="dashboard.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Dashboard</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Siswa.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Kelola Siswa</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Guru.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Kelola Guru</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Kelas.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Kelola Kelas</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Tahun_Ajaran.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Kelola Tahun Ajaran</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Penempatan_Siswa.php" class="nav-link active">
-                    <span class="fw-bold mb-4">Kelola Penempatan Siswa</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Wali_Kelas.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Kelola Wali Kelas</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Kategori_Pelanggaran.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Kelola Kategori Pelanggaran</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Kelola_Jenis_Pelanggaran.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Kelola Jenis Pelanggaran</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="Laporan.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">Laporan</span> 
-                    </a>
-                </li>
-                <li class="nav-item mb-2">
-                    <a href="about_me.php" class="nav-link text-white">
-                    <span class="fw-bold mb-4">About Me</span> 
-                    </a>
-                </li>
-                <hr class="text-secondary">
-                <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-danger">
-                    <span class="fw-bold mb-4">Logout</span> 
-                    </a>
-                </li>
-            </ul>
-        </div>
+<div class="container-fluid d-flex p-0" style="min-height: 100vh;">
+    <div class="row flex-grow-1 g-0 w-100">
 
-        <!-- KONTEN -->
+        <!-- Memanggil Sidebar Terpusat -->
+        <?php include "layout/sidebar.php"; ?>
+
+        <!-- KONTEN UTAMA FORM TAMBAH PENEMPATAN SISWA -->
         <main class="col-md-9 col-lg-10 p-4">
-
-            <h3 class="fw-bold mb-4">Tambah Penempatan Siswa</h3>
-
-            <div class="card shadow-sm border" style="background-color: #ffffff; border-color: #dee2e6 !important;">
-                <div class="card-body p-4">
-
-                    <?php if ($pesan != ""): ?>
-                        <div class="alert alert-danger py-2">
-                            <?= htmlspecialchars($pesan) ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- FORM -->
-                    <form method="POST" action="tambah_penempatan_Siswa.php">
-
-                        <div class="mb-3">
-                            <label class="form-label">Siswa</label>
-                            <select name="siswa_id" id="selectSiswa" class="form-select" required>
-                                <option value="">-- Pilih atau Cari Siswa --</option>
-                                <?php while ($s = mysqli_fetch_assoc($siswa)): ?>
-                                    <option value="<?= $s['id'] ?>" data-status="<?= $s['status_aktif'] ?>">
-                                        <?= htmlspecialchars($s['nis'] . ' - ' . $s['nama']) ?>
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Tahun Ajaran</label>
-                            <?php if ($tahun_aktif): ?>
-                                <input type="hidden" name="tahun_ajaran_id" value="<?= $tahun_ajaran_aktif_id ?>">
-                                <input type="text" class="form-control bg-light" value="<?= htmlspecialchars($tahun_aktif['nama']) ?>" readonly>
-                            <?php else: ?>
-                                <input type="text" class="form-control bg-light text-danger" value="Tidak ada tahun ajaran yang aktif saat ini!" readonly>
-                            <?php endif; ?>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Kelas</label>
-                            <select name="kelas_id" class="form-select" required>
-                                <option value="">-- Pilih Kelas --</option>
-                                <?php while ($k = mysqli_fetch_assoc($kelas)): ?>
-                                    <option value="<?= $k['id'] ?>">
-                                        <?= htmlspecialchars(
-                                            $k['nama'] . ' - ' .
-                                            $k['tingkat'] . ' - ' .
-                                            $k['jurusan']
-                                        ) ?>
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Status Aktif</label>
-                            <select name="status_aktif" class="form-select" required>
-                                <option value="1">Aktif</option>
-                                <option value="0">Tidak Aktif</option>
-                            </select>
-                        </div>
-
-                        <div class="d-flex gap-2 mt-4">
-                            <button
-                                type="submit"
-                                name="simpan"
-                                class="btn btn-primary px-3 py-1 text-white"
-                                style="background-color: #0d6efd;"
-                                <?= !$tahun_aktif ? 'disabled' : '' ?>
-                            >
-                                Tambah
-                            </button>
-
-                            <a href="Kelola_Penempatan_Siswa.php" class="btn btn-secondary px-3 py-1" style="background-color: #6c757d;">
-                                Kembali
-                            </a>
-                        </div>
-
-                    </form>
-
+            <div class="content-card shadow-sm">
+                <div class="mb-3">
+                    <h2>Tambah Penempatan Siswa</h2>
+                    <p class="text-muted mb-0">Formulir penempatan siswa ke dalam kelas dan tahun ajaran.</p>
                 </div>
-            </div>
+                <hr>
 
+                <form action="" method="POST" autocomplete="off">
+                    <div class="mb-3">
+                        <label for="siswa_id" class="form-label fw-bold">Pilih Siswa</label>
+                        <select class="form-select" id="siswa_id" name="siswa_id" required>
+                            <option value="">-- Pilih Siswa --</option>
+                            <?php foreach ($siswa_list as $s): ?>
+                                <option value="<?= (int)$s['id'] ?>"><?= htmlspecialchars($s['nama'], ENT_QUOTES, 'UTF-8') ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="kelas_id" class="form-label fw-bold">Pilih Kelas</label>
+                        <select class="form-select" id="kelas_id" name="kelas_id" required>
+                            <option value="">-- Pilih Kelas --</option>
+                            <?php foreach ($kelas_list as $k): ?>
+                                <option value="<?= (int)$k['id'] ?>"><?= htmlspecialchars($k['nama'], ENT_QUOTES, 'UTF-8') ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tahun_ajaran" class="form-label fw-bold">Tahun Ajaran</label>
+                        <input type="text" class="form-control" id="tahun_ajaran" value="<?= htmlspecialchars($tahun_aktif['nama'] ?? 'Belum ada tahun ajaran aktif', ENT_QUOTES, 'UTF-8') ?>" readonly>
+                        <?php if (!$tahun_aktif): ?><div class="form-text text-danger">Aktifkan satu tahun ajaran terlebih dahulu.</div><?php endif; ?>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="status_aktif" name="status_aktif" value="1" checked>
+                        <label class="form-check-label fw-bold" for="status_aktif">Status Aktif</label>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" name="submit" class="btn btn-warning fw-semibold px-4 text-dark" <?= !$tahun_aktif ? 'disabled' : '' ?>>Simpan</button>
+                        <a href="penempatan_siswa.php" class="btn btn-secondary fw-semibold px-4 ms-2">Kembali</a>
+                    </div>
+                </form>
+            </div>
         </main>
 
     </div>
 </div>
 
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<!-- Bootstrap 5 JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Select2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-<script>
-$(document).ready(function() {
-    $('#selectSiswa').select2({
-        theme: 'bootstrap-5',
-        width: '100%'
-    });
-
-    $('#selectSiswa').on('change', function() {
-        var selectedOption = $(this).find(':selected');
-        var statusSiswa = selectedOption.data('status');
-        
-        if (statusSiswa !== undefined && statusSiswa !== '') {
-            $('select[name="status_aktif"]').val(statusSiswa);
-        }
-    });
-});
-</script>
 </body>
 </html>

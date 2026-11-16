@@ -133,33 +133,6 @@ if (!$result) {
             <h1><strong>Kelola Guru</strong></h1> 
             <p>Halaman untuk mengelola data guru</p>
 
-            <!-- KARTU STATISTIK GURU (Gaya Minimalis Tanpa Gambar/Ikon) -->
-            <div class="row g-3 mb-4">
-                <!-- Card 1: Guru Aktif -->
-                <div class="col-md-4">
-                    <div class="card shadow-sm border-0 p-3 h-100">
-                        <span class="text-muted small mb-1">Guru Aktif</span>
-                        <h2 class="fw-bold mb-0 text-success"><?= $countAktif ?></h2>
-                    </div>
-                </div>
-
-                <!-- Card 2: Guru Menjadi Wali Kelas -->
-                <div class="col-md-4">
-                    <div class="card shadow-sm border-0 p-3 h-100">
-                        <span class="text-muted small mb-1">Guru Menjadi Wali Kelas</span>
-                        <h2 class="fw-bold mb-0 text-primary"><?= $countWali ?></h2>
-                    </div>
-                </div>
-
-                <!-- Card 3: Guru Tidak Aktif -->
-                <div class="col-md-4">
-                    <div class="card shadow-sm border-0 p-3 h-100">
-                        <span class="text-muted small mb-1">Guru Tidak Aktif</span>
-                        <h2 class="fw-bold mb-0 text-danger"><?= $countTidakAktif ?></h2>
-                    </div>
-                </div>
-            </div>
-
             <div class="mb-3">
                 <a href="tambah_guru.php" class="btn btn-primary">
                     + Tambah Guru

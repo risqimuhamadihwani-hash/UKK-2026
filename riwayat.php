@@ -44,25 +44,25 @@ $tahun_id = $tahunData ? (int)$tahunData['id'] : 1;
 
 // DETEKSI APAKAH USER ADALAH WALI KELAS
 $is_wali_kelas = false;
-if ($role === 'walikelas') {
+$stmtWali = $koneksi->prepare(
+    "SELECT k.nama AS nama_kelas 
+     FROM t_guru g
+     JOIN t_wali_kelas wk ON wk.guru_id = g.id AND wk.tahun_ajaran_id = ? AND wk.status_aktif = 1
+     JOIN t_kelas k ON k.id = wk.kelas_id
+     WHERE (g.user_id = ? OR g.id = ?) AND g.status_aktif = 1
+     LIMIT 1"
+);
+$stmtWali->bind_param("iii", $tahun_id, $session_id, $session_id);
+$stmtWali->execute();
+$resWali = $stmtWali->get_result()->fetch_assoc();
+$stmtWali->close();
+
+if ($resWali && !empty($resWali['nama_kelas'])) {
     $is_wali_kelas = true;
-} else {
-    // Cek apakah guru biasa ternyata memegang wali kelas di tahun ajaran aktif
-    $stmtWali = $koneksi->prepare(
-        "SELECT k.nama AS nama_kelas 
-         FROM t_guru g
-         JOIN t_wali_kelas wk ON wk.guru_id = g.id AND wk.tahun_ajaran_id = ? AND wk.status_aktif = 1
-         JOIN t_kelas k ON k.id = wk.kelas_id
-         WHERE g.user_id = ? OR g.id = ?
-         LIMIT 1"
-    );
-    $stmtWali->bind_param("iii", $tahun_id, $session_id, $session_id);
-    $stmtWali->execute();
-    if ($stmtWali->get_result()->num_rows > 0) {
-        $is_wali_kelas = true;
-    }
-    $stmtWali->close();
 }
+
+// Jika role adalah admin, kita bebaskan aksesnya. Jika guru/walikelas tapi punya kelas wali, aktifkan filter kelas wali.
+$filter_berdasarkan_wali = ($role !== 'admin' && $is_wali_kelas);
 
 // FILTER PENCARIAN
 $cari = trim($_GET['cari'] ?? '');
@@ -73,31 +73,35 @@ $where = " WHERE 1=1 ";
 $params = [];
 $types = '';
 
-// KARENA LOGIN SEBAGAI WALI KELAS, BATASI HANYA KELAS YANG DIAKUI WALI KELAS TERSEBUT
-if ($role === 'walikelas') {
+// JIKA BUKAN ADMIN DAN MERUPAKAN WALI KELAS, BATASI HANYA KELAS BINAANNYA
+if ($filter_berdasarkan_wali) {
     $where .= "
         AND (
             ks.kelas_id IN (
                 SELECT wk.kelas_id
                 FROM t_wali_kelas wk
                 INNER JOIN t_guru g ON g.id = wk.guru_id
-                WHERE g.user_id = ?
-                AND g.status_aktif = 1
+                WHERE (g.user_id = ? OR g.id = ?)
+                AND wk.tahun_ajaran_id = ?
                 AND wk.status_aktif = 1
             )
             OR ps.kelas_id IN (
                 SELECT wk.kelas_id
                 FROM t_wali_kelas wk
                 INNER JOIN t_guru g ON g.id = wk.guru_id
-                WHERE g.user_id = ?
-                AND g.status_aktif = 1
+                WHERE (g.user_id = ? OR g.id = ?)
+                AND wk.tahun_ajaran_id = ?
                 AND wk.status_aktif = 1
             )
         )
     ";
     $params[] = $session_id;
     $params[] = $session_id;
-    $types .= 'ii';
+    $params[] = $tahun_id;
+    $params[] = $session_id;
+    $params[] = $session_id;
+    $params[] = $tahun_id;
+    $types .= 'iiiiii';
 }
 
 // PENCARIAN
@@ -141,7 +145,7 @@ $sql = "
         ps.tindakan,
         ps.status
     FROM t_pelanggaran_siswa ps
-    LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = ps.siswa_id AND ks.status_aktif = 1
+    LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = ps.siswa_id AND ks.tahun_ajaran_id = ? AND ks.status_aktif = 1
     LEFT JOIN t_kelas k ON k.id = COALESCE(ps.kelas_id, ks.kelas_id)
     LEFT JOIN t_pelanggaran tp ON tp.id = ps.pelanggaran_id
     LEFT JOIN t_guru g_pencatat ON g_pencatat.id = ps.guru_id
@@ -149,6 +153,10 @@ $sql = "
     AND k.id IS NOT NULL
     ORDER BY ps.tanggal DESC, ps.id DESC
 ";
+
+// Masukkan parameter tahun_id untuk join t_kelas_siswa di awal array parameter
+array_unshift($params, $tahun_id);
+$types = 'i' . $types;
 
 $stmt = mysqli_prepare($koneksi, $sql);
 

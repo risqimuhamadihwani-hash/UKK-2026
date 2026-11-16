@@ -143,28 +143,6 @@ if (!$data) {
             <h1><strong>Kelola Wali Kelas</strong></h1>
             <p>Halaman untuk menampilkan data wali kelas</p>
 
-            <!-- KARTU STATISTIK WALI KELAS (Minimalis Tanpa Gambar/Ikon) -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <div class="card shadow-sm border-0 p-3 h-100">
-                        <span class="text-muted small mb-1">Total Wali Kelas</span>
-                        <h2 class="fw-bold mb-0 text-primary"><?= $countTotal ?></h2>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card shadow-sm border-0 p-3 h-100">
-                        <span class="text-muted small mb-1">Wali Kelas Aktif</span>
-                        <h2 class="fw-bold mb-0 text-success"><?= $countAktif ?></h2>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card shadow-sm border-0 p-3 h-100">
-                        <span class="text-muted small mb-1">Tidak Aktif</span>
-                        <h2 class="fw-bold mb-0 text-danger"><?= $countTidakAktif ?></h2>
-                    </div>
-                </div>
-            </div>
-
             <!-- TOMBOL TAMBAH -->
             <div class="mb-3">
                 <a href="tambah_wali_kelas.php" class="btn btn-primary">

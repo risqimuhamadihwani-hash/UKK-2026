@@ -143,28 +143,6 @@ if (!$data) {
             <h1><strong>Kelola Penempatan Siswa</strong></h1> 
             <p>Halaman untuk mengelola penempatan siswa ke kelas</p>
 
-            <!-- KARTU STATISTIK PENEMPATAN SISWA (Minimalis Tanpa Gambar/Ikon) -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <div class="card shadow-sm border-0 p-3 h-100">
-                        <span class="text-muted small mb-1">Total Penempatan</span>
-                        <h2 class="fw-bold mb-0 text-primary"><?= $countTotalPenempatan ?></h2>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card shadow-sm border-0 p-3 h-100">
-                        <span class="text-muted small mb-1">Siswa Belum Ditempatkan</span>
-                        <h2 class="fw-bold mb-0 text-success"><?= $countBelumDitempatkan ?></h2>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card shadow-sm border-0 p-3 h-100">
-                        <span class="text-muted small mb-1">Tahun Ajaran Aktif</span>
-                        <h2 class="fw-bold mb-0 text-warning"><?= $countTahunAktif ?></h2>
-                    </div>
-                </div>
-            </div>
-
             <div class="mb-3">
                 <a href="Tambah_Penempatan_Siswa.php" class="btn btn-primary">
                     + Tambah Penempatan

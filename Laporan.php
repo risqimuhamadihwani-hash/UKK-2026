@@ -51,7 +51,6 @@ $kelas_id_wali_arr = [];
 if ($role === 'guru') {
     $session_user_id = (int)$_SESSION['id_user'];
 
-    // Cek data guru berdasarkan user_id atau id yang sama dengan session login
     $stmtGuru = $koneksi->prepare("SELECT id FROM t_guru WHERE user_id = ? OR id = ? LIMIT 1");
     $stmtGuru->bind_param("ii", $session_user_id, $session_user_id);
     $stmtGuru->execute();
@@ -62,7 +61,6 @@ if ($role === 'guru') {
         $guru_id = (int)$dataGuru['id'];
     }
 
-    // Jika masih 0, ambil data guru pertama atau sesuaikan dengan relasi tabel
     if ($guru_id === 0) {
         $resFB = $koneksi->query("SELECT id FROM t_guru ORDER BY id ASC LIMIT 1");
         if ($rowFB = $resFB->fetch_assoc()) {
@@ -70,7 +68,6 @@ if ($role === 'guru') {
         }
     }
 
-    // Ambil SEMUA ID Kelas yang diampu oleh guru ini sebagai Wali Kelas pada tahun ajaran aktif
     if ($guru_id > 0) {
         $stmtWali = $koneksi->prepare(
             "SELECT kelas_id FROM t_wali_kelas 
@@ -91,8 +88,6 @@ $where = ["ps.tahun_ajaran_id = ?"];
 $params = [$tahun_id];
 $types = 'i';
 
-// Aturan filter: Jika guru adalah wali kelas di suatu kelas, tampilkan siswa di kelas tersebut. 
-// Jika bukan wali kelas, tampilkan data pelanggaran yang dicatat oleh guru tersebut.
 if ($role === 'guru') {
     if (!empty($kelas_id_wali_arr)) {
         $placeholders = implode(',', array_fill(0, count($kelas_id_wali_arr), '?'));
@@ -193,14 +188,18 @@ while ($row = $result->fetch_assoc()) {
 
 $stmt->close();
 
-/* EXPORT EXCEL (CSV) */
+/* EXPORT EXCEL (CSV) YANG RAPI DAN SESUAI TABEL */
 if ($export === 'csv') {
+    $filename = "laporan_pelanggaran_" . date('Y-m-d_H-i-s') . ".csv";
+    
     header('Content-Type: text/csv; charset=UTF-8');
-    header('Content-Disposition: attachment; filename="laporan_pelanggaran.csv"');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
 
     $output = fopen('php://output', 'w');
+    // Tambahkan BOM agar Excel membaca format UTF-8 dengan benar (karakter tidak aneh)
     fwrite($output, "\xEF\xBB\xBF");
 
+    // Header kolom sesuai dengan tabel HTML
     fputcsv($output, [
         'No',
         'Nama Siswa',
@@ -214,18 +213,22 @@ if ($export === 'csv') {
         'Status'
     ], ';');
 
+    // Baris data disesuaikan formatnya dengan yang tampil di tabel
     foreach ($data as $i => $row) {
+        $tanggal_formatted = !empty($row['tanggal']) ? date('d-m-Y', strtotime($row['tanggal'])) : '-';
+        $status_formatted = !empty($row['status']) ? ucfirst($row['status']) : '-';
+
         fputcsv($output, [
             $i + 1,
             $row['nama_siswa'],
             $row['nama_kelas'],
             $row['nama_pelanggaran'],
             $row['nama_guru'],
-            $row['tanggal'],
-            $row['poin'],
+            $tanggal_formatted,
+            (int)$row['poin'],
             $row['tindakan'],
             $row['keterangan'],
-            $row['status']
+            $status_formatted
         ], ';');
     }
 
@@ -259,14 +262,11 @@ if ($status !== '') {
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css">
     
     <style>
-        /* PENGATURAN KHUSUS CETAK LAPORAN (LANDSCAPE AGAR TIDAK TERPOTONG) */
         @media print {
             @page {
                 size: landscape;
                 margin: 10mm;
             }
-
-            /* Sembunyikan Sidebar, Form Filter, Tombol Aksi, dan Elemen Pendukung Lainnya */
             .col-md-3, .col-lg-2, 
             .card:has(form), 
             .btn, 
@@ -279,34 +279,27 @@ if ($status !== '') {
             nav {
                 display: none !important;
             }
-
-            /* Perlebar area konten utama */
             main, .col-md-9, .col-lg-10 {
                 width: 100% !important;
                 max-width: 100% !important;
                 margin: 0 !important;
                 padding: 0 !important;
             }
-
             body {
                 background-color: #ffffff !important;
                 color: #000000 !important;
                 font-size: 10pt;
             }
-
-            /* Styling tabel bersih saat dicetak */
             table.table {
                 width: 100% !important;
                 border-collapse: collapse !important;
             }
-
             table.table th, table.table td {
                 background-color: transparent !important;
                 color: #000000 !important;
                 border: 1px solid #444 !important;
                 padding: 6px 8px !important;
             }
-
             thead.table-dark th {
                 background-color: #212529 !important;
                 color: #fff !important;
@@ -320,16 +313,12 @@ if ($status !== '') {
 
 <div class="container-fluid">
     <div class="row">
-        <!-- SIDEBAR DINAMIS BERDASARKAN ROLE -->
+        <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3 sticky-top" style="top: 0; height: 100vh; overflow-y: auto;">
-            <h4 class="text-white fw-bold mb-4">
-                Pelanggaran Siswa
-            </h4>
+            <h4 class="text-white fw-bold mb-4">Pelanggaran Siswa</h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-2">
-                    <a href="dashboard.php" class="nav-link text-white">
-                        <span class="fw-bold">Dashboard</span> 
-                    </a>
+                    <a href="dashboard.php" class="nav-link text-white"><span class="fw-bold">Dashboard</span></a>
                 </li>
 
                 <?php if (strtolower($_SESSION['role'] ?? '') === 'admin'): ?>
@@ -353,9 +342,7 @@ if ($status !== '') {
 
                 <hr class="text-secondary">
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-danger">
-                        <span class="fw-bold">Logout</span> 
-                    </a>
+                    <a href="logout.php" class="nav-link text-danger"><span class="fw-bold">Logout</span></a>
                 </li>
             </ul>
         </div>
@@ -415,7 +402,7 @@ if ($status !== '') {
                             <input type="date" name="tanggal" class="form-control" value="<?= e($tanggal) ?>">
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="form-label">Status:</label>
                             <select name="status" class="form-select">
                                 <option value="">Semua Status</option>
@@ -431,7 +418,6 @@ if ($status !== '') {
                         <div class="col-12 mt-3">
                             <button type="submit" class="btn btn-primary">Cari / Filter</button>
                             <a href="Laporan.php" class="btn btn-secondary">Reset</a>
-                            
                             <button type="button" onclick="window.print()" class="btn btn-primary ms-2">Cetak Laporan</button>
                             <a href="?<?= e(http_build_query(array_merge($_GET, ['export' => 'csv']))) ?>" class="btn btn-success text-white">Export Excel</a>
                         </div>

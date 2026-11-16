@@ -9,19 +9,23 @@ require_once 'config/koneksi.php';
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 // CEK LOGIN
-if (!isset($_SESSION['id_user'])) {
+$session_id = $_SESSION['id_user'] ?? $_SESSION['user_id'] ?? 0;
+if ($session_id < 1) {
     header("Location: login.php");
     exit;
 }
 
-$role = strtolower(trim($_SESSION['role'] ?? ''));
+$role = strtolower(trim($_SESSION['role'] ?? $_SESSION['level'] ?? ''));
 
-// VALIDASI ROLE (Izinkan admin, guru, dan wali_kelas)
+// VALIDASI ROLE
 if ($role !== 'admin' && $role !== 'guru' && $role !== 'wali_kelas' && $role !== 'walikelas') {
     session_destroy();
     header("Location: login.php");
     exit;
 }
+
+$is_admin = ($role === 'admin');
+$is_session_wali_kelas = ($role === 'wali_kelas' || $role === 'walikelas');
 
 if (!function_exists('e')) {
     function e($data) {
@@ -36,12 +40,60 @@ if (!$koneksi instanceof mysqli) {
 }
 
 $error = '';
-$session_id = (int)($_SESSION['id_user'] ?? 0);
 
 // AMBIL TAHUN AJARAN AKTIF
 $tahunQuery = $koneksi->query("SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1");
 $tahunData = $tahunQuery ? $tahunQuery->fetch_assoc() : null;
 $tahun_id = $tahunData ? (int)$tahunData['id'] : 1;
+
+// DETEKSI GURU & KELAS WALI KELAS SECARA AKURAT
+$guru_id = 0;
+$nama_guru = '';
+$kelas_wali_id = 0;
+$is_wali_kelas = false;
+
+$stmtGuru = $koneksi->prepare(
+    "SELECT g.id AS guru_id, g.nama AS nama_guru 
+     FROM t_guru g 
+     WHERE g.user_id = ? OR g.id = ? 
+     LIMIT 1"
+);
+$stmtGuru->bind_param("ii", $session_id, $session_id);
+$stmtGuru->execute();
+$dataGuruLogin = $stmtGuru->get_result()->fetch_assoc();
+$stmtGuru->close();
+
+if ($dataGuruLogin && !empty($dataGuruLogin['guru_id'])) {
+    $guru_id = (int) $dataGuruLogin['guru_id'];
+    $nama_guru = $dataGuruLogin['nama_guru'];
+
+    $stmtWali = $koneksi->prepare(
+        "SELECT wk.kelas_id, k.nama AS nama_kelas 
+         FROM t_wali_kelas wk
+         JOIN t_kelas k ON k.id = wk.kelas_id
+         WHERE wk.guru_id = ? AND wk.tahun_ajaran_id = ? AND wk.status_aktif = 1
+         LIMIT 1"
+    );
+    $stmtWali->bind_param("ii", $guru_id, $tahun_id);
+    $stmtWali->execute();
+    $resWali = $stmtWali->get_result()->fetch_assoc();
+    $stmtWali->close();
+
+    if ($resWali) {
+        $kelas_wali_id = (int) $resWali['kelas_id'];
+        $is_wali_kelas = true;
+    }
+} else {
+    $guru_id = 0;
+    $nama_guru = trim($_SESSION['name'] ?? ($_SESSION['nama'] ?? ''));
+}
+
+if ($is_session_wali_kelas) {
+    $is_wali_kelas = true;
+}
+
+// Ambil daftar seluruh guru untuk dropdown (jika Admin/Guru biasa)
+$guruListAll = $koneksi->query("SELECT id, nama FROM t_guru ORDER BY nama ASC");
 
 // AMBIL ID DATA YANG MAU DIEDIT
 $id = (int)($_GET['id'] ?? 0);
@@ -62,51 +114,64 @@ if (!$dataCatatan) {
     exit;
 }
 
+// Ambil detail nama siswa dan kelas yang sedang diedit untuk ditampilkan (read-only)
+$stmtSiswaEdit = $koneksi->prepare(
+    "SELECT s.nama, COALESCE(k.nama, 'Tanpa Kelas') AS nama_kelas
+     FROM t_siswa s
+     LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = s.id AND ks.tahun_ajaran_id = ? AND ks.status_aktif = 1
+     LEFT JOIN t_kelas k ON k.id = ks.kelas_id
+     WHERE s.id = ? LIMIT 1"
+);
+$stmtSiswaEdit->bind_param("ii", $tahun_id, $dataCatatan['siswa_id']);
+$stmtSiswaEdit->execute();
+$resSiswaEdit = $stmtSiswaEdit->get_result()->fetch_assoc();
+$stmtSiswaEdit->close();
+
+$nama_siswa_edit = $resSiswaEdit['nama'] ?? ($dataCatatan['nama_siswa'] ?? 'Siswa');
+$nama_kelas_edit = $resSiswaEdit['nama_kelas'] ?? ($dataCatatan['nama_kelas'] ?? '-');
+
 // PROSES UPDATE DATA
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $siswa_id = (int) ($_POST['siswa_id'] ?? 0);
+        // Siswa dikunci dari data awal, tidak diambil dari $_POST['siswa_id'] luar untuk keamanan
+        $siswa_id = (int) $dataCatatan['siswa_id'];
         $pelanggaran_id = (int) ($_POST['pelanggaran_id'] ?? 0);
         $tanggal = $_POST['tanggal'] ?? date('Y-m-d');
         $keterangan = trim($_POST['keterangan'] ?? '');
         $status = trim($_POST['status'] ?? 'tercatat');
 
-        if ($siswa_id < 1 || $pelanggaran_id < 1 || $keterangan === '') {
+        if ($is_wali_kelas && !$is_admin) {
+            if ($guru_id < 1) {
+                throw new Exception("ID Guru Wali Kelas tidak valid.");
+            }
+        } else {
+            $guru_id = (int) ($_POST['guru_id'] ?? 0);
+        }
+
+        if ($guru_id < 1 || $siswa_id < 1 || $pelanggaran_id < 1 || $keterangan === '') {
             throw new Exception("Lengkapi semua data form dengan benar.");
         }
+
+        $stmtCekGuru = $koneksi->prepare("SELECT id, nama FROM t_guru WHERE id = ? LIMIT 1");
+        $stmtCekGuru->bind_param("i", $guru_id);
+        $stmtCekGuru->execute();
+        $resCekGuru = $stmtCekGuru->get_result()->fetch_assoc();
+        $stmtCekGuru->close();
+
+        if (!$resCekGuru) {
+            throw new Exception("Data guru pelapor tidak valid.");
+        }
+        $nama_guru = $resCekGuru['nama'];
 
         $tanggalObj = DateTime::createFromFormat('!Y-m-d', $tanggal);
         if (!$tanggalObj || $tanggalObj->format('Y-m-d') !== $tanggal) {
             throw new Exception("Format tanggal tidak valid.");
         }
 
-        // Ambil data siswa terbaru
-        $stmtSiswa = $koneksi->prepare("SELECT id, nama FROM t_siswa WHERE id = ? LIMIT 1");
-        $stmtSiswa->bind_param("i", $siswa_id);
-        $stmtSiswa->execute();
-        $siswa = $stmtSiswa->get_result()->fetch_assoc();
-        $stmtSiswa->close();
-
-        if (!$siswa) {
-            throw new Exception("Data siswa tidak ditemukan.");
-        }
-        $nama_siswa = $siswa['nama'];
-
-        // Ambil data kelas siswa berdasarkan tahun ajaran aktif
-        $stmtKelas = $koneksi->prepare(
-            "SELECT k.id AS kelas_id, k.nama AS nama_kelas
-             FROM t_kelas_siswa ks
-             JOIN t_kelas k ON k.id = ks.kelas_id
-             WHERE ks.siswa_id = ? AND ks.tahun_ajaran_id = ? AND ks.status_aktif = 1
-             LIMIT 1"
-        );
-        $stmtKelas->bind_param("ii", $siswa_id, $tahun_id);
-        $stmtKelas->execute();
-        $kelasData = $stmtKelas->get_result()->fetch_assoc();
-        $stmtKelas->close();
-
-        $kelas_id = ($kelasData && !empty($kelasData['kelas_id'])) ? (int) $kelasData['kelas_id'] : null;
-        $nama_kelas = $kelasData ? $kelasData['nama_kelas'] : '-';
+        // Gunakan nama siswa yang sudah ada/terbaru
+        $nama_siswa = $nama_siswa_edit;
+        $kelas_id = $dataCatatan['kelas_id'];
+        $nama_kelas = $nama_kelas_edit;
 
         // Ambil data jenis pelanggaran & poin
         $stmtP = $koneksi->prepare(
@@ -127,38 +192,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $kategori_id = (int) ($pelanggaran['pelanggaran_kategori_id'] ?? 0);
         $poin = (int) $pelanggaran['poin'];
 
-        // Update database
-        $stmtUpdate = $koneksi->prepare(
-            "UPDATE t_pelanggaran_siswa SET 
-                siswa_id = ?, 
-                nama_siswa = ?, 
-                kelas_id = ?, 
-                nama_kelas = ?, 
-                pelanggaran_id = ?, 
-                nama_pelanggaran = ?, 
-                pelanggaran_kategori_id = ?, 
-                tanggal = ?, 
-                keterangan = ?, 
-                poin = ?, 
-                status = ?
-             WHERE id = ?"
-        );
-
-        $stmtUpdate->bind_param(
-            "isiississisi",
-            $siswa_id,
-            $nama_siswa,
-            $kelas_id,
-            $nama_kelas,
-            $pelanggaran_id,
-            $nama_pelanggaran,
-            $kategori_id,
-            $tanggal,
-            $keterangan,
-            $poin,
-            $status,
-            $id
-        );
+        // Update database dengan penanganan aman untuk kelas_id NULL
+        if ($kelas_id === null || $kelas_id === '') {
+            $stmtUpdate = $koneksi->prepare(
+                "UPDATE t_pelanggaran_siswa SET 
+                    siswa_id = ?, 
+                    nama_siswa = ?, 
+                    kelas_id = NULL, 
+                    nama_kelas = ?, 
+                    pelanggaran_id = ?, 
+                    nama_pelanggaran = ?, 
+                    pelanggaran_kategori_id = ?, 
+                    guru_id = ?,
+                    nama_guru = ?,
+                    tanggal = ?, 
+                    keterangan = ?, 
+                    poin = ?, 
+                    status = ?
+                 WHERE id = ?"
+            );
+            $stmtUpdate->bind_param(
+                "isisisissisii",
+                $siswa_id,
+                $nama_siswa,
+                $nama_kelas,
+                $pelanggaran_id,
+                $nama_pelanggaran,
+                $kategori_id,
+                $guru_id,
+                $nama_guru,
+                $tanggal,
+                $keterangan,
+                $poin,
+                $status,
+                $id
+            );
+        } else {
+            $stmtUpdate = $koneksi->prepare(
+                "UPDATE t_pelanggaran_siswa SET 
+                    siswa_id = ?, 
+                    nama_siswa = ?, 
+                    kelas_id = ?, 
+                    nama_kelas = ?, 
+                    pelanggaran_id = ?, 
+                    nama_pelanggaran = ?, 
+                    pelanggaran_kategori_id = ?, 
+                    guru_id = ?,
+                    nama_guru = ?,
+                    tanggal = ?, 
+                    keterangan = ?, 
+                    poin = ?, 
+                    status = ?
+                 WHERE id = ?"
+            );
+            $stmtUpdate->bind_param(
+                "isisisiisssisi",
+                $siswa_id,
+                $nama_siswa,
+                (int)$kelas_id,
+                $nama_kelas,
+                $pelanggaran_id,
+                $nama_pelanggaran,
+                $kategori_id,
+                $guru_id,
+                $nama_guru,
+                $tanggal,
+                $keterangan,
+                $poin,
+                $status,
+                $id
+            );
+        }
 
         $stmtUpdate->execute();
         $stmtUpdate->close();
@@ -171,22 +275,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Ambil daftar siswa untuk dropdown
-$siswaList = $koneksi->query(
-    "SELECT s.id, s.nis, s.nama, COALESCE(MAX(k.nama), 'Tanpa Kelas') AS nama_kelas
-     FROM t_siswa s
-     LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = s.id AND ks.status_aktif = 1 AND ks.tahun_ajaran_id = $tahun_id
-     LEFT JOIN t_kelas k ON k.id = ks.kelas_id
-     GROUP BY s.id, s.nis, s.nama
-     ORDER BY s.nama ASC"
-);
-
 // Ambil daftar pelanggaran untuk dropdown
 $pelanggaranList = $koneksi->query(
     "SELECT id, kode, nama, poin 
      FROM t_pelanggaran 
      WHERE status_aktif = 1 
-     ORDER BY CAST(SUBSTRING(kode, 4) AS UNSIGNED) ASC"
+     ORDER BY nama ASC"
 );
 ?>
 
@@ -239,30 +333,33 @@ $pelanggaranList = $koneksi->query(
                 <form method="POST" action="">
                     <div class="row g-3 align-items-center mb-3">
                         
-                        <!-- Pilih Siswa dengan Select2 -->
+                        <!-- Pilihan Guru Pelapor -->
                         <div class="col-md-4">
-                            <label class="form-label text-muted small mb-1">Siswa</label>
-                            <select name="siswa_id" id="selectSiswa" class="form-select form-select-sm" required>
-                                <option value="">-- Pilih Siswa --</option>
-                                <?php while ($s = $siswaList->fetch_assoc()): ?>
-                                    <option value="<?= (int) $s['id'] ?>" <?= ($s['id'] == $dataCatatan['siswa_id']) ? 'selected' : '' ?>>
-                                        <?= e($s['nama']) ?> (<?= e($s['nama_kelas']) ?>)
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
+                            <label class="form-label text-muted small mb-1">Guru Pelapor</label>
+                            <?php if ($is_wali_kelas && !$is_admin): ?>
+                                <input type="hidden" name="guru_id" value="<?= (int)$guru_id ?>">
+                                <input type="text" class="form-control form-control-sm bg-light fw-bold" value="<?= e($nama_guru) ?>" readonly>
+                            <?php else: ?>
+                                <select name="guru_id" id="selectGuru" class="form-select form-select-sm" required>
+                                    <option value="">-- Pilih Guru Pelapor --</option>
+                                    <?php 
+                                    if ($guruListAll) {
+                                        $guruListAll->data_seek(0);
+                                        while ($g = $guruListAll->fetch_assoc()) {
+                                            $selected = ((int)$g['id'] === (int)$dataCatatan['guru_id']) ? 'selected' : '';
+                                            echo '<option value="' . (int)$g['id'] . '" ' . $selected . '>' . e($g['nama']) . '</option>';
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            <?php endif; ?>
                         </div>
 
-                        <!-- Pilih Jenis Pelanggaran -->
+                        <!-- Siswa (Dikunci / Read-only karena tidak boleh diganti saat edit catatan pelanggaran) -->
                         <div class="col-md-4">
-                            <label class="form-label text-muted small mb-1">Jenis Pelanggaran</label>
-                            <select name="pelanggaran_id" id="selectPelanggaran" class="form-select form-select-sm" required>
-                                <option value="">-- Pilih Pelanggaran --</option>
-                                <?php while ($p = $pelanggaranList->fetch_assoc()): ?>
-                                    <option value="<?= (int) $p['id'] ?>" <?= ($p['id'] == $dataCatatan['pelanggaran_id']) ? 'selected' : '' ?>>
-                                        <?= e($p['nama']) ?> (<?= (int)$p['poin'] ?> Poin)
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
+                            <label class="form-label text-muted small mb-1">Siswa</label>
+                            <input type="hidden" name="siswa_id" value="<?= (int)$dataCatatan['siswa_id'] ?>">
+                            <input type="text" class="form-control form-control-sm bg-light fw-bold" value="<?= e($nama_siswa_edit) ?> (<?= e($nama_kelas_edit) ?>)" readonly>
                         </div>
 
                         <!-- Tanggal Kejadian -->
@@ -273,8 +370,21 @@ $pelanggaranList = $koneksi->query(
                     </div>
 
                     <div class="row g-3 align-items-center mb-3">
-                        <!-- Status Pelanggaran -->
-                        <div class="col-md-4">
+                        <!-- Jenis Pelanggaran -->
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small mb-1">Jenis Pelanggaran</label>
+                            <select name="pelanggaran_id" id="selectPelanggaran" class="form-select form-select-sm" required>
+                                <option value="">-- Pilih Pelanggaran --</option>
+                                <?php while ($p = $pelanggaranList->fetch_assoc()): ?>
+                                    <option value="<?= (int) $p['id'] ?>" <?= ((int)$p['id'] === (int)$dataCatatan['pelanggaran_id']) ? 'selected' : '' ?>>
+                                        <?= e($p['nama']) ?> (<?= (int)$p['poin'] ?> Poin)
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+
+                        <!-- Status Penanganan -->
+                        <div class="col-md-6">
                             <label class="form-label text-muted small mb-1">Status Penanganan</label>
                             <select name="status" class="form-select form-select-sm" required>
                                 <option value="tercatat" <?= ($dataCatatan['status'] === 'tercatat') ? 'selected' : '' ?>>Tercatat / Perlu Tindakan</option>
@@ -311,10 +421,12 @@ $pelanggaranList = $koneksi->query(
 
 <script>
 $(document).ready(function() {
-    $('#selectSiswa').select2({
-        theme: 'bootstrap-5',
-        width: '100%'
-    });
+    if ($('#selectGuru').length) {
+        $('#selectGuru').select2({
+            theme: 'bootstrap-5',
+            width: '100%'
+        });
+    }
     $('#selectPelanggaran').select2({
         theme: 'bootstrap-5',
         width: '100%'
