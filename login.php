@@ -106,7 +106,7 @@ if (isset($_SESSION['id_user'])) {
             <h4 class="fw-bold mb-2 text-white">Sistem Pelanggaran Siswa</h4>
             <p class="mb-4 text-white-50 small">Silakan login untuk mengelola data pelanggaran dan ketertiban siswa.</p>
             <div class="d-none d-md-block">
-                <small class="text-muted">&copy; 2026 Admin Panel</small>
+                <small class="text-white">&copy; 2026 Admin Panel</small>
             </div>
         </div>
 
