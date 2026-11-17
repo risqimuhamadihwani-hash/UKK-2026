@@ -220,7 +220,7 @@ $result = $stmt->get_result();
                                         <td><?= e($row['nama_kelas']) ?></td>
                                         <td><?= e($row['jumlah_pelanggaran']) ?></td>
                                         <td>
-                                            <span class="badge bg-primary">
+                                            <span class="badge bg-danger">
                                                 <?= e($row['total_poin']) ?> Poin
                                             </span>
                                         </td>

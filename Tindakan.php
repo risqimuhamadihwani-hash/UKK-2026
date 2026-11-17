@@ -282,7 +282,7 @@ $result = mysqli_stmt_get_result($stmt);
                                                 <?= (!empty($row['tanggal']) && $row['tanggal'] !== '0000-00-00') ? date('d-m-Y', strtotime($row['tanggal'])) : '-' ?>
                                             </td>
                                             <td>
-                                                <span class="badge bg-primary">
+                                                <span class="badge bg-danger">
                                                     <?= (int)$row['poin'] ?> Poin
                                                 </span>
                                             </td>

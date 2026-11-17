@@ -460,7 +460,7 @@ if ($status !== '') {
                                                     : '-' ?>
                                             </td>
                                             <td>
-                                                <span class="badge bg-primary">
+                                                <span class="badge bg-danger">
                                                     <?= (int)$row['poin'] ?> Poin
                                                 </span>
                                             </td>

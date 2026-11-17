@@ -273,7 +273,7 @@ $result_status = mysqli_query($koneksi, $sql_status);
                                         <td><?= e($row['nama_siswa']) ?></td>
                                         <td><?= e($row['nama_kelas']) ?></td>
                                         <td><?= e($row['nama_pelanggaran']) ?></td>
-                                        <td><span class="badge bg-primary"><?= e($row['poin']) ?> Poin</span></td>
+                                        <td><span class="badge bg-danger"><?= e($row['poin']) ?> Poin</span></td>
                                         <td><?= e($row['nama_guru']) ?></td>
                                         <td><?= e($row['keterangan']) ?></td>
                                         <td><?= e($row['tindakan']) ?></td>
